@@ -32,10 +32,12 @@ export default function TransactionsPage() {
     description: '',
   });
 
-  const { data: transactions = [], isLoading } = useQuery({
+  const { data: paginatedResult, isLoading } = useQuery({
     queryKey: ['transactions', filters],
     queryFn: () => transactionsApi.getAll(filters),
   });
+
+  const transactions = paginatedResult?.data ?? [];
 
   const { data: categories = [] } = useQuery({
     queryKey: ['categories'],

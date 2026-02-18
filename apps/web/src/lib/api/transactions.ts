@@ -1,5 +1,5 @@
 import { api } from './client';
-import { Transaction, TransactionFilters } from '../../types';
+import { Transaction, TransactionFilters, PaginatedResult } from '../../types';
 
 export const transactionsApi = {
   getAll: (filters?: TransactionFilters) => {
@@ -11,7 +11,7 @@ export const transactionsApi = {
     if (filters?.page) params.set('page', String(filters.page));
     if (filters?.limit) params.set('limit', String(filters.limit));
     const qs = params.toString();
-    return api.get<Transaction[]>(`/transactions${qs ? `?${qs}` : ''}`);
+    return api.get<PaginatedResult<Transaction>>(`/transactions${qs ? `?${qs}` : ''}`);
   },
 
   getById: (id: string) => api.get<Transaction>(`/transactions/${id}`),

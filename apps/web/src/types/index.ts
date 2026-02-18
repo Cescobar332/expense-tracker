@@ -80,6 +80,14 @@ export interface ReportData {
   trend: { date: string; income: number; expenses: number }[];
 }
 
+export interface PaginatedResult<T> {
+  data: T[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
 export interface TransactionFilters {
   type?: 'INCOME' | 'EXPENSE';
   categoryId?: string;

@@ -10,6 +10,22 @@ import { GenerateReportUseCase } from '../../application/use-cases/generate-repo
 export class ReportsController {
   constructor(private readonly reportUseCase: GenerateReportUseCase) {}
 
+  @Get()
+  @ApiOperation({ summary: 'Obtener reporte unificado' })
+  @ApiQuery({ name: 'startDate', required: true })
+  @ApiQuery({ name: 'endDate', required: true })
+  async getReport(
+    @Request() req: any,
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
+  ) {
+    return this.reportUseCase.getUnifiedReport(
+      req.user.userId,
+      new Date(startDate),
+      new Date(endDate),
+    );
+  }
+
   @Get('dashboard')
   @ApiOperation({ summary: 'Obtener resumen del dashboard' })
   async getDashboard(@Request() req: any) {

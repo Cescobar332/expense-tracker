@@ -82,6 +82,87 @@ export class GenerateReportUseCase {
     return results.sort((a, b) => b.total - a.total);
   }
 
+  async getUnifiedReport(userId: string, startDate: Date, endDate: Date) {
+    const [summary, byCategory, trend] = await Promise.all([
+      this.getSummaryForRange(userId, startDate, endDate),
+      this.getCategoryBreakdown(userId, startDate, endDate, 'EXPENSE'),
+      this.getTrendForRange(userId, startDate, endDate),
+    ]);
+
+    const totalExpenses = summary.totalExpenses;
+    const byCategoryWithPercentage = byCategory.map((c) => ({
+      ...c,
+      percentage: totalExpenses > 0 ? Math.round((c.total / totalExpenses) * 100) : 0,
+    }));
+
+    return {
+      summary,
+      byCategory: byCategoryWithPercentage,
+      trend,
+    };
+  }
+
+  private async getSummaryForRange(userId: string, startDate: Date, endDate: Date) {
+    const groupResult = await this.prisma.transaction.groupBy({
+      by: ['type'],
+      where: {
+        userId,
+        date: { gte: startDate, lte: endDate },
+      },
+      _sum: { amount: true },
+    });
+
+    let totalIncome = 0;
+    let totalExpenses = 0;
+    for (const s of groupResult) {
+      if (s.type === 'INCOME') totalIncome = Number(s._sum.amount || 0);
+      if (s.type === 'EXPENSE') totalExpenses = Number(s._sum.amount || 0);
+    }
+
+    const savingsGoals = await this.prisma.savingsGoal.findMany({
+      where: { userId },
+    });
+    const savingsTotal = savingsGoals.reduce((sum, g) => sum + Number(g.currentAmount), 0);
+
+    return {
+      totalIncome: Math.round(totalIncome * 100) / 100,
+      totalExpenses: Math.round(totalExpenses * 100) / 100,
+      balance: Math.round((totalIncome - totalExpenses) * 100) / 100,
+      savingsTotal: Math.round(savingsTotal * 100) / 100,
+    };
+  }
+
+  private async getTrendForRange(userId: string, startDate: Date, endDate: Date) {
+    const transactions = await this.prisma.transaction.findMany({
+      where: {
+        userId,
+        date: { gte: startDate, lte: endDate },
+      },
+      orderBy: { date: 'asc' },
+    });
+
+    const monthlyData = new Map<string, { income: number; expenses: number }>();
+
+    for (const tx of transactions) {
+      const key = `${tx.date.getFullYear()}-${String(tx.date.getMonth() + 1).padStart(2, '0')}`;
+      if (!monthlyData.has(key)) {
+        monthlyData.set(key, { income: 0, expenses: 0 });
+      }
+      const entry = monthlyData.get(key)!;
+      const amount = Number(tx.amount);
+      if (tx.type === 'INCOME') entry.income += amount;
+      else entry.expenses += amount;
+    }
+
+    return Array.from(monthlyData.entries())
+      .map(([date, data]) => ({
+        date,
+        income: Math.round(data.income * 100) / 100,
+        expenses: Math.round(data.expenses * 100) / 100,
+      }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+  }
+
   async getDashboardSummary(userId: string) {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -121,7 +202,14 @@ export class GenerateReportUseCase {
     }
 
     // Check budget alerts
-    const budgetAlerts = [];
+    const budgetAlerts: {
+      budgetId: string;
+      categoryName: string;
+      budgetAmount: number;
+      spent: number;
+      percentage: number;
+      exceeded: boolean;
+    }[] = [];
     for (const budget of budgets) {
       const spent = await this.prisma.transaction.aggregate({
         where: {

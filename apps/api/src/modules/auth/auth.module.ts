@@ -10,10 +10,12 @@ import { JwtStrategy } from './presentation/guards/jwt.strategy';
 import { PrismaRefreshTokenRepository } from './infrastructure/repositories/prisma-refresh-token.repository';
 import { REFRESH_TOKEN_REPOSITORY } from './domain/repositories/refresh-token.repository.interface';
 import { UsersModule } from '../users/users.module';
+import { CategoriesModule } from '../categories/categories.module';
 
 @Module({
   imports: [
     UsersModule,
+    CategoriesModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -21,7 +23,7 @@ import { UsersModule } from '../users/users.module';
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('jwt.secret', 'dev-secret'),
         signOptions: {
-          expiresIn: configService.get<string>('jwt.expiration', '15m'),
+          expiresIn: configService.get<string>('jwt.expiration', '15m') as any,
         },
       }),
     }),
