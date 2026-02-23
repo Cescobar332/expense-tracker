@@ -94,7 +94,7 @@ export default function ReportsPage() {
               { value: 'this-month', label: 'Este mes' },
               { value: 'last-month', label: 'Mes pasado' },
               { value: 'this-quarter', label: 'Trimestre' },
-              { value: 'this-year', label: 'Este ano' },
+              { value: 'this-year', label: 'Este año' },
             ].map((p) => (
               <button
                 key={p.value}
@@ -109,7 +109,7 @@ export default function ReportsPage() {
             <Input type="date" label="Desde" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
             <Input type="date" label="Hasta" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
             <Select
-              label="Agrupacion"
+              label="Agrupación"
               options={[
                 { value: 'DAILY', label: 'Diario' },
                 { value: 'WEEKLY', label: 'Semanal' },
@@ -173,7 +173,7 @@ export default function ReportsPage() {
           {/* Category breakdown */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
             <Card>
-              <h2 className="text-lg font-semibold text-[var(--color-text)] mb-4">Distribucion por categoria</h2>
+              <h2 className="text-lg font-semibold text-[var(--color-text)] mb-4">Distribución por categoría</h2>
               {categoryData.length > 0 ? (
                 <div className="h-[300px]">
                   <ResponsiveContainer width="100%" height="100%">
@@ -194,7 +194,7 @@ export default function ReportsPage() {
             </Card>
 
             <Card>
-              <h2 className="text-lg font-semibold text-[var(--color-text)] mb-4">Detalle por categoria</h2>
+              <h2 className="text-lg font-semibold text-[var(--color-text)] mb-4">Detalle por categoría</h2>
               {categoryData.length > 0 ? (
                 <div className="space-y-3 max-h-[300px] overflow-y-auto">
                   {categoryData

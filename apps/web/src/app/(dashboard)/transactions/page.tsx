@@ -128,7 +128,7 @@ export default function TransactionsPage() {
         </div>
         <Button onClick={openCreate}>
           <svg className="w-5 h-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
-          Nueva transaccion
+          Nueva transacción
         </Button>
       </div>
 
@@ -177,7 +177,7 @@ export default function TransactionsPage() {
             icon={<svg className="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" /></svg>}
             title="Sin transacciones"
             description="Registra tu primer ingreso o gasto para comenzar"
-            action={{ label: 'Nueva transaccion', onClick: openCreate }}
+            action={{ label: 'Nueva transacción', onClick: openCreate }}
           />
         ) : (
           <div className="divide-y divide-[var(--color-border)]">
@@ -192,7 +192,7 @@ export default function TransactionsPage() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-[var(--color-text)] truncate">
-                      {tx.description || tx.category?.name || 'Sin descripcion'}
+                      {tx.description || tx.category?.name || 'Sin descripción'}
                     </p>
                     <div className="flex items-center gap-2 mt-0.5">
                       <span className="text-xs text-[var(--color-text-secondary)]">{formatDate(tx.date)}</span>
@@ -220,7 +220,7 @@ export default function TransactionsPage() {
       </Card>
 
       {/* Create/Edit Modal */}
-      <Modal isOpen={showModal} onClose={closeModal} title={editingTx ? 'Editar transaccion' : 'Nueva transaccion'}>
+      <Modal isOpen={showModal} onClose={closeModal} title={editingTx ? 'Editar transacción' : 'Nueva transacción'}>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <button
@@ -254,11 +254,11 @@ export default function TransactionsPage() {
           />
 
           <Select
-            label="Categoria"
+            label="Categoría"
             options={filteredCategories.map((c) => ({ value: c.id, label: c.name }))}
             value={form.categoryId}
             onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))}
-            placeholder="Selecciona una categoria"
+            placeholder="Selecciona una categoría"
             required
           />
 
@@ -271,7 +271,7 @@ export default function TransactionsPage() {
           />
 
           <Input
-            label="Descripcion (opcional)"
+            label="Descripción (opcional)"
             value={form.description}
             onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
             placeholder="Ej: Compra del supermercado"
@@ -287,9 +287,9 @@ export default function TransactionsPage() {
       </Modal>
 
       {/* Delete confirmation */}
-      <Modal isOpen={!!deleteConfirm} onClose={() => setDeleteConfirm(null)} title="Eliminar transaccion">
+      <Modal isOpen={!!deleteConfirm} onClose={() => setDeleteConfirm(null)} title="Eliminar transacción">
         <p className="text-[var(--color-text-secondary)] mb-6">
-          Estas seguro de que quieres eliminar esta transaccion? Esta accion no se puede deshacer.
+          ¿Estás seguro/a de que quieres eliminar esta transacción? Esta acción no se puede deshacer.
         </p>
         <div className="flex gap-3">
           <Button variant="secondary" fullWidth onClick={() => setDeleteConfirm(null)}>Cancelar</Button>

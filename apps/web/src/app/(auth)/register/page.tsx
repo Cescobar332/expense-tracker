@@ -21,12 +21,12 @@ export default function RegisterPage() {
     setError('');
 
     if (form.password !== form.confirmPassword) {
-      setError('Las contrasenas no coinciden');
+      setError('Las contraseñas no coinciden');
       return;
     }
 
     if (form.password.length < 8) {
-      setError('La contrasena debe tener al menos 8 caracteres');
+      setError('La contraseña debe tener al menos 8 caracteres');
       return;
     }
 
@@ -68,7 +68,7 @@ export default function RegisterPage() {
             </div>
 
             <Input
-              label="Correo electronico"
+              label="Correo electrónico"
               type="email"
               value={form.email}
               onChange={updateField('email')}
@@ -78,21 +78,21 @@ export default function RegisterPage() {
             />
 
             <Input
-              label="Contrasena"
+              label="Contraseña"
               type="password"
               value={form.password}
               onChange={updateField('password')}
-              placeholder="Minimo 8 caracteres"
+              placeholder="Mínimo 8 caracteres"
               required
               autoComplete="new-password"
             />
 
             <Input
-              label="Confirmar contrasena"
+              label="Confirmar contraseña"
               type="password"
               value={form.confirmPassword}
               onChange={updateField('confirmPassword')}
-              placeholder="Repite tu contrasena"
+              placeholder="Repite tu contraseña"
               required
               autoComplete="new-password"
             />
@@ -103,9 +103,9 @@ export default function RegisterPage() {
           </form>
 
           <p className="mt-6 text-center text-sm text-[var(--color-text-secondary)]">
-            Ya tienes cuenta?{' '}
+            ¿Ya tienes cuenta?{' '}
             <Link href="/login" className="text-[var(--color-primary)] hover:underline font-medium">
-              Inicia sesion
+              Inicia sesión
             </Link>
           </p>
         </div>

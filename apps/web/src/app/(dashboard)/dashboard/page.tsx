@@ -22,7 +22,7 @@ export default function DashboardPage() {
     queryFn: () => reportsApi.getSummary({ startDate, endDate }),
   });
 
-  const { data: transactions } = useQuery({
+  const { data: transactionsResult } = useQuery({
     queryKey: ['transactions', 'recent'],
     queryFn: () => transactionsApi.getAll({ limit: 5 }),
   });
@@ -80,7 +80,7 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         <Card>
-          <h2 className="text-lg font-semibold text-[var(--color-text)] mb-4">Gastos por categoria</h2>
+          <h2 className="text-lg font-semibold text-[var(--color-text)] mb-4">Gastos por categoría</h2>
           <ExpenseChart data={report?.byCategory || []} currency={currency} />
         </Card>
         <Card>
@@ -91,7 +91,7 @@ export default function DashboardPage() {
 
       <Card>
         <h2 className="text-lg font-semibold text-[var(--color-text)] mb-4">Transacciones recientes</h2>
-        <RecentTransactions transactions={transactions || []} currency={currency} />
+        <RecentTransactions transactions={transactionsResult?.data || []} currency={currency} />
       </Card>
     </div>
   );

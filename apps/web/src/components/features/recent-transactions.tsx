@@ -31,7 +31,7 @@ export function RecentTransactions({ transactions, currency }: Props) {
             </div>
             <div className="min-w-0">
               <p className="text-sm font-medium text-[var(--color-text)] truncate">
-                {t.description || t.category?.name || 'Sin descripcion'}
+                {t.description || t.category?.name || 'Sin descripción'}
               </p>
               <p className="text-xs text-[var(--color-text-secondary)]">{formatDate(t.date)}</p>
             </div>

@@ -82,12 +82,12 @@ export default function CategoriesPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-[var(--color-text)]">Categorias</h1>
-          <p className="text-[var(--color-text-secondary)] mt-1">Organiza tus transacciones por categorias</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-[var(--color-text)]">Categorías</h1>
+          <p className="text-[var(--color-text-secondary)] mt-1">Organiza tus transacciones por categorías</p>
         </div>
         <Button onClick={openCreate}>
           <svg className="w-5 h-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
-          Nueva categoria
+          Nueva categoría
         </Button>
       </div>
 
@@ -121,9 +121,9 @@ export default function CategoriesPage() {
         <Card>
           <EmptyState
             icon={<svg className="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg>}
-            title="Sin categorias"
-            description="Crea categorias para organizar tus transacciones"
-            action={{ label: 'Crear categoria', onClick: openCreate }}
+            title="Sin categorías"
+            description="Crea categorías para organizar tus transacciones"
+            action={{ label: 'Crear categoría', onClick: openCreate }}
           />
         </Card>
       ) : (
@@ -157,9 +157,9 @@ export default function CategoriesPage() {
       )}
 
       {/* Create/Edit Modal */}
-      <Modal isOpen={showModal} onClose={closeModal} title={editingCat ? 'Editar categoria' : 'Nueva categoria'}>
+      <Modal isOpen={showModal} onClose={closeModal} title={editingCat ? 'Editar categoría' : 'Nueva categoría'}>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <Input label="Nombre" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Ej: Alimentacion, Transporte" required />
+          <Input label="Nombre" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Ej: Alimentación, Transporte" required />
 
           {!editingCat && (
             <div>
@@ -201,9 +201,9 @@ export default function CategoriesPage() {
       </Modal>
 
       {/* Delete Modal */}
-      <Modal isOpen={!!deleteConfirm} onClose={() => setDeleteConfirm(null)} title="Eliminar categoria">
-        <p className="text-[var(--color-text-secondary)] mb-2">Estas seguro de que quieres eliminar esta categoria?</p>
-        <p className="text-sm text-[var(--color-warning)] mb-6">Las transacciones asociadas no se eliminaran, pero quedaran sin categoria.</p>
+      <Modal isOpen={!!deleteConfirm} onClose={() => setDeleteConfirm(null)} title="Eliminar categoría">
+        <p className="text-[var(--color-text-secondary)] mb-2">¿Estás seguro/a de que quieres eliminar esta categoría?</p>
+        <p className="text-sm text-[var(--color-warning)] mb-6">Las transacciones asociadas no se eliminarán, pero quedarán sin categoría.</p>
         <div className="flex gap-3">
           <Button variant="secondary" fullWidth onClick={() => setDeleteConfirm(null)}>Cancelar</Button>
           <Button variant="danger" fullWidth loading={deleteMutation.isPending} onClick={() => deleteConfirm && deleteMutation.mutate(deleteConfirm)}>Eliminar</Button>

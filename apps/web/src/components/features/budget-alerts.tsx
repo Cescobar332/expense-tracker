@@ -27,7 +27,7 @@ export function BudgetAlerts({ budgets, currency }: Props) {
         <svg className="w-12 h-12 text-[var(--color-success)] mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
-        <p className="text-sm text-[var(--color-text-secondary)]">Todos tus presupuestos estan en orden</p>
+        <p className="text-sm text-[var(--color-text-secondary)]">Todos tus presupuestos están en orden</p>
       </div>
     );
   }

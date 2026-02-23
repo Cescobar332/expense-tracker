@@ -106,7 +106,7 @@ export default function BudgetsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-[var(--color-text)]">Presupuestos</h1>
-          <p className="text-[var(--color-text-secondary)] mt-1">Controla tus limites de gasto por categoria</p>
+          <p className="text-[var(--color-text-secondary)] mt-1">Controla tus límites de gasto por categoría</p>
         </div>
         <Button onClick={openCreate}>
           <svg className="w-5 h-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
@@ -179,9 +179,9 @@ export default function BudgetsPage() {
       {/* Create/Edit Modal */}
       <Modal isOpen={showModal} onClose={closeModal} title={editingBudget ? 'Editar presupuesto' : 'Nuevo presupuesto'}>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <Input label="Monto limite" type="number" step="0.01" min="0.01" value={form.amount} onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))} required />
-          <Select label="Categoria" options={expenseCategories.map((c) => ({ value: c.id, label: c.name }))} value={form.categoryId} onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))} placeholder="Selecciona categoria" required />
-          <Select label="Periodo" options={[{ value: 'MONTHLY', label: 'Mensual' }, { value: 'QUARTERLY', label: 'Trimestral' }, { value: 'YEARLY', label: 'Anual' }]} value={form.period} onChange={(e) => setForm((f) => ({ ...f, period: e.target.value }))} />
+          <Input label="Monto límite" type="number" step="0.01" min="0.01" value={form.amount} onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))} required />
+          <Select label="Categoría" options={expenseCategories.map((c) => ({ value: c.id, label: c.name }))} value={form.categoryId} onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))} placeholder="Selecciona categoría" required />
+          <Select label="Período" options={[{ value: 'MONTHLY', label: 'Mensual' }, { value: 'QUARTERLY', label: 'Trimestral' }, { value: 'YEARLY', label: 'Anual' }]} value={form.period} onChange={(e) => setForm((f) => ({ ...f, period: e.target.value }))} />
           <div className="grid grid-cols-2 gap-3">
             <Input label="Fecha inicio" type="date" value={form.startDate} onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))} required />
             <Input label="Fecha fin" type="date" value={form.endDate} onChange={(e) => setForm((f) => ({ ...f, endDate: e.target.value }))} required />
@@ -196,7 +196,7 @@ export default function BudgetsPage() {
 
       {/* Delete Modal */}
       <Modal isOpen={!!deleteConfirm} onClose={() => setDeleteConfirm(null)} title="Eliminar presupuesto">
-        <p className="text-[var(--color-text-secondary)] mb-6">Estas seguro de que quieres eliminar este presupuesto?</p>
+        <p className="text-[var(--color-text-secondary)] mb-6">¿Estás seguro/a de que quieres eliminar este presupuesto?</p>
         <div className="flex gap-3">
           <Button variant="secondary" fullWidth onClick={() => setDeleteConfirm(null)}>Cancelar</Button>
           <Button variant="danger" fullWidth loading={deleteMutation.isPending} onClick={() => deleteConfirm && deleteMutation.mutate(deleteConfirm)}>Eliminar</Button>

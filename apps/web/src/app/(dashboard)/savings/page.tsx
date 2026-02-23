@@ -179,7 +179,7 @@ export default function SavingsPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input label="Nombre de la meta" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Ej: Vacaciones, Fondo de emergencia" required />
           <Input label="Monto objetivo" type="number" step="0.01" min="0.01" value={form.targetAmount} onChange={(e) => setForm((f) => ({ ...f, targetAmount: e.target.value }))} required />
-          <Input label="Fecha limite (opcional)" type="date" value={form.targetDate} onChange={(e) => setForm((f) => ({ ...f, targetDate: e.target.value }))} />
+          <Input label="Fecha límite (opcional)" type="date" value={form.targetDate} onChange={(e) => setForm((f) => ({ ...f, targetDate: e.target.value }))} />
           <div className="flex gap-3 pt-2">
             <Button type="button" variant="secondary" fullWidth onClick={closeModal}>Cancelar</Button>
             <Button type="submit" fullWidth loading={createMutation.isPending || updateMutation.isPending}>{editingGoal ? 'Guardar' : 'Crear'}</Button>
@@ -203,7 +203,7 @@ export default function SavingsPage() {
 
       {/* Delete Modal */}
       <Modal isOpen={!!deleteConfirm} onClose={() => setDeleteConfirm(null)} title="Eliminar meta">
-        <p className="text-[var(--color-text-secondary)] mb-6">Estas seguro de que quieres eliminar esta meta de ahorro?</p>
+        <p className="text-[var(--color-text-secondary)] mb-6">¿Estás seguro/a de que quieres eliminar esta meta de ahorro?</p>
         <div className="flex gap-3">
           <Button variant="secondary" fullWidth onClick={() => setDeleteConfirm(null)}>Cancelar</Button>
           <Button variant="danger" fullWidth loading={deleteMutation.isPending} onClick={() => deleteConfirm && deleteMutation.mutate(deleteConfirm)}>Eliminar</Button>
