@@ -45,27 +45,37 @@ export async function apiRequest<T>(endpoint: string, options: RequestOptions = 
     headers['Authorization'] = `Bearer ${accessToken}`;
   }
 
-  let res = await fetch(`${API_URL}${endpoint}`, {
-    ...rest,
-    headers,
-    body: body ? JSON.stringify(body) : undefined,
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${API_URL}${endpoint}`, {
+      ...rest,
+      headers,
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  } catch {
+    throw new Error('No se pudo conectar con el servidor. Verifica que el backend esté en ejecución.');
+  }
 
   if (res.status === 401 && accessToken) {
     const newToken = await refreshAccessToken();
     if (newToken) {
       headers['Authorization'] = `Bearer ${newToken}`;
-      res = await fetch(`${API_URL}${endpoint}`, {
-        ...rest,
-        headers,
-        body: body ? JSON.stringify(body) : undefined,
-      });
+      try {
+        res = await fetch(`${API_URL}${endpoint}`, {
+          ...rest,
+          headers,
+          body: body ? JSON.stringify(body) : undefined,
+        });
+      } catch {
+        throw new Error('No se pudo conectar con el servidor. Verifica que el backend esté en ejecución.');
+      }
     }
   }
 
   if (!res.ok) {
-    const error = await res.json().catch(() => ({ message: 'Error de red' }));
-    throw new Error(error.message || `Error ${res.status}`);
+    const error = await res.json().catch(() => ({}));
+    const message = Array.isArray(error.message) ? error.message[0] : error.message;
+    throw new Error(message || `Error del servidor (${res.status})`);
   }
 
   if (res.status === 204) return {} as T;
