@@ -4,19 +4,19 @@ import { ICategoryRepository } from '../../domain/repositories/category.reposito
 import { Category } from '../../domain/entities/category.entity';
 
 const DEFAULT_CATEGORIES = [
-  { name: 'Salario', type: 'INCOME', color: '#22c55e', icon: 'briefcase' },
-  { name: 'Freelance', type: 'INCOME', color: '#3b82f6', icon: 'laptop' },
-  { name: 'Inversiones', type: 'INCOME', color: '#8b5cf6', icon: 'trending-up' },
-  { name: 'Otros ingresos', type: 'INCOME', color: '#06b6d4', icon: 'plus-circle' },
-  { name: 'Alimentación', type: 'EXPENSE', color: '#ef4444', icon: 'utensils' },
-  { name: 'Transporte', type: 'EXPENSE', color: '#f97316', icon: 'car' },
-  { name: 'Vivienda', type: 'EXPENSE', color: '#eab308', icon: 'home' },
-  { name: 'Servicios', type: 'EXPENSE', color: '#14b8a6', icon: 'zap' },
-  { name: 'Salud', type: 'EXPENSE', color: '#ec4899', icon: 'heart' },
-  { name: 'Entretenimiento', type: 'EXPENSE', color: '#a855f7', icon: 'film' },
-  { name: 'Educación', type: 'EXPENSE', color: '#6366f1', icon: 'book-open' },
-  { name: 'Ropa', type: 'EXPENSE', color: '#f43f5e', icon: 'shirt' },
-  { name: 'Otros gastos', type: 'EXPENSE', color: '#64748b', icon: 'more-horizontal' },
+  { name: 'Salario', type: 'INCOME', color: '#22c55e', icon: '💼' },
+  { name: 'Freelance', type: 'INCOME', color: '#3b82f6', icon: '💻' },
+  { name: 'Inversiones', type: 'INCOME', color: '#8b5cf6', icon: '📈' },
+  { name: 'Otros ingresos', type: 'INCOME', color: '#06b6d4', icon: '➕' },
+  { name: 'Alimentación', type: 'EXPENSE', color: '#ef4444', icon: '🍽️' },
+  { name: 'Transporte', type: 'EXPENSE', color: '#f97316', icon: '🚗' },
+  { name: 'Vivienda', type: 'EXPENSE', color: '#eab308', icon: '🏠' },
+  { name: 'Servicios', type: 'EXPENSE', color: '#14b8a6', icon: '⚡' },
+  { name: 'Salud', type: 'EXPENSE', color: '#ec4899', icon: '❤️' },
+  { name: 'Entretenimiento', type: 'EXPENSE', color: '#a855f7', icon: '🎬' },
+  { name: 'Educación', type: 'EXPENSE', color: '#6366f1', icon: '📚' },
+  { name: 'Ropa', type: 'EXPENSE', color: '#f43f5e', icon: '👕' },
+  { name: 'Otros gastos', type: 'EXPENSE', color: '#64748b', icon: '📦' },
 ];
 
 @Injectable()

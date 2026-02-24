@@ -188,7 +188,7 @@ export default function TransactionsPage() {
                     className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-medium flex-shrink-0"
                     style={{ backgroundColor: tx.category?.color || '#6366f1' }}
                   >
-                    {tx.category?.name?.[0]?.toUpperCase() || '?'}
+                    {tx.category?.icon || tx.category?.name?.[0]?.toUpperCase() || '?'}
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-[var(--color-text)] truncate">

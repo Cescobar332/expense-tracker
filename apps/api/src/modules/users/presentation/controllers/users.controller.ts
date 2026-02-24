@@ -4,6 +4,8 @@ import { JwtAuthGuard } from '../../../auth/presentation/guards/jwt-auth.guard';
 import { USER_REPOSITORY, IUserRepository } from '../../domain/repositories/user.repository.interface';
 import { Inject } from '@nestjs/common';
 import { UserResponseDto } from '../../application/dto/user-response.dto';
+import { ChangeCurrencyDto } from '../../application/dto/change-currency.dto';
+import { ChangeCurrencyUseCase } from '../../application/use-cases/change-currency.use-case';
 import { IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class UpdateProfileDto {
@@ -30,6 +32,7 @@ export class UpdateProfileDto {
 export class UsersController {
   constructor(
     @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository,
+    private readonly changeCurrencyUseCase: ChangeCurrencyUseCase,
   ) {}
 
   @Get('profile')
@@ -48,5 +51,17 @@ export class UsersController {
   ): Promise<UserResponseDto> {
     const user = await this.userRepository.update(req.user.userId, dto);
     return UserResponseDto.fromEntity(user);
+  }
+
+  @Patch('currency')
+  @ApiOperation({ summary: 'Cambiar moneda y convertir todos los montos' })
+  async changeCurrency(
+    @Request() req: any,
+    @Body() dto: ChangeCurrencyDto,
+  ) {
+    return this.changeCurrencyUseCase.execute(
+      req.user.userId,
+      dto.newCurrency.toUpperCase(),
+    );
   }
 }

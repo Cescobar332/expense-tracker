@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuthStore } from '../../../lib/stores/auth-store';
 import { reportsApi } from '../../../lib/api/reports';
@@ -15,7 +16,30 @@ import { BudgetAlerts } from '../../../components/features/budget-alerts';
 
 export default function DashboardPage() {
   const { user } = useAuthStore();
-  const { startDate, endDate } = getMonthRange();
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  const { startDate, endDate } = getMonthRange(selectedDate);
+
+  const goToPreviousMonth = () => {
+    setSelectedDate(prev => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+  };
+
+  const goToNextMonth = () => {
+    setSelectedDate(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+  };
+
+  const goToCurrentMonth = () => {
+    setSelectedDate(new Date());
+  };
+
+  const monthLabel = new Intl.DateTimeFormat('es-ES', {
+    month: 'long',
+    year: 'numeric',
+  }).format(selectedDate);
+
+  const now = new Date();
+  const isCurrentMonth = selectedDate.getMonth() === now.getMonth()
+    && selectedDate.getFullYear() === now.getFullYear();
 
   const { data: report } = useQuery({
     queryKey: ['report', startDate, endDate],
@@ -23,8 +47,8 @@ export default function DashboardPage() {
   });
 
   const { data: transactionsResult } = useQuery({
-    queryKey: ['transactions', 'recent'],
-    queryFn: () => transactionsApi.getAll({ limit: 5 }),
+    queryKey: ['transactions', 'recent', startDate, endDate],
+    queryFn: () => transactionsApi.getAll({ limit: 5, startDate, endDate }),
   });
 
   const { data: savings } = useQuery({
@@ -42,13 +66,50 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl md:text-3xl font-bold text-[var(--color-text)]">
-          Hola, {user?.firstName}
-        </h1>
-        <p className="text-[var(--color-text-secondary)] mt-1">
-          Resumen de tus finanzas este mes
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-[var(--color-text)]">
+            Hola, {user?.firstName}
+          </h1>
+          <p className="text-[var(--color-text-secondary)] mt-1">
+            Resumen de tus finanzas
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={goToPreviousMonth}
+            className="p-2 rounded-lg border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:bg-[var(--color-border)] min-h-[40px] min-w-[40px] flex items-center justify-center"
+            aria-label="Mes anterior"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+
+          <span className="text-sm font-medium text-[var(--color-text)] min-w-[160px] text-center capitalize">
+            {monthLabel}
+          </span>
+
+          <button
+            onClick={goToNextMonth}
+            className="p-2 rounded-lg border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:bg-[var(--color-border)] min-h-[40px] min-w-[40px] flex items-center justify-center"
+            aria-label="Mes siguiente"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+
+          {!isCurrentMonth && (
+            <button
+              onClick={goToCurrentMonth}
+              className="ml-1 px-3 py-1.5 text-xs font-medium rounded-lg bg-[var(--color-primary)] text-white hover:opacity-90 min-h-[36px]"
+            >
+              Hoy
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">

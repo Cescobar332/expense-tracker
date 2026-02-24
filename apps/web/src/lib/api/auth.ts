@@ -12,4 +12,10 @@ export const authApi = {
     apiRequest<AuthResponse>('/auth/refresh', { method: 'POST', body: { refreshToken } }),
 
   getProfile: () => api.get<User>('/users/profile'),
+
+  updateCurrency: (newCurrency: string) =>
+    api.patch<{ user: User; convertedCounts: { transactions: number; budgets: number; savings: number } }>(
+      '/users/currency',
+      { newCurrency },
+    ),
 };

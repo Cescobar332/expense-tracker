@@ -39,3 +39,8 @@ input, select, textarea {
   color: inherit;
   background-color: inherit;
 }
+
+option {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+}

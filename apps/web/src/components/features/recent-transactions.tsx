@@ -27,7 +27,7 @@ export function RecentTransactions({ transactions, currency }: Props) {
               className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-medium flex-shrink-0"
               style={{ backgroundColor: t.category?.color || '#6366f1' }}
             >
-              {t.category?.name?.[0]?.toUpperCase() || (t.type === 'INCOME' ? 'I' : 'G')}
+              {t.category?.icon || t.category?.name?.[0]?.toUpperCase() || (t.type === 'INCOME' ? 'I' : 'G')}
             </div>
             <div className="min-w-0">
               <p className="text-sm font-medium text-[var(--color-text)] truncate">

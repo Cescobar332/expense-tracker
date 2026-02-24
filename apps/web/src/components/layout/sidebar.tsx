@@ -1,8 +1,23 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '../../lib/stores/auth-store';
+import { authApi } from '../../lib/api/auth';
+
+const CURRENCIES = [
+  { value: 'USD', label: 'USD ($)' },
+  { value: 'EUR', label: 'EUR (€)' },
+  { value: 'GBP', label: 'GBP (£)' },
+  { value: 'COP', label: 'COP ($)' },
+  { value: 'MXN', label: 'MXN ($)' },
+  { value: 'ARS', label: 'ARS ($)' },
+  { value: 'BRL', label: 'BRL (R$)' },
+  { value: 'CLP', label: 'CLP ($)' },
+  { value: 'PEN', label: 'PEN (S/)' },
+];
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: (
@@ -27,7 +42,18 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { user, logout } = useAuthStore();
+  const { user, logout, setUser } = useAuthStore();
+  const queryClient = useQueryClient();
+  const [showCurrencyPicker, setShowCurrencyPicker] = useState(false);
+
+  const currencyMutation = useMutation({
+    mutationFn: (newCurrency: string) => authApi.updateCurrency(newCurrency),
+    onSuccess: (result) => {
+      setUser(result.user);
+      queryClient.invalidateQueries();
+      setShowCurrencyPicker(false);
+    },
+  });
 
   return (
     <>
@@ -65,6 +91,57 @@ export function Sidebar() {
               <p className="text-xs text-[var(--color-text-secondary)] truncate">{user?.email}</p>
             </div>
           </div>
+
+          {/* Currency selector */}
+          <div className="mb-2">
+            <button
+              onClick={() => setShowCurrencyPicker(!showCurrencyPicker)}
+              className="w-full flex items-center justify-between px-3 py-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:bg-[var(--color-border)] rounded-lg transition-colors"
+            >
+              <span>Moneda: {user?.currency || 'USD'}</span>
+              <svg className={`w-4 h-4 transition-transform ${showCurrencyPicker ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            {showCurrencyPicker && (
+              <div className="mt-1 p-2 border border-[var(--color-border)] rounded-lg bg-[var(--color-surface)]">
+                <p className="text-xs text-[var(--color-text-secondary)] mb-2 px-1">
+                  Se convertirán todos los montos
+                </p>
+                <div className="grid grid-cols-3 gap-1">
+                  {CURRENCIES.map((c) => (
+                    <button
+                      key={c.value}
+                      onClick={() => {
+                        if (c.value !== user?.currency && !currencyMutation.isPending) {
+                          currencyMutation.mutate(c.value);
+                        }
+                      }}
+                      disabled={currencyMutation.isPending}
+                      className={`px-2 py-1.5 text-xs rounded transition-colors ${
+                        c.value === user?.currency
+                          ? 'bg-[var(--color-primary)] text-white'
+                          : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-border)]'
+                      } ${currencyMutation.isPending ? 'opacity-50 cursor-wait' : ''}`}
+                    >
+                      {c.value}
+                    </button>
+                  ))}
+                </div>
+                {currencyMutation.isPending && (
+                  <p className="text-xs text-[var(--color-primary)] mt-2 text-center">
+                    Convirtiendo montos...
+                  </p>
+                )}
+                {currencyMutation.isError && (
+                  <p className="text-xs text-[var(--color-danger)] mt-2 px-1">
+                    {currencyMutation.error instanceof Error ? currencyMutation.error.message : 'Error al cambiar moneda'}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+
           <button
             onClick={logout}
             className="w-full flex items-center gap-2 px-3 py-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-danger)] hover:bg-red-50 rounded-lg transition-colors"
