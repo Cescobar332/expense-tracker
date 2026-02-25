@@ -61,8 +61,8 @@ export class TransactionsController {
       categoryId,
       startDate: startDate ? new Date(startDate) : undefined,
       endDate: endDate ? new Date(endDate) : undefined,
-      page: page ? parseInt(page, 10) : 1,
-      limit: limit ? parseInt(limit, 10) : 20,
+      page: page ? Number.parseInt(page, 10) : 1,
+      limit: limit ? Number.parseInt(limit, 10) : 20,
     });
   }
 

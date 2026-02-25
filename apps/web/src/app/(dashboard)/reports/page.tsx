@@ -5,7 +5,6 @@ import { useQuery } from '@tanstack/react-query';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
   PieChart, Pie, Cell,
-  LineChart, Line,
 } from 'recharts';
 import { useAuthStore } from '../../../lib/stores/auth-store';
 import { reportsApi } from '../../../lib/api/reports';
@@ -14,6 +13,10 @@ import { Input } from '../../../components/ui/input';
 import { Select } from '../../../components/ui/select';
 import { StatCard } from '../../../components/ui/stat-card';
 import { formatCurrency, getMonthRange } from '../../../lib/utils/format';
+
+function renderLegendText(value: string) {
+  return <span className="text-xs">{value}</span>;
+}
 
 export default function ReportsPage() {
   const { user } = useAuthStore();
@@ -41,11 +44,12 @@ export default function ReportsPage() {
         s = new Date(now.getFullYear(), now.getMonth() - 1, 1);
         e = new Date(now.getFullYear(), now.getMonth(), 0);
         break;
-      case 'this-quarter':
+      case 'this-quarter': {
         const qStart = Math.floor(now.getMonth() / 3) * 3;
         s = new Date(now.getFullYear(), qStart, 1);
         e = new Date(now.getFullYear(), qStart + 3, 0);
         break;
+      }
       case 'this-year':
         s = new Date(now.getFullYear(), 0, 1);
         e = new Date(now.getFullYear(), 11, 31);
@@ -158,7 +162,7 @@ export default function ReportsPage() {
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
                     <XAxis dataKey="date" tick={{ fontSize: 12 }} stroke="var(--color-text-secondary)" />
                     <YAxis tick={{ fontSize: 12 }} stroke="var(--color-text-secondary)" tickFormatter={(v) => formatCurrency(v, currency)} />
-                    <Tooltip {...tooltipStyle} formatter={(value: number) => formatCurrency(value, currency)} />
+                    <Tooltip {...tooltipStyle} formatter={(value: number | undefined) => formatCurrency(value ?? 0, currency)} />
                     <Legend />
                     <Bar dataKey="Ingresos" fill="var(--color-success)" radius={[4, 4, 0, 0]} />
                     <Bar dataKey="Gastos" fill="var(--color-danger)" radius={[4, 4, 0, 0]} />
@@ -179,12 +183,12 @@ export default function ReportsPage() {
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie data={categoryData} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={2} dataKey="value">
-                        {categoryData.map((entry, i) => (
-                          <Cell key={i} fill={entry.color} />
+                        {categoryData.map((entry) => (
+                          <Cell key={entry.name} fill={entry.color} />
                         ))}
                       </Pie>
-                      <Tooltip {...tooltipStyle} formatter={(value: number) => formatCurrency(value, currency)} />
-                      <Legend verticalAlign="bottom" height={36} formatter={(v: string) => <span className="text-xs">{v}</span>} />
+                      <Tooltip {...tooltipStyle} formatter={(value: number | undefined) => formatCurrency(value ?? 0, currency)} />
+                      <Legend verticalAlign="bottom" height={36} formatter={renderLegendText} />
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
@@ -198,9 +202,9 @@ export default function ReportsPage() {
               {categoryData.length > 0 ? (
                 <div className="space-y-3 max-h-[300px] overflow-y-auto">
                   {categoryData
-                    .sort((a, b) => b.value - a.value)
-                    .map((cat, i) => (
-                      <div key={i} className="flex items-center justify-between">
+                    .toSorted((a, b) => b.value - a.value)
+                    .map((cat) => (
+                      <div key={cat.name} className="flex items-center justify-between">
                         <div className="flex items-center gap-2 min-w-0 flex-1">
                           <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: cat.color }} />
                           <span className="text-sm text-[var(--color-text)] truncate">{cat.name}</span>

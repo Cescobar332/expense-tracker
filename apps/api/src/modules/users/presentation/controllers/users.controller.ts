@@ -5,6 +5,7 @@ import {
   Body,
   UseGuards,
   Request,
+  Inject,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../../auth/presentation/guards/jwt-auth.guard';
@@ -12,7 +13,6 @@ import {
   USER_REPOSITORY,
   IUserRepository,
 } from '../../domain/repositories/user.repository.interface';
-import { Inject } from '@nestjs/common';
 import { UserResponseDto } from '../../application/dto/user-response.dto';
 import { ChangeCurrencyDto } from '../../application/dto/change-currency.dto';
 import { ChangeCurrencyUseCase } from '../../application/use-cases/change-currency.use-case';

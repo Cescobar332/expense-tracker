@@ -19,7 +19,7 @@ export default function LoginPage() {
 
   const registered = searchParams.get('registered') === 'true';
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     setLoading(true);

@@ -48,7 +48,7 @@ export class LoginUseCase {
     const accessToken = this.jwtService.sign(payload);
 
     const refreshToken = uuidv4();
-    const refreshExpDays = parseInt(
+    const refreshExpDays = Number.parseInt(
       this.configService
         .get<string>('jwt.refreshExpiration', '7')
         .replace('d', ''),

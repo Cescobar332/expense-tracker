@@ -14,6 +14,8 @@ import { EmptyState } from '../../../components/ui/empty-state';
 import { formatCurrency, formatDate, formatDateInput } from '../../../lib/utils/format';
 import { Budget } from '../../../types';
 
+const PERIOD_LABELS: Record<string, string> = { MONTHLY: 'Mensual', QUARTERLY: 'Trimestral', YEARLY: 'Anual' };
+
 export default function BudgetsPage() {
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
@@ -84,21 +86,96 @@ export default function BudgetsPage() {
 
   const closeModal = () => { setShowModal(false); setEditingBudget(null); };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const payload = {
-      amount: parseFloat(form.amount),
+      amount: Number.parseFloat(form.amount),
       categoryId: form.categoryId,
       period: form.period as 'MONTHLY' | 'QUARTERLY' | 'YEARLY',
       startDate: form.startDate,
       endDate: form.endDate,
-      alertAt: parseInt(form.alertAt),
+      alertAt: Number.parseInt(form.alertAt),
     };
     if (editingBudget) {
       updateMutation.mutate({ id: editingBudget.id, data: payload });
     } else {
       createMutation.mutate(payload);
     }
+  };
+
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]" /></div>
+      );
+    }
+    if (budgets.length === 0) {
+      return (
+        <Card>
+          <EmptyState
+            icon={<svg className="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>}
+            title="Sin presupuestos"
+            description="Crea un presupuesto para controlar tus gastos"
+            action={{ label: 'Crear presupuesto', onClick: openCreate }}
+          />
+        </Card>
+      );
+    }
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {budgets.map((b) => {
+          const pct = b.percentage || 0;
+          const isOver = pct >= 100;
+          const isWarning = pct >= (b.alertAt || 80);
+          let barColor = 'bg-[var(--color-success)]';
+          if (isOver) barColor = 'bg-[var(--color-danger)]';
+          else if (isWarning) barColor = 'bg-[var(--color-warning)]';
+          let textColorClass = 'text-[var(--color-success)]';
+          if (isOver) textColorClass = 'text-[var(--color-danger)]';
+          else if (isWarning) textColorClass = 'text-[var(--color-warning)]';
+          return (
+            <Card key={b.id}>
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <h3 className="font-semibold text-[var(--color-text)]">{b.category?.name || 'Presupuesto'}</h3>
+                  <p className="text-xs text-[var(--color-text-secondary)]">
+                    {PERIOD_LABELS[b.period] || b.period}
+                  </p>
+                </div>
+                <div className="flex gap-1">
+                  <button onClick={() => openEdit(b)} className="p-1.5 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] rounded" aria-label="Editar">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                  </button>
+                  <button onClick={() => setDeleteConfirm(b.id)} className="p-1.5 text-[var(--color-text-secondary)] hover:text-[var(--color-danger)] rounded" aria-label="Eliminar">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                  </button>
+                </div>
+              </div>
+              <div className="mb-2">
+                <div className="flex justify-between text-sm mb-1">
+                  <span className="text-[var(--color-text-secondary)]">{formatCurrency(b.spent || 0, currency)}</span>
+                  <span className="font-medium text-[var(--color-text)]">{formatCurrency(Number(b.amount), currency)}</span>
+                </div>
+                <div className="w-full bg-[var(--color-border)] rounded-full h-3">
+                  <div className={`h-3 rounded-full transition-all ${barColor}`} style={{ width: `${Math.min(pct, 100)}%` }} />
+                </div>
+                <div className="flex justify-between mt-1">
+                  <span className={`text-xs font-semibold ${textColorClass}`}>
+                    {pct}% usado
+                  </span>
+                  <span className="text-xs text-[var(--color-text-secondary)]">
+                    Alerta al {b.alertAt}%
+                  </span>
+                </div>
+              </div>
+              <p className="text-xs text-[var(--color-text-secondary)] mt-2">
+                {formatDate(b.startDate)} - {formatDate(b.endDate)}
+              </p>
+            </Card>
+          );
+        })}
+      </div>
+    );
   };
 
   return (
@@ -114,67 +191,7 @@ export default function BudgetsPage() {
         </Button>
       </div>
 
-      {isLoading ? (
-        <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]" /></div>
-      ) : budgets.length === 0 ? (
-        <Card>
-          <EmptyState
-            icon={<svg className="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>}
-            title="Sin presupuestos"
-            description="Crea un presupuesto para controlar tus gastos"
-            action={{ label: 'Crear presupuesto', onClick: openCreate }}
-          />
-        </Card>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {budgets.map((b) => {
-            const pct = b.percentage || 0;
-            const isOver = pct >= 100;
-            const isWarning = pct >= (b.alertAt || 80);
-            const barColor = isOver ? 'bg-[var(--color-danger)]' : isWarning ? 'bg-[var(--color-warning)]' : 'bg-[var(--color-success)]';
-            return (
-              <Card key={b.id}>
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <h3 className="font-semibold text-[var(--color-text)]">{b.category?.name || 'Presupuesto'}</h3>
-                    <p className="text-xs text-[var(--color-text-secondary)]">
-                      {b.period === 'MONTHLY' ? 'Mensual' : b.period === 'QUARTERLY' ? 'Trimestral' : 'Anual'}
-                    </p>
-                  </div>
-                  <div className="flex gap-1">
-                    <button onClick={() => openEdit(b)} className="p-1.5 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] rounded" aria-label="Editar">
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                    </button>
-                    <button onClick={() => setDeleteConfirm(b.id)} className="p-1.5 text-[var(--color-text-secondary)] hover:text-[var(--color-danger)] rounded" aria-label="Eliminar">
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                    </button>
-                  </div>
-                </div>
-                <div className="mb-2">
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-[var(--color-text-secondary)]">{formatCurrency(b.spent || 0, currency)}</span>
-                    <span className="font-medium text-[var(--color-text)]">{formatCurrency(Number(b.amount), currency)}</span>
-                  </div>
-                  <div className="w-full bg-[var(--color-border)] rounded-full h-3">
-                    <div className={`h-3 rounded-full transition-all ${barColor}`} style={{ width: `${Math.min(pct, 100)}%` }} />
-                  </div>
-                  <div className="flex justify-between mt-1">
-                    <span className={`text-xs font-semibold ${isOver ? 'text-[var(--color-danger)]' : isWarning ? 'text-[var(--color-warning)]' : 'text-[var(--color-success)]'}`}>
-                      {pct}% usado
-                    </span>
-                    <span className="text-xs text-[var(--color-text-secondary)]">
-                      Alerta al {b.alertAt}%
-                    </span>
-                  </div>
-                </div>
-                <p className="text-xs text-[var(--color-text-secondary)] mt-2">
-                  {formatDate(b.startDate)} - {formatDate(b.endDate)}
-                </p>
-              </Card>
-            );
-          })}
-        </div>
-      )}
+      {renderContent()}
 
       {/* Create/Edit Modal */}
       <Modal isOpen={showModal} onClose={closeModal} title={editingBudget ? 'Editar presupuesto' : 'Nuevo presupuesto'}>

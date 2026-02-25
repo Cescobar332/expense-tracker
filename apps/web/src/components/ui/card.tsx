@@ -5,7 +5,7 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
   padding?: boolean;
 }
 
-export function Card({ children, padding = true, className = '', ...props }: CardProps) {
+export function Card({ children, padding = true, className = '', ...props }: Readonly<CardProps>) {
   return (
     <div
       className={`

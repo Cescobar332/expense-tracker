@@ -30,7 +30,7 @@ export class RefreshTokenUseCase {
     }
 
     const user = await this.userRepository.findById(storedToken.userId);
-    if (!user || !user.isActive) {
+    if (!user || !user?.isActive) {
       throw new UnauthorizedException('Usuario no encontrado o desactivado');
     }
 
@@ -40,7 +40,7 @@ export class RefreshTokenUseCase {
     const accessToken = this.jwtService.sign(payload);
 
     const newRefreshToken = uuidv4();
-    const refreshExpDays = parseInt(
+    const refreshExpDays = Number.parseInt(
       this.configService
         .get<string>('jwt.refreshExpiration', '7')
         .replace('d', ''),

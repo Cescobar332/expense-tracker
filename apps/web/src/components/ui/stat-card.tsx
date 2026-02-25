@@ -9,7 +9,13 @@ interface StatCardProps {
   color?: string;
 }
 
-export function StatCard({ title, value, subtitle, icon, trend, color = 'var(--color-primary)' }: StatCardProps) {
+function getTrendColorClass(trend?: 'up' | 'down' | 'neutral') {
+  if (trend === 'up') return 'text-[var(--color-success)]';
+  if (trend === 'down') return 'text-[var(--color-danger)]';
+  return 'text-[var(--color-text-secondary)]';
+}
+
+export function StatCard({ title, value, subtitle, icon, trend, color = 'var(--color-primary)' }: Readonly<StatCardProps>) {
   return (
     <div className="bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] shadow-sm p-4 md:p-6">
       <div className="flex items-start justify-between">
@@ -17,13 +23,9 @@ export function StatCard({ title, value, subtitle, icon, trend, color = 'var(--c
           <p className="text-sm text-[var(--color-text-secondary)] truncate">{title}</p>
           <p className="mt-1 text-2xl md:text-3xl font-bold" style={{ color }}>{value}</p>
           {subtitle && (
-            <p className={`mt-1 text-sm ${
-              trend === 'up' ? 'text-[var(--color-success)]' :
-              trend === 'down' ? 'text-[var(--color-danger)]' :
-              'text-[var(--color-text-secondary)]'
-            }`}>
-              {trend === 'up' && '↑ '}
-              {trend === 'down' && '↓ '}
+            <p className={`mt-1 text-sm ${getTrendColorClass(trend)}`}>
+              {trend === 'up' && '\u2191 '}
+              {trend === 'down' && '\u2193 '}
               {subtitle}
             </p>
           )}

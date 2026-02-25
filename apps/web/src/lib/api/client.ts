@@ -31,6 +31,14 @@ async function refreshAccessToken(): Promise<string | null> {
   }
 }
 
+async function makeRequest(url: string, options: RequestInit): Promise<Response> {
+  try {
+    return await fetch(url, options);
+  } catch {
+    throw new Error('No se pudo conectar con el servidor. Verifica que el backend esté en ejecución.');
+  }
+}
+
 export async function apiRequest<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
   const { body, headers: customHeaders, ...rest } = options;
 
@@ -45,30 +53,19 @@ export async function apiRequest<T>(endpoint: string, options: RequestOptions = 
     headers['Authorization'] = `Bearer ${accessToken}`;
   }
 
-  let res: Response;
-  try {
-    res = await fetch(`${API_URL}${endpoint}`, {
-      ...rest,
-      headers,
-      body: body ? JSON.stringify(body) : undefined,
-    });
-  } catch {
-    throw new Error('No se pudo conectar con el servidor. Verifica que el backend esté en ejecución.');
-  }
+  const requestOptions: RequestInit = {
+    ...rest,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+  };
+
+  let res = await makeRequest(`${API_URL}${endpoint}`, requestOptions);
 
   if (res.status === 401 && accessToken) {
     const newToken = await refreshAccessToken();
     if (newToken) {
       headers['Authorization'] = `Bearer ${newToken}`;
-      try {
-        res = await fetch(`${API_URL}${endpoint}`, {
-          ...rest,
-          headers,
-          body: body ? JSON.stringify(body) : undefined,
-        });
-      } catch {
-        throw new Error('No se pudo conectar con el servidor. Verifica que el backend esté en ejecución.');
-      }
+      res = await makeRequest(`${API_URL}${endpoint}`, { ...requestOptions, headers });
     }
   }
 

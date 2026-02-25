@@ -15,7 +15,11 @@ interface Props {
   currency: string;
 }
 
-export function ExpenseChart({ data, currency }: Props) {
+function legendFormatter(value: string) {
+  return <span className="text-xs text-[var(--color-text)]">{value}</span>;
+}
+
+export function ExpenseChart({ data, currency }: Readonly<Props>) {
   if (data.length === 0) {
     return (
       <p className="text-[var(--color-text-secondary)] text-sm py-12 text-center">
@@ -43,12 +47,12 @@ export function ExpenseChart({ data, currency }: Props) {
             paddingAngle={2}
             dataKey="value"
           >
-            {chartData.map((entry, index) => (
-              <Cell key={index} fill={entry.color} />
+            {chartData.map((entry) => (
+              <Cell key={entry.name} fill={entry.color} />
             ))}
           </Pie>
           <Tooltip
-            formatter={(value: number) => formatCurrency(value, currency)}
+            formatter={(value: number | undefined) => formatCurrency(value ?? 0, currency)}
             contentStyle={{
               backgroundColor: 'var(--color-surface)',
               border: '1px solid var(--color-border)',
@@ -58,7 +62,7 @@ export function ExpenseChart({ data, currency }: Props) {
           <Legend
             verticalAlign="bottom"
             height={36}
-            formatter={(value: string) => <span className="text-xs text-[var(--color-text)]">{value}</span>}
+            formatter={legendFormatter}
           />
         </PieChart>
       </ResponsiveContainer>

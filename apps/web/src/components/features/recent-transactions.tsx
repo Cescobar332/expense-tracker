@@ -9,7 +9,7 @@ interface Props {
   currency: string;
 }
 
-export function RecentTransactions({ transactions, currency }: Props) {
+export function RecentTransactions({ transactions, currency }: Readonly<Props>) {
   if (transactions.length === 0) {
     return (
       <p className="text-[var(--color-text-secondary)] text-sm py-4 text-center">

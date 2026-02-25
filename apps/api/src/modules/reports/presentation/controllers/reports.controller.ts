@@ -47,7 +47,7 @@ export class ReportsController {
   ) {
     return this.reportUseCase.getMonthlyTrend(
       req.user.userId,
-      months ? parseInt(months, 10) : 12,
+      months ? Number.parseInt(months, 10) : 12,
     );
   }
 

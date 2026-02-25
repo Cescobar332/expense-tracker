@@ -8,6 +8,7 @@ export const reportsApi = {
     if (params?.endDate) searchParams.set('endDate', params.endDate);
     if (params?.period) searchParams.set('period', params.period);
     const qs = searchParams.toString();
-    return api.get<ReportData>(`/reports${qs ? `?${qs}` : ''}`);
+    const queryString = qs ? `?${qs}` : '';
+    return api.get<ReportData>(`/reports${queryString}`);
   },
 };

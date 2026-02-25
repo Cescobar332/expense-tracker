@@ -8,7 +8,7 @@ interface Props {
   currency: string;
 }
 
-export function BudgetAlerts({ budgets, currency }: Props) {
+export function BudgetAlerts({ budgets, currency }: Readonly<Props>) {
   if (budgets.length === 0) {
     return (
       <p className="text-[var(--color-text-secondary)] text-sm py-4 text-center">

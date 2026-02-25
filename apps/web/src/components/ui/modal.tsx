@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useEffect, useRef } from 'react';
+import { ReactNode, useEffect } from 'react';
 
 interface ModalProps {
   isOpen: boolean;
@@ -9,9 +9,7 @@ interface ModalProps {
   children: ReactNode;
 }
 
-export function Modal({ isOpen, onClose, title, children }: ModalProps) {
-  const overlayRef = useRef<HTMLDivElement>(null);
-
+export function Modal({ isOpen, onClose, title, children }: Readonly<ModalProps>) {
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -29,15 +27,18 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div
-      ref={overlayRef}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
-      onClick={(e) => { if (e.target === overlayRef.current) onClose(); }}
-      role="dialog"
-      aria-modal="true"
-      aria-label={title}
-    >
-      <div className="w-full max-w-lg bg-[var(--color-surface)] rounded-xl shadow-xl border border-[var(--color-border)] max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <button
+        type="button"
+        className="absolute inset-0 bg-black/50 cursor-default border-none"
+        onClick={onClose}
+        aria-label="Cerrar modal"
+      />
+      <dialog
+        open
+        aria-label={title}
+        className="relative w-full max-w-lg bg-[var(--color-surface)] rounded-xl shadow-xl border border-[var(--color-border)] max-h-[90vh] overflow-y-auto p-0 m-0"
+      >
         <div className="flex items-center justify-between p-4 md:p-6 border-b border-[var(--color-border)]">
           <h2 className="text-lg font-semibold text-[var(--color-text)]">{title}</h2>
           <button
@@ -51,7 +52,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
           </button>
         </div>
         <div className="p-4 md:p-6">{children}</div>
-      </div>
+      </dialog>
     </div>
   );
 }

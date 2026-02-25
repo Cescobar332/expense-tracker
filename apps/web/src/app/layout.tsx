@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description: 'Aplicacion web para el control integral de finanzas personales',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="es">
       <body>

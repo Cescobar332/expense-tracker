@@ -11,7 +11,8 @@ export const transactionsApi = {
     if (filters?.page) params.set('page', String(filters.page));
     if (filters?.limit) params.set('limit', String(filters.limit));
     const qs = params.toString();
-    return api.get<PaginatedResult<Transaction>>(`/transactions${qs ? `?${qs}` : ''}`);
+    const queryString = qs ? `?${qs}` : '';
+    return api.get<PaginatedResult<Transaction>>(`/transactions${queryString}`);
   },
 
   getById: (id: string) => api.get<Transaction>(`/transactions/${id}`),

@@ -51,7 +51,7 @@ async function bootstrap() {
   logger.log(`API running on http://localhost:${port}`);
   logger.log(`Swagger docs: http://localhost:${port}/api/docs`);
 }
-bootstrap().catch((err) => {
+void bootstrap().catch((err) => {
   const logger = new Logger('Bootstrap');
   logger.error('Failed to start application', err);
   process.exit(1);

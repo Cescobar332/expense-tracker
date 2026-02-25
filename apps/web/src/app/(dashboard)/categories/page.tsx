@@ -6,7 +6,6 @@ import { categoriesApi } from '../../../lib/api/categories';
 import { Button } from '../../../components/ui/button';
 import { Card } from '../../../components/ui/card';
 import { Input } from '../../../components/ui/input';
-import { Select } from '../../../components/ui/select';
 import { Modal } from '../../../components/ui/modal';
 import { EmptyState } from '../../../components/ui/empty-state';
 import { Category } from '../../../types';
@@ -69,13 +68,68 @@ export default function CategoriesPage() {
 
   const closeModal = () => { setShowModal(false); setEditingCat(null); };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (editingCat) {
       updateMutation.mutate({ id: editingCat.id, data: { name: form.name, color: form.color, icon: form.icon || undefined } });
     } else {
       createMutation.mutate({ name: form.name, type: form.type, color: form.color, icon: form.icon || undefined });
     }
+  };
+
+  const getTabCount = (tabValue: string): number => {
+    if (tabValue === '') return categories.length;
+    if (tabValue === 'INCOME') return incomeCategories.length;
+    return expenseCategories.length;
+  };
+
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]" /></div>
+      );
+    }
+    if (filtered.length === 0) {
+      return (
+        <Card>
+          <EmptyState
+            icon={<svg className="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg>}
+            title="Sin categorías"
+            description="Crea categorías para organizar tus transacciones"
+            action={{ label: 'Crear categoría', onClick: openCreate }}
+          />
+        </Card>
+      );
+    }
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+        {filtered.map((cat) => (
+          <div key={cat.id} className="bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] p-4 flex items-center justify-between hover:shadow-sm transition-shadow">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0" style={{ backgroundColor: cat.color }}>
+                {cat.icon || cat.name[0]?.toUpperCase()}
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-[var(--color-text)] truncate">{cat.name}</p>
+                <span className={`text-xs ${cat.type === 'INCOME' ? 'text-[var(--color-success)]' : 'text-[var(--color-danger)]'}`}>
+                  {cat.type === 'INCOME' ? 'Ingreso' : 'Gasto'}
+                </span>
+              </div>
+            </div>
+            <div className="flex gap-1 flex-shrink-0">
+              <button onClick={() => openEdit(cat)} className="p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] rounded min-h-[40px] min-w-[40px] flex items-center justify-center" aria-label="Editar">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+              </button>
+              {!cat.isDefault && (
+                <button onClick={() => setDeleteConfirm(cat.id)} className="p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-danger)] rounded min-h-[40px] min-w-[40px] flex items-center justify-center" aria-label="Eliminar">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -109,52 +163,13 @@ export default function CategoriesPage() {
           >
             {tab.label}
             <span className="ml-1.5 text-xs opacity-75">
-              ({tab.value === '' ? categories.length : tab.value === 'INCOME' ? incomeCategories.length : expenseCategories.length})
+              ({getTabCount(tab.value)})
             </span>
           </button>
         ))}
       </div>
 
-      {isLoading ? (
-        <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]" /></div>
-      ) : filtered.length === 0 ? (
-        <Card>
-          <EmptyState
-            icon={<svg className="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg>}
-            title="Sin categorías"
-            description="Crea categorías para organizar tus transacciones"
-            action={{ label: 'Crear categoría', onClick: openCreate }}
-          />
-        </Card>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-          {filtered.map((cat) => (
-            <div key={cat.id} className="bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] p-4 flex items-center justify-between hover:shadow-sm transition-shadow">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0" style={{ backgroundColor: cat.color }}>
-                  {cat.icon || cat.name[0]?.toUpperCase()}
-                </div>
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-[var(--color-text)] truncate">{cat.name}</p>
-                  <span className={`text-xs ${cat.type === 'INCOME' ? 'text-[var(--color-success)]' : 'text-[var(--color-danger)]'}`}>
-                    {cat.type === 'INCOME' ? 'Ingreso' : 'Gasto'}
-                  </span>
-                </div>
-              </div>
-              <div className="flex gap-1 flex-shrink-0">
-                <button onClick={() => openEdit(cat)} className="p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] rounded min-h-[40px] min-w-[40px] flex items-center justify-center" aria-label="Editar">
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                </button>
-                {!cat.isDefault && (
-                  <button onClick={() => setDeleteConfirm(cat.id)} className="p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-danger)] rounded min-h-[40px] min-w-[40px] flex items-center justify-center" aria-label="Eliminar">
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                  </button>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      {renderContent()}
 
       {/* Create/Edit Modal */}
       <Modal isOpen={showModal} onClose={closeModal} title={editingCat ? 'Editar categoría' : 'Nueva categoría'}>
@@ -163,8 +178,8 @@ export default function CategoriesPage() {
 
           {!editingCat && (
             <div>
-              <label className="block text-sm font-medium text-[var(--color-text)] mb-1">Tipo</label>
-              <div className="grid grid-cols-2 gap-3">
+              <label htmlFor="category-type" className="block text-sm font-medium text-[var(--color-text)] mb-1">Tipo</label>
+              <div id="category-type" className="grid grid-cols-2 gap-3">
                 <button type="button" onClick={() => setForm((f) => ({ ...f, type: 'EXPENSE' }))} className={`py-2 px-4 rounded-lg text-sm font-medium border transition-colors min-h-[44px] ${form.type === 'EXPENSE' ? 'bg-red-50 border-red-300 text-red-700' : 'border-[var(--color-border)] text-[var(--color-text-secondary)]'}`}>
                   Gasto
                 </button>
@@ -176,8 +191,8 @@ export default function CategoriesPage() {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-[var(--color-text)] mb-2">Color</label>
-            <div className="flex flex-wrap gap-2">
+            <label htmlFor="category-color" className="block text-sm font-medium text-[var(--color-text)] mb-2">Color</label>
+            <div id="category-color" className="flex flex-wrap gap-2">
               {PRESET_COLORS.map((color) => (
                 <button
                   key={color}

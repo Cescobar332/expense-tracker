@@ -8,7 +8,7 @@ interface EmptyStateProps {
   action?: { label: string; onClick: () => void };
 }
 
-export function EmptyState({ icon, title, description, action }: EmptyStateProps) {
+export function EmptyState({ icon, title, description, action }: Readonly<EmptyStateProps>) {
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
       <div className="text-[var(--color-text-secondary)] mb-4">{icon}</div>
