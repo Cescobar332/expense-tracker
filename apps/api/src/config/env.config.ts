@@ -12,6 +12,6 @@ export const jwtConfig = registerAs('jwt', () => ({
 }));
 
 export const appConfig = registerAs('app', () => ({
-  port: parseInt(process.env.PORT || '3001', 10),
+  port: Number.parseInt(process.env.PORT || '3001', 10),
   frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
 }));

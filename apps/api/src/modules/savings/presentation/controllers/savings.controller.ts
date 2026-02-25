@@ -1,13 +1,27 @@
 import {
-  Controller, Get, Post, Patch, Delete, Body, Param,
-  UseGuards, Request, ForbiddenException, NotFoundException, Inject,
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+  Request,
+  ForbiddenException,
+  NotFoundException,
+  Inject,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../../auth/presentation/guards/jwt-auth.guard';
-import { SAVINGS_GOAL_REPOSITORY, ISavingsGoalRepository } from '../../domain/repositories/savings-goal.repository.interface';
+import {
+  SAVINGS_GOAL_REPOSITORY,
+  ISavingsGoalRepository,
+} from '../../domain/repositories/savings-goal.repository.interface';
 import { CreateSavingsGoalDto } from '../../application/dto/create-savings-goal.dto';
 import { UpdateSavingsGoalDto } from '../../application/dto/update-savings-goal.dto';
 import { AddSavingsAmountDto } from '../../application/dto/add-savings-amount.dto';
+import { AuthenticatedRequest } from '../../../../shared/types/authenticated-request';
 
 @ApiTags('savings')
 @ApiBearerAuth()
@@ -15,19 +29,20 @@ import { AddSavingsAmountDto } from '../../application/dto/add-savings-amount.dt
 @Controller('savings')
 export class SavingsController {
   constructor(
-    @Inject(SAVINGS_GOAL_REPOSITORY) private readonly savingsRepo: ISavingsGoalRepository,
+    @Inject(SAVINGS_GOAL_REPOSITORY)
+    private readonly savingsRepo: ISavingsGoalRepository,
   ) {}
 
   @Get()
   @ApiOperation({ summary: 'Listar metas de ahorro' })
-  async findAll(@Request() req: any) {
+  async findAll(@Request() req: AuthenticatedRequest) {
     const goals = await this.savingsRepo.findByUserId(req.user.userId);
     return goals.map((g) => ({ ...g, progress: g.progress }));
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Obtener una meta de ahorro' })
-  async findOne(@Request() req: any, @Param('id') id: string) {
+  async findOne(@Request() req: AuthenticatedRequest, @Param('id') id: string) {
     const goal = await this.savingsRepo.findById(id);
     if (!goal) throw new NotFoundException('Meta de ahorro no encontrada');
     if (goal.userId !== req.user.userId) throw new ForbiddenException();
@@ -36,7 +51,10 @@ export class SavingsController {
 
   @Post()
   @ApiOperation({ summary: 'Crear meta de ahorro' })
-  async create(@Request() req: any, @Body() dto: CreateSavingsGoalDto) {
+  async create(
+    @Request() req: AuthenticatedRequest,
+    @Body() dto: CreateSavingsGoalDto,
+  ) {
     return this.savingsRepo.create({
       userId: req.user.userId,
       name: dto.name,
@@ -48,22 +66,24 @@ export class SavingsController {
   @Patch(':id')
   @ApiOperation({ summary: 'Actualizar meta de ahorro' })
   async update(
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Param('id') id: string,
     @Body() dto: UpdateSavingsGoalDto,
   ) {
     const goal = await this.savingsRepo.findById(id);
     if (!goal) throw new NotFoundException('Meta de ahorro no encontrada');
     if (goal.userId !== req.user.userId) throw new ForbiddenException();
-    const updateData: any = { ...dto };
-    if (dto.targetDate) updateData.targetDate = new Date(dto.targetDate);
-    return this.savingsRepo.update(id, updateData);
+    const { targetDate, ...rest } = dto;
+    return this.savingsRepo.update(id, {
+      ...rest,
+      ...(targetDate && { targetDate: new Date(targetDate) }),
+    });
   }
 
   @Post(':id/add')
   @ApiOperation({ summary: 'Agregar o retirar monto de la meta' })
   async addAmount(
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Param('id') id: string,
     @Body() dto: AddSavingsAmountDto,
   ) {
@@ -76,7 +96,7 @@ export class SavingsController {
 
   @Delete(':id')
   @ApiOperation({ summary: 'Eliminar meta de ahorro' })
-  async remove(@Request() req: any, @Param('id') id: string) {
+  async remove(@Request() req: AuthenticatedRequest, @Param('id') id: string) {
     const goal = await this.savingsRepo.findById(id);
     if (!goal) throw new NotFoundException('Meta de ahorro no encontrada');
     if (goal.userId !== req.user.userId) throw new ForbiddenException();

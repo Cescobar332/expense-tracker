@@ -1,12 +1,32 @@
 import {
-  Controller, Get, Post, Patch, Delete, Body, Param, Query,
-  UseGuards, Request, ForbiddenException, NotFoundException, Inject,
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  Request,
+  ForbiddenException,
+  NotFoundException,
+  Inject,
 } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../../auth/presentation/guards/jwt-auth.guard';
-import { TRANSACTION_REPOSITORY, ITransactionRepository } from '../../domain/repositories/transaction.repository.interface';
+import {
+  TRANSACTION_REPOSITORY,
+  ITransactionRepository,
+} from '../../domain/repositories/transaction.repository.interface';
 import { CreateTransactionDto } from '../../application/dto/create-transaction.dto';
 import { UpdateTransactionDto } from '../../application/dto/update-transaction.dto';
+import { AuthenticatedRequest } from '../../../../shared/types/authenticated-request';
 
 @ApiTags('transactions')
 @ApiBearerAuth()
@@ -14,7 +34,8 @@ import { UpdateTransactionDto } from '../../application/dto/update-transaction.d
 @Controller('transactions')
 export class TransactionsController {
   constructor(
-    @Inject(TRANSACTION_REPOSITORY) private readonly transactionRepo: ITransactionRepository,
+    @Inject(TRANSACTION_REPOSITORY)
+    private readonly transactionRepo: ITransactionRepository,
   ) {}
 
   @Get()
@@ -26,7 +47,7 @@ export class TransactionsController {
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
   async findAll(
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Query('type') type?: string,
     @Query('categoryId') categoryId?: string,
     @Query('startDate') startDate?: string,
@@ -50,7 +71,7 @@ export class TransactionsController {
   @ApiQuery({ name: 'startDate', required: true })
   @ApiQuery({ name: 'endDate', required: true })
   async getSummary(
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Query('startDate') startDate: string,
     @Query('endDate') endDate: string,
   ) {
@@ -66,7 +87,7 @@ export class TransactionsController {
   @ApiQuery({ name: 'startDate', required: true })
   @ApiQuery({ name: 'endDate', required: true })
   async getByCategory(
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Query('startDate') startDate: string,
     @Query('endDate') endDate: string,
   ) {
@@ -79,7 +100,7 @@ export class TransactionsController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Obtener una transacción' })
-  async findOne(@Request() req: any, @Param('id') id: string) {
+  async findOne(@Request() req: AuthenticatedRequest, @Param('id') id: string) {
     const tx = await this.transactionRepo.findById(id);
     if (!tx) throw new NotFoundException('Transacción no encontrada');
     if (tx.userId !== req.user.userId) throw new ForbiddenException();
@@ -88,7 +109,10 @@ export class TransactionsController {
 
   @Post()
   @ApiOperation({ summary: 'Crear transacción' })
-  async create(@Request() req: any, @Body() dto: CreateTransactionDto) {
+  async create(
+    @Request() req: AuthenticatedRequest,
+    @Body() dto: CreateTransactionDto,
+  ) {
     return this.transactionRepo.create({
       userId: req.user.userId,
       categoryId: dto.categoryId,
@@ -103,21 +127,23 @@ export class TransactionsController {
   @Patch(':id')
   @ApiOperation({ summary: 'Actualizar transacción' })
   async update(
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Param('id') id: string,
     @Body() dto: UpdateTransactionDto,
   ) {
     const tx = await this.transactionRepo.findById(id);
     if (!tx) throw new NotFoundException('Transacción no encontrada');
     if (tx.userId !== req.user.userId) throw new ForbiddenException();
-    const updateData: any = { ...dto };
-    if (dto.date) updateData.date = new Date(dto.date);
-    return this.transactionRepo.update(id, updateData);
+    const { date, ...rest } = dto;
+    return this.transactionRepo.update(id, {
+      ...rest,
+      ...(date && { date: new Date(date) }),
+    });
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Eliminar transacción' })
-  async remove(@Request() req: any, @Param('id') id: string) {
+  async remove(@Request() req: AuthenticatedRequest, @Param('id') id: string) {
     const tx = await this.transactionRepo.findById(id);
     if (!tx) throw new NotFoundException('Transacción no encontrada');
     if (tx.userId !== req.user.userId) throw new ForbiddenException();

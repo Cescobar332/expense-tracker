@@ -1,4 +1,5 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../../../shared/infrastructure/prisma.service';
 
 @Injectable()
@@ -42,8 +43,13 @@ export class GenerateReportUseCase {
       .sort((a, b) => a.month.localeCompare(b.month));
   }
 
-  async getCategoryBreakdown(userId: string, startDate: Date, endDate: Date, type?: string) {
-    const where: any = {
+  async getCategoryBreakdown(
+    userId: string,
+    startDate: Date,
+    endDate: Date,
+    type?: string,
+  ) {
+    const where: Prisma.TransactionWhereInput = {
       userId,
       date: { gte: startDate, lte: endDate },
     };
@@ -54,7 +60,10 @@ export class GenerateReportUseCase {
       include: { category: true },
     });
 
-    const categoryMap = new Map<string, { name: string; color: string; total: number; count: number }>();
+    const categoryMap = new Map<
+      string,
+      { name: string; color: string; total: number; count: number }
+    >();
 
     for (const tx of transactions) {
       const catId = tx.categoryId;
@@ -71,13 +80,15 @@ export class GenerateReportUseCase {
       entry.count += 1;
     }
 
-    const results = Array.from(categoryMap.entries()).map(([categoryId, data]) => ({
-      categoryId,
-      categoryName: data.name,
-      color: data.color,
-      total: Math.round(data.total * 100) / 100,
-      count: data.count,
-    }));
+    const results = Array.from(categoryMap.entries()).map(
+      ([categoryId, data]) => ({
+        categoryId,
+        categoryName: data.name,
+        color: data.color,
+        total: Math.round(data.total * 100) / 100,
+        count: data.count,
+      }),
+    );
 
     return results.sort((a, b) => b.total - a.total);
   }
@@ -92,7 +103,8 @@ export class GenerateReportUseCase {
     const totalExpenses = summary.totalExpenses;
     const byCategoryWithPercentage = byCategory.map((c) => ({
       ...c,
-      percentage: totalExpenses > 0 ? Math.round((c.total / totalExpenses) * 100) : 0,
+      percentage:
+        totalExpenses > 0 ? Math.round((c.total / totalExpenses) * 100) : 0,
     }));
 
     return {
@@ -102,7 +114,11 @@ export class GenerateReportUseCase {
     };
   }
 
-  private async getSummaryForRange(userId: string, startDate: Date, endDate: Date) {
+  private async getSummaryForRange(
+    userId: string,
+    startDate: Date,
+    endDate: Date,
+  ) {
     const groupResult = await this.prisma.transaction.groupBy({
       by: ['type'],
       where: {
@@ -122,7 +138,10 @@ export class GenerateReportUseCase {
     const savingsGoals = await this.prisma.savingsGoal.findMany({
       where: { userId },
     });
-    const savingsTotal = savingsGoals.reduce((sum, g) => sum + Number(g.currentAmount), 0);
+    const savingsTotal = savingsGoals.reduce(
+      (sum, g) => sum + Number(g.currentAmount),
+      0,
+    );
 
     return {
       totalIncome: Math.round(totalIncome * 100) / 100,
@@ -132,7 +151,11 @@ export class GenerateReportUseCase {
     };
   }
 
-  private async getTrendForRange(userId: string, startDate: Date, endDate: Date) {
+  private async getTrendForRange(
+    userId: string,
+    startDate: Date,
+    endDate: Date,
+  ) {
     const transactions = await this.prisma.transaction.findMany({
       where: {
         userId,
@@ -166,33 +189,41 @@ export class GenerateReportUseCase {
   async getDashboardSummary(userId: string) {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+    const endOfMonth = new Date(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      0,
+      23,
+      59,
+      59,
+    );
 
-    const [monthlySummary, recentTransactions, savingsGoals, budgets] = await Promise.all([
-      this.prisma.transaction.groupBy({
-        by: ['type'],
-        where: {
-          userId,
-          date: { gte: startOfMonth, lte: endOfMonth },
-        },
-        _sum: { amount: true },
-      }),
-      this.prisma.transaction.findMany({
-        where: { userId },
-        orderBy: { date: 'desc' },
-        take: 5,
-        include: { category: true },
-      }),
-      this.prisma.savingsGoal.findMany({
-        where: { userId, isCompleted: false },
-        orderBy: { createdAt: 'desc' },
-        take: 3,
-      }),
-      this.prisma.budget.findMany({
-        where: { userId, isActive: true },
-        include: { category: true },
-      }),
-    ]);
+    const [monthlySummary, recentTransactions, savingsGoals, budgets] =
+      await Promise.all([
+        this.prisma.transaction.groupBy({
+          by: ['type'],
+          where: {
+            userId,
+            date: { gte: startOfMonth, lte: endOfMonth },
+          },
+          _sum: { amount: true },
+        }),
+        this.prisma.transaction.findMany({
+          where: { userId },
+          orderBy: { date: 'desc' },
+          take: 5,
+          include: { category: true },
+        }),
+        this.prisma.savingsGoal.findMany({
+          where: { userId, isCompleted: false },
+          orderBy: { createdAt: 'desc' },
+          take: 3,
+        }),
+        this.prisma.budget.findMany({
+          where: { userId, isActive: true },
+          include: { category: true },
+        }),
+      ]);
 
     let monthlyIncome = 0;
     let monthlyExpense = 0;
@@ -222,7 +253,8 @@ export class GenerateReportUseCase {
       });
       const spentAmount = Number(spent._sum.amount || 0);
       const budgetAmount = Number(budget.amount);
-      const percentage = budgetAmount > 0 ? Math.round((spentAmount / budgetAmount) * 100) : 0;
+      const percentage =
+        budgetAmount > 0 ? Math.round((spentAmount / budgetAmount) * 100) : 0;
 
       if (percentage >= budget.alertAt) {
         budgetAlerts.push({
@@ -255,9 +287,15 @@ export class GenerateReportUseCase {
         name: g.name,
         targetAmount: Number(g.targetAmount),
         currentAmount: Number(g.currentAmount),
-        progress: Number(g.targetAmount) > 0
-          ? Math.min(100, Math.round((Number(g.currentAmount) / Number(g.targetAmount)) * 100))
-          : 0,
+        progress:
+          Number(g.targetAmount) > 0
+            ? Math.min(
+                100,
+                Math.round(
+                  (Number(g.currentAmount) / Number(g.targetAmount)) * 100,
+                ),
+              )
+            : 0,
         targetDate: g.targetDate,
       })),
       budgetAlerts,

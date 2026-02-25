@@ -1,6 +1,9 @@
 import { Injectable, Inject, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../../../shared/infrastructure/prisma.service';
-import { USER_REPOSITORY, IUserRepository } from '../../domain/repositories/user.repository.interface';
+import {
+  USER_REPOSITORY,
+  IUserRepository,
+} from '../../domain/repositories/user.repository.interface';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
@@ -104,7 +107,9 @@ export class ChangeCurrencyUseCase {
       if (!response.ok) {
         throw new BadRequestException('No se pudo obtener el tipo de cambio');
       }
-      const data = await response.json();
+      const data = (await response.json()) as {
+        rates?: Record<string, number>;
+      };
       const rate = data.rates?.[to];
       if (!rate) {
         throw new BadRequestException(`Moneda no soportada: ${to}`);

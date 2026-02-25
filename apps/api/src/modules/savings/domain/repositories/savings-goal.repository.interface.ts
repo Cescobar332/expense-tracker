@@ -11,13 +11,16 @@ export interface ISavingsGoalRepository {
     targetAmount: number;
     targetDate?: Date;
   }): Promise<SavingsGoal>;
-  update(id: string, data: Partial<{
-    name: string;
-    targetAmount: number;
-    currentAmount: number;
-    targetDate: Date | null;
-    isCompleted: boolean;
-  }>): Promise<SavingsGoal>;
+  update(
+    id: string,
+    data: Partial<{
+      name: string;
+      targetAmount: number;
+      currentAmount: number;
+      targetDate: Date | null;
+      isCompleted: boolean;
+    }>,
+  ): Promise<SavingsGoal>;
   addAmount(id: string, amount: number): Promise<SavingsGoal>;
   delete(id: string): Promise<void>;
 }

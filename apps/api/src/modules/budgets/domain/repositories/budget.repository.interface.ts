@@ -19,14 +19,17 @@ export interface IBudgetRepository {
     endDate: Date;
     alertAt?: number;
   }): Promise<Budget>;
-  update(id: string, data: Partial<{
-    amount: number;
-    period: string;
-    startDate: Date;
-    endDate: Date;
-    alertAt: number;
-    isActive: boolean;
-  }>): Promise<Budget>;
+  update(
+    id: string,
+    data: Partial<{
+      amount: number;
+      period: string;
+      startDate: Date;
+      endDate: Date;
+      alertAt: number;
+      isActive: boolean;
+    }>,
+  ): Promise<Budget>;
   delete(id: string): Promise<void>;
   getBudgetsWithSpent(userId: string): Promise<BudgetWithSpent[]>;
 }

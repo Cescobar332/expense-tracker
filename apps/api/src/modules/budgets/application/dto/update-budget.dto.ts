@@ -1,4 +1,13 @@
-import { IsOptional, IsNumber, IsEnum, IsDateString, Min, Max, IsInt, IsBoolean } from 'class-validator';
+import {
+  IsOptional,
+  IsNumber,
+  IsEnum,
+  IsDateString,
+  Min,
+  Max,
+  IsInt,
+  IsBoolean,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateBudgetDto {

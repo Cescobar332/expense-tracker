@@ -1,12 +1,23 @@
-import { Controller, Get, Patch, Body, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Patch,
+  Body,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../../auth/presentation/guards/jwt-auth.guard';
-import { USER_REPOSITORY, IUserRepository } from '../../domain/repositories/user.repository.interface';
+import {
+  USER_REPOSITORY,
+  IUserRepository,
+} from '../../domain/repositories/user.repository.interface';
 import { Inject } from '@nestjs/common';
 import { UserResponseDto } from '../../application/dto/user-response.dto';
 import { ChangeCurrencyDto } from '../../application/dto/change-currency.dto';
 import { ChangeCurrencyUseCase } from '../../application/use-cases/change-currency.use-case';
 import { IsOptional, IsString, MaxLength } from 'class-validator';
+import { AuthenticatedRequest } from '../../../../shared/types/authenticated-request';
 
 export class UpdateProfileDto {
   @IsOptional()
@@ -37,7 +48,9 @@ export class UsersController {
 
   @Get('profile')
   @ApiOperation({ summary: 'Obtener perfil del usuario autenticado' })
-  async getProfile(@Request() req: any): Promise<UserResponseDto> {
+  async getProfile(
+    @Request() req: AuthenticatedRequest,
+  ): Promise<UserResponseDto> {
     const user = await this.userRepository.findById(req.user.userId);
     if (!user) throw new Error('User not found');
     return UserResponseDto.fromEntity(user);
@@ -46,7 +59,7 @@ export class UsersController {
   @Patch('profile')
   @ApiOperation({ summary: 'Actualizar perfil del usuario' })
   async updateProfile(
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Body() dto: UpdateProfileDto,
   ): Promise<UserResponseDto> {
     const user = await this.userRepository.update(req.user.userId, dto);
@@ -56,7 +69,7 @@ export class UsersController {
   @Patch('currency')
   @ApiOperation({ summary: 'Cambiar moneda y convertir todos los montos' })
   async changeCurrency(
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Body() dto: ChangeCurrencyDto,
   ) {
     return this.changeCurrencyUseCase.execute(

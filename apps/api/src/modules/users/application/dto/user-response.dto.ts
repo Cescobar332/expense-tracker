@@ -6,7 +6,14 @@ export class UserResponseDto {
   currency: string;
   createdAt: Date;
 
-  static fromEntity(user: { id: string; email: string; firstName: string; lastName: string; currency: string; createdAt: Date }): UserResponseDto {
+  static fromEntity(user: {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    currency: string;
+    createdAt: Date;
+  }): UserResponseDto {
     const dto = new UserResponseDto();
     dto.id = user.id;
     dto.email = user.email;

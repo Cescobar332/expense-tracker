@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../../shared/infrastructure/prisma.service';
-import { IBudgetRepository, BudgetWithSpent } from '../../domain/repositories/budget.repository.interface';
+import {
+  IBudgetRepository,
+  BudgetWithSpent,
+} from '../../domain/repositories/budget.repository.interface';
 import { Budget } from '../../domain/entities/budget.entity';
-import { Prisma } from '@prisma/client';
+import { Budget as PrismaBudget, Prisma } from '@prisma/client';
 
 @Injectable()
 export class PrismaBudgetRepository implements IBudgetRepository {
@@ -47,19 +50,25 @@ export class PrismaBudgetRepository implements IBudgetRepository {
     return this.toDomain(b);
   }
 
-  async update(id: string, data: Partial<{
-    amount: number;
-    period: string;
-    startDate: Date;
-    endDate: Date;
-    alertAt: number;
-    isActive: boolean;
-  }>): Promise<Budget> {
-    const updateData: any = { ...data };
+  async update(
+    id: string,
+    data: Partial<{
+      amount: number;
+      period: string;
+      startDate: Date;
+      endDate: Date;
+      alertAt: number;
+      isActive: boolean;
+    }>,
+  ): Promise<Budget> {
+    const updateData: Prisma.BudgetUncheckedUpdateInput = { ...data };
     if (data.amount !== undefined) {
       updateData.amount = new Prisma.Decimal(data.amount);
     }
-    const b = await this.prisma.budget.update({ where: { id }, data: updateData });
+    const b = await this.prisma.budget.update({
+      where: { id },
+      data: updateData,
+    });
     return this.toDomain(b);
   }
 
@@ -91,16 +100,19 @@ export class PrismaBudgetRepository implements IBudgetRepository {
 
       const spent = Number(spentResult._sum.amount || 0);
       const budgetAmount = Number(budget.amount);
-      const percentage = budgetAmount > 0 ? Math.round((spent / budgetAmount) * 100) : 0;
+      const percentage =
+        budgetAmount > 0 ? Math.round((spent / budgetAmount) * 100) : 0;
 
       const domainBudget = this.toDomain(budget);
-      results.push(Object.assign(domainBudget, { spent, percentage }) as BudgetWithSpent);
+      results.push(
+        Object.assign(domainBudget, { spent, percentage }) as BudgetWithSpent,
+      );
     }
 
     return results;
   }
 
-  private toDomain(raw: any): Budget {
+  private toDomain(raw: PrismaBudget): Budget {
     return new Budget({
       id: raw.id,
       userId: raw.userId,

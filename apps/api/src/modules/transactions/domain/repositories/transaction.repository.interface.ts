@@ -22,7 +22,9 @@ export interface PaginatedResult<T> {
 
 export interface ITransactionRepository {
   findById(id: string): Promise<Transaction | null>;
-  findByFilters(filters: TransactionFilters): Promise<PaginatedResult<Transaction>>;
+  findByFilters(
+    filters: TransactionFilters,
+  ): Promise<PaginatedResult<Transaction>>;
   create(data: {
     userId: string;
     categoryId: string;
@@ -32,25 +34,38 @@ export interface ITransactionRepository {
     date: Date;
     isRecurring?: boolean;
   }): Promise<Transaction>;
-  update(id: string, data: Partial<{
-    categoryId: string;
-    amount: number;
-    type: string;
-    description: string;
-    date: Date;
-    isRecurring: boolean;
-  }>): Promise<Transaction>;
+  update(
+    id: string,
+    data: Partial<{
+      categoryId: string;
+      amount: number;
+      type: string;
+      description: string;
+      date: Date;
+      isRecurring: boolean;
+    }>,
+  ): Promise<Transaction>;
   delete(id: string): Promise<void>;
-  getSummaryByDateRange(userId: string, startDate: Date, endDate: Date): Promise<{
+  getSummaryByDateRange(
+    userId: string,
+    startDate: Date,
+    endDate: Date,
+  ): Promise<{
     totalIncome: number;
     totalExpense: number;
     balance: number;
   }>;
-  getByCategory(userId: string, startDate: Date, endDate: Date): Promise<{
-    categoryId: string;
-    categoryName: string;
-    categoryColor: string;
-    total: number;
-    type: string;
-  }[]>;
+  getByCategory(
+    userId: string,
+    startDate: Date,
+    endDate: Date,
+  ): Promise<
+    {
+      categoryId: string;
+      categoryName: string;
+      categoryColor: string;
+      total: number;
+      type: string;
+    }[]
+  >;
 }

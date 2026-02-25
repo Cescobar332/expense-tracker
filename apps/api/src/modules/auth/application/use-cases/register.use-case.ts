@@ -1,6 +1,12 @@
 import { Injectable, Inject, ConflictException } from '@nestjs/common';
-import { USER_REPOSITORY, IUserRepository } from '../../../users/domain/repositories/user.repository.interface';
-import { CATEGORY_REPOSITORY, ICategoryRepository } from '../../../categories/domain/repositories/category.repository.interface';
+import {
+  USER_REPOSITORY,
+  IUserRepository,
+} from '../../../users/domain/repositories/user.repository.interface';
+import {
+  CATEGORY_REPOSITORY,
+  ICategoryRepository,
+} from '../../../categories/domain/repositories/category.repository.interface';
 import { RegisterDto } from '../dto/register.dto';
 import { hashPassword } from '../../../../shared/utils/hash.util';
 import { User } from '../../../users/domain/entities/user.entity';
@@ -9,7 +15,8 @@ import { User } from '../../../users/domain/entities/user.entity';
 export class RegisterUseCase {
   constructor(
     @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository,
-    @Inject(CATEGORY_REPOSITORY) private readonly categoryRepository: ICategoryRepository,
+    @Inject(CATEGORY_REPOSITORY)
+    private readonly categoryRepository: ICategoryRepository,
   ) {}
 
   async execute(dto: RegisterDto): Promise<User> {

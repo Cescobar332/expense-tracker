@@ -12,10 +12,13 @@ export interface IUserRepository {
     lastName: string;
     currency?: string;
   }): Promise<User>;
-  update(id: string, data: Partial<{
-    firstName: string;
-    lastName: string;
-    currency: string;
-    isActive: boolean;
-  }>): Promise<User>;
+  update(
+    id: string,
+    data: Partial<{
+      firstName: string;
+      lastName: string;
+      currency: string;
+      isActive: boolean;
+    }>,
+  ): Promise<User>;
 }

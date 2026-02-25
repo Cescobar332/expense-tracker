@@ -1,7 +1,13 @@
 import { Controller, Get, Query, UseGuards, Request } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../../auth/presentation/guards/jwt-auth.guard';
 import { GenerateReportUseCase } from '../../application/use-cases/generate-report.use-case';
+import { AuthenticatedRequest } from '../../../../shared/types/authenticated-request';
 
 @ApiTags('reports')
 @ApiBearerAuth()
@@ -15,7 +21,7 @@ export class ReportsController {
   @ApiQuery({ name: 'startDate', required: true })
   @ApiQuery({ name: 'endDate', required: true })
   async getReport(
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Query('startDate') startDate: string,
     @Query('endDate') endDate: string,
   ) {
@@ -28,7 +34,7 @@ export class ReportsController {
 
   @Get('dashboard')
   @ApiOperation({ summary: 'Obtener resumen del dashboard' })
-  async getDashboard(@Request() req: any) {
+  async getDashboard(@Request() req: AuthenticatedRequest) {
     return this.reportUseCase.getDashboardSummary(req.user.userId);
   }
 
@@ -36,7 +42,7 @@ export class ReportsController {
   @ApiOperation({ summary: 'Obtener tendencia mensual' })
   @ApiQuery({ name: 'months', required: false, type: Number })
   async getMonthlyTrend(
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Query('months') months?: string,
   ) {
     return this.reportUseCase.getMonthlyTrend(
@@ -51,7 +57,7 @@ export class ReportsController {
   @ApiQuery({ name: 'endDate', required: true })
   @ApiQuery({ name: 'type', required: false, enum: ['INCOME', 'EXPENSE'] })
   async getCategoryBreakdown(
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Query('startDate') startDate: string,
     @Query('endDate') endDate: string,
     @Query('type') type?: string,

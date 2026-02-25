@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { User as PrismaUser } from '@prisma/client';
 import { PrismaService } from '../../../../shared/infrastructure/prisma.service';
 import { IUserRepository } from '../../domain/repositories/user.repository.interface';
 import { User } from '../../domain/entities/user.entity';
@@ -28,17 +29,20 @@ export class PrismaUserRepository implements IUserRepository {
     return this.toDomain(user);
   }
 
-  async update(id: string, data: Partial<{
-    firstName: string;
-    lastName: string;
-    currency: string;
-    isActive: boolean;
-  }>): Promise<User> {
+  async update(
+    id: string,
+    data: Partial<{
+      firstName: string;
+      lastName: string;
+      currency: string;
+      isActive: boolean;
+    }>,
+  ): Promise<User> {
     const user = await this.prisma.user.update({ where: { id }, data });
     return this.toDomain(user);
   }
 
-  private toDomain(raw: any): User {
+  private toDomain(raw: PrismaUser): User {
     return new User({
       id: raw.id,
       email: raw.email,

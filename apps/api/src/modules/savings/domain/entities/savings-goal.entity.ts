@@ -36,6 +36,9 @@ export class SavingsGoal {
   get progress(): number {
     const target = Number(this.targetAmount);
     if (target <= 0) return 0;
-    return Math.min(100, Math.round((Number(this.currentAmount) / target) * 100));
+    return Math.min(
+      100,
+      Math.round((Number(this.currentAmount) / target) * 100),
+    );
   }
 }

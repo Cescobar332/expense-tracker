@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../../shared/infrastructure/prisma.service';
 import { ISavingsGoalRepository } from '../../domain/repositories/savings-goal.repository.interface';
 import { SavingsGoal } from '../../domain/entities/savings-goal.entity';
-import { Prisma } from '@prisma/client';
+import { Prisma, SavingsGoal as PrismaSavingsGoal } from '@prisma/client';
 
 @Injectable()
 export class PrismaSavingsGoalRepository implements ISavingsGoalRepository {
@@ -38,17 +38,25 @@ export class PrismaSavingsGoalRepository implements ISavingsGoalRepository {
     return this.toDomain(sg);
   }
 
-  async update(id: string, data: Partial<{
-    name: string;
-    targetAmount: number;
-    currentAmount: number;
-    targetDate: Date | null;
-    isCompleted: boolean;
-  }>): Promise<SavingsGoal> {
-    const updateData: any = { ...data };
-    if (data.targetAmount !== undefined) updateData.targetAmount = new Prisma.Decimal(data.targetAmount);
-    if (data.currentAmount !== undefined) updateData.currentAmount = new Prisma.Decimal(data.currentAmount);
-    const sg = await this.prisma.savingsGoal.update({ where: { id }, data: updateData });
+  async update(
+    id: string,
+    data: Partial<{
+      name: string;
+      targetAmount: number;
+      currentAmount: number;
+      targetDate: Date | null;
+      isCompleted: boolean;
+    }>,
+  ): Promise<SavingsGoal> {
+    const updateData: Prisma.SavingsGoalUncheckedUpdateInput = { ...data };
+    if (data.targetAmount !== undefined)
+      updateData.targetAmount = new Prisma.Decimal(data.targetAmount);
+    if (data.currentAmount !== undefined)
+      updateData.currentAmount = new Prisma.Decimal(data.currentAmount);
+    const sg = await this.prisma.savingsGoal.update({
+      where: { id },
+      data: updateData,
+    });
     return this.toDomain(sg);
   }
 
@@ -73,7 +81,7 @@ export class PrismaSavingsGoalRepository implements ISavingsGoalRepository {
     await this.prisma.savingsGoal.delete({ where: { id } });
   }
 
-  private toDomain(raw: any): SavingsGoal {
+  private toDomain(raw: PrismaSavingsGoal): SavingsGoal {
     return new SavingsGoal({
       id: raw.id,
       userId: raw.userId,

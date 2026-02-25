@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Category as PrismaCategory } from '@prisma/client';
 import { PrismaService } from '../../../../shared/infrastructure/prisma.service';
 import { ICategoryRepository } from '../../domain/repositories/category.repository.interface';
 import { Category } from '../../domain/entities/category.entity';
@@ -56,7 +57,10 @@ export class PrismaCategoryRepository implements ICategoryRepository {
     return this.toDomain(cat);
   }
 
-  async update(id: string, data: Partial<{ name: string; color: string; icon: string }>): Promise<Category> {
+  async update(
+    id: string,
+    data: Partial<{ name: string; color: string; icon: string }>,
+  ): Promise<Category> {
     const cat = await this.prisma.category.update({ where: { id }, data });
     return this.toDomain(cat);
   }
@@ -75,7 +79,7 @@ export class PrismaCategoryRepository implements ICategoryRepository {
     });
   }
 
-  private toDomain(raw: any): Category {
+  private toDomain(raw: PrismaCategory): Category {
     return new Category({
       id: raw.id,
       userId: raw.userId,

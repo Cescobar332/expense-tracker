@@ -1,8 +1,20 @@
-import { IsNotEmpty, IsNumber, IsEnum, IsOptional, IsString, IsDateString, IsBoolean, Min, Max, MaxLength, IsUUID } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsEnum,
+  IsOptional,
+  IsString,
+  IsDateString,
+  IsBoolean,
+  Min,
+  Max,
+  MaxLength,
+  IsUUID,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateTransactionDto {
-  @ApiProperty({ example: 150.50, minimum: 0.01 })
+  @ApiProperty({ example: 150.5, minimum: 0.01 })
   @IsNumber({ maxDecimalPlaces: 2 })
   @Min(0.01)
   @Max(999999999.99)

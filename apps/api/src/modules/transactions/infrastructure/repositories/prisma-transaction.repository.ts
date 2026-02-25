@@ -6,7 +6,7 @@ import {
   PaginatedResult,
 } from '../../domain/repositories/transaction.repository.interface';
 import { Transaction } from '../../domain/entities/transaction.entity';
-import { Prisma } from '@prisma/client';
+import { Prisma, Transaction as PrismaTransaction } from '@prisma/client';
 
 @Injectable()
 export class PrismaTransactionRepository implements ITransactionRepository {
@@ -17,7 +17,9 @@ export class PrismaTransactionRepository implements ITransactionRepository {
     return tx ? this.toDomain(tx) : null;
   }
 
-  async findByFilters(filters: TransactionFilters): Promise<PaginatedResult<Transaction>> {
+  async findByFilters(
+    filters: TransactionFilters,
+  ): Promise<PaginatedResult<Transaction>> {
     const page = filters.page || 1;
     const limit = filters.limit || 20;
     const skip = (page - 1) * limit;
@@ -74,19 +76,25 @@ export class PrismaTransactionRepository implements ITransactionRepository {
     return this.toDomain(tx);
   }
 
-  async update(id: string, data: Partial<{
-    categoryId: string;
-    amount: number;
-    type: string;
-    description: string;
-    date: Date;
-    isRecurring: boolean;
-  }>): Promise<Transaction> {
-    const updateData: any = { ...data };
+  async update(
+    id: string,
+    data: Partial<{
+      categoryId: string;
+      amount: number;
+      type: string;
+      description: string;
+      date: Date;
+      isRecurring: boolean;
+    }>,
+  ): Promise<Transaction> {
+    const updateData: Prisma.TransactionUncheckedUpdateInput = { ...data };
     if (data.amount !== undefined) {
       updateData.amount = new Prisma.Decimal(data.amount);
     }
-    const tx = await this.prisma.transaction.update({ where: { id }, data: updateData });
+    const tx = await this.prisma.transaction.update({
+      where: { id },
+      data: updateData,
+    });
     return this.toDomain(tx);
   }
 
@@ -143,7 +151,7 @@ export class PrismaTransactionRepository implements ITransactionRepository {
     });
   }
 
-  private toDomain(raw: any): Transaction {
+  private toDomain(raw: PrismaTransaction): Transaction {
     return new Transaction({
       id: raw.id,
       userId: raw.userId,

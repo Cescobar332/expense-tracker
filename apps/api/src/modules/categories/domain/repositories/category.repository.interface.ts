@@ -14,11 +14,14 @@ export interface ICategoryRepository {
     icon?: string;
     isDefault?: boolean;
   }): Promise<Category>;
-  update(id: string, data: Partial<{
-    name: string;
-    color: string;
-    icon: string;
-  }>): Promise<Category>;
+  update(
+    id: string,
+    data: Partial<{
+      name: string;
+      color: string;
+      icon: string;
+    }>,
+  ): Promise<Category>;
   delete(id: string): Promise<void>;
   createDefaultCategories(userId: string): Promise<void>;
 }
