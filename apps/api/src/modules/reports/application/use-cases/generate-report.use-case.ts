@@ -62,7 +62,7 @@ export class GenerateReportUseCase {
 
     const categoryMap = new Map<
       string,
-      { name: string; color: string; total: number; count: number }
+      { name: string; color: string; type: string; total: number; count: number }
     >();
 
     for (const tx of transactions) {
@@ -71,6 +71,7 @@ export class GenerateReportUseCase {
         categoryMap.set(catId, {
           name: tx.category.name,
           color: tx.category.color,
+          type: tx.type,
           total: 0,
           count: 0,
         });
@@ -85,6 +86,7 @@ export class GenerateReportUseCase {
         categoryId,
         categoryName: data.name,
         color: data.color,
+        type: data.type,
         total: Math.round(data.total * 100) / 100,
         count: data.count,
       }),
@@ -96,16 +98,20 @@ export class GenerateReportUseCase {
   async getUnifiedReport(userId: string, startDate: Date, endDate: Date) {
     const [summary, byCategory, trend] = await Promise.all([
       this.getSummaryForRange(userId, startDate, endDate),
-      this.getCategoryBreakdown(userId, startDate, endDate, 'EXPENSE'),
+      this.getCategoryBreakdown(userId, startDate, endDate),
       this.getTrendForRange(userId, startDate, endDate),
     ]);
 
     const totalExpenses = summary.totalExpenses;
-    const byCategoryWithPercentage = byCategory.map((c) => ({
-      ...c,
-      percentage:
-        totalExpenses > 0 ? Math.round((c.total / totalExpenses) * 100) : 0,
-    }));
+    const totalIncome = summary.totalIncome;
+    const byCategoryWithPercentage = byCategory.map((c) => {
+      const typeTotal = c.type === 'INCOME' ? totalIncome : totalExpenses;
+      return {
+        ...c,
+        percentage:
+          typeTotal > 0 ? Math.round((c.total / typeTotal) * 100) : 0,
+      };
+    });
 
     return {
       summary,

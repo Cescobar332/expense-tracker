@@ -17,11 +17,11 @@ function getTrendColorClass(trend?: 'up' | 'down' | 'neutral') {
 
 export function StatCard({ title, value, subtitle, icon, trend, color = 'var(--color-primary)' }: Readonly<StatCardProps>) {
   return (
-    <div className="bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] shadow-sm p-4 md:p-6">
+    <div className="bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] shadow-sm p-4 md:p-6 min-w-0 overflow-hidden">
       <div className="flex items-start justify-between">
         <div className="flex-1 min-w-0">
           <p className="text-sm text-[var(--color-text-secondary)] truncate">{title}</p>
-          <p className="mt-1 text-2xl md:text-3xl font-bold" style={{ color }}>{value}</p>
+          <p className="mt-1 text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold truncate" style={{ color }}>{value}</p>
           {subtitle && (
             <p className={`mt-1 text-sm ${getTrendColorClass(trend)}`}>
               {trend === 'up' && '\u2191 '}

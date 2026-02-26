@@ -5,19 +5,19 @@ import { ICategoryRepository } from '../../domain/repositories/category.reposito
 import { Category } from '../../domain/entities/category.entity';
 
 const DEFAULT_CATEGORIES = [
-  { name: 'Salario', type: 'INCOME', color: '#22c55e', icon: '💼' },
-  { name: 'Freelance', type: 'INCOME', color: '#3b82f6', icon: '💻' },
-  { name: 'Inversiones', type: 'INCOME', color: '#8b5cf6', icon: '📈' },
-  { name: 'Otros ingresos', type: 'INCOME', color: '#06b6d4', icon: '➕' },
-  { name: 'Alimentación', type: 'EXPENSE', color: '#ef4444', icon: '🍽️' },
-  { name: 'Transporte', type: 'EXPENSE', color: '#f97316', icon: '🚗' },
-  { name: 'Vivienda', type: 'EXPENSE', color: '#eab308', icon: '🏠' },
-  { name: 'Servicios', type: 'EXPENSE', color: '#14b8a6', icon: '⚡' },
-  { name: 'Salud', type: 'EXPENSE', color: '#ec4899', icon: '❤️' },
-  { name: 'Entretenimiento', type: 'EXPENSE', color: '#a855f7', icon: '🎬' },
-  { name: 'Educación', type: 'EXPENSE', color: '#6366f1', icon: '📚' },
-  { name: 'Ropa', type: 'EXPENSE', color: '#f43f5e', icon: '👕' },
-  { name: 'Otros gastos', type: 'EXPENSE', color: '#64748b', icon: '📦' },
+  { name: 'Salario', type: 'INCOME', color: '#22c55e', icon: 'Briefcase' },
+  { name: 'Freelance', type: 'INCOME', color: '#3b82f6', icon: 'Laptop' },
+  { name: 'Inversiones', type: 'INCOME', color: '#8b5cf6', icon: 'TrendingUp' },
+  { name: 'Otros ingresos', type: 'INCOME', color: '#06b6d4', icon: 'PlusCircle' },
+  { name: 'Alimentación', type: 'EXPENSE', color: '#ef4444', icon: 'UtensilsCrossed' },
+  { name: 'Transporte', type: 'EXPENSE', color: '#f97316', icon: 'Car' },
+  { name: 'Vivienda', type: 'EXPENSE', color: '#eab308', icon: 'Home' },
+  { name: 'Servicios', type: 'EXPENSE', color: '#14b8a6', icon: 'Zap' },
+  { name: 'Salud', type: 'EXPENSE', color: '#ec4899', icon: 'Heart' },
+  { name: 'Entretenimiento', type: 'EXPENSE', color: '#a855f7', icon: 'Film' },
+  { name: 'Educación', type: 'EXPENSE', color: '#6366f1', icon: 'BookOpen' },
+  { name: 'Ropa', type: 'EXPENSE', color: '#f43f5e', icon: 'Shirt' },
+  { name: 'Otros gastos', type: 'EXPENSE', color: '#64748b', icon: 'Package' },
 ];
 
 @Injectable()

@@ -203,7 +203,10 @@ export default function BudgetsPage() {
             <Input label="Fecha inicio" type="date" value={form.startDate} onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))} required />
             <Input label="Fecha fin" type="date" value={form.endDate} onChange={(e) => setForm((f) => ({ ...f, endDate: e.target.value }))} required />
           </div>
-          <Input label="Alerta al (%)" type="number" min="1" max="100" value={form.alertAt} onChange={(e) => setForm((f) => ({ ...f, alertAt: e.target.value }))} />
+          <div className="relative">
+            <Input label="Alerta al (%)" type="number" min="1" max="100" value={form.alertAt} onChange={(e) => setForm((f) => ({ ...f, alertAt: e.target.value }))} className="pr-8" />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-text-secondary)] text-sm pointer-events-none">%</span>
+          </div>
           <div className="flex gap-3 pt-2">
             <Button type="button" variant="secondary" fullWidth onClick={closeModal}>Cancelar</Button>
             <Button type="submit" fullWidth loading={createMutation.isPending || updateMutation.isPending}>{editingBudget ? 'Guardar' : 'Crear'}</Button>

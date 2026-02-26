@@ -46,13 +46,13 @@ export default function LoginPage() {
         <div className="bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] shadow-sm p-6 md:p-8">
           <form onSubmit={handleSubmit} className="space-y-4">
             {registered && (
-              <div className="p-3 rounded-lg bg-green-50 border border-green-200 text-sm text-green-700">
+              <div className="p-3 rounded-lg border text-sm" style={{ backgroundColor: 'rgba(34,197,94,0.1)', color: 'var(--color-success)', borderColor: 'rgba(34,197,94,0.3)' }}>
                 Cuenta creada exitosamente. Inicia sesión con tus credenciales.
               </div>
             )}
 
             {error && (
-              <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-sm text-[var(--color-danger)]">
+              <div className="p-3 rounded-lg border text-sm" style={{ backgroundColor: 'rgba(239,68,68,0.1)', color: 'var(--color-danger)', borderColor: 'rgba(239,68,68,0.3)' }}>
                 {error}
               </div>
             )}

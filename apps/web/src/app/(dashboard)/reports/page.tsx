@@ -26,6 +26,7 @@ export default function ReportsPage() {
   const [startDate, setStartDate] = useState(defaultRange.startDate);
   const [endDate, setEndDate] = useState(defaultRange.endDate);
   const [period, setPeriod] = useState('MONTHLY');
+  const [categoryTypeFilter, setCategoryTypeFilter] = useState<string>('ALL');
 
   const { data: report, isLoading } = useQuery({
     queryKey: ['report', startDate, endDate, period],
@@ -61,12 +62,17 @@ export default function ReportsPage() {
     setEndDate(e.toISOString().split('T')[0]);
   };
 
-  const categoryData = (report?.byCategory || []).map((c) => ({
+  const allCategoryData = (report?.byCategory || []).map((c) => ({
     name: c.categoryName,
     value: Number(c.total),
     color: c.color,
     percentage: c.percentage,
+    type: c.type,
   }));
+
+  const categoryData = categoryTypeFilter === 'ALL'
+    ? allCategoryData
+    : allCategoryData.filter((c) => c.type === categoryTypeFilter);
 
   const trendData = (report?.trend || []).map((t) => ({
     date: t.date,
@@ -80,6 +86,13 @@ export default function ReportsPage() {
       border: '1px solid var(--color-border)',
       borderRadius: '8px',
       fontSize: '13px',
+      color: 'var(--color-text)',
+    },
+    labelStyle: {
+      color: 'var(--color-text)',
+    },
+    itemStyle: {
+      color: 'var(--color-text)',
     },
   };
 
@@ -113,7 +126,7 @@ export default function ReportsPage() {
             <Input type="date" label="Desde" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
             <Input type="date" label="Hasta" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
             <Select
-              label="Agrupación"
+              label="Vista"
               options={[
                 { value: 'DAILY', label: 'Diario' },
                 { value: 'WEEKLY', label: 'Semanal' },
@@ -174,6 +187,27 @@ export default function ReportsPage() {
             )}
           </Card>
 
+          {/* Category type filter */}
+          <div className="flex gap-2">
+            {[
+              { value: 'ALL', label: 'Todos' },
+              { value: 'EXPENSE', label: 'Gastos' },
+              { value: 'INCOME', label: 'Ingresos' },
+            ].map((f) => (
+              <button
+                key={f.value}
+                onClick={() => setCategoryTypeFilter(f.value)}
+                className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors min-h-[36px] ${
+                  categoryTypeFilter === f.value
+                    ? 'bg-[var(--color-primary)] text-white'
+                    : 'border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:bg-[var(--color-border)]'
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+
           {/* Category breakdown */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
             <Card>
@@ -208,6 +242,17 @@ export default function ReportsPage() {
                         <div className="flex items-center gap-2 min-w-0 flex-1">
                           <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: cat.color }} />
                           <span className="text-sm text-[var(--color-text)] truncate">{cat.name}</span>
+                          {categoryTypeFilter === 'ALL' && (
+                            <span
+                              className="text-[10px] px-1.5 py-0.5 rounded-full flex-shrink-0 font-medium"
+                              style={{
+                                backgroundColor: cat.type === 'INCOME' ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)',
+                                color: cat.type === 'INCOME' ? 'var(--color-success)' : 'var(--color-danger)',
+                              }}
+                            >
+                              {cat.type === 'INCOME' ? 'Ingreso' : 'Gasto'}
+                            </span>
+                          )}
                         </div>
                         <div className="flex items-center gap-3 flex-shrink-0 ml-2">
                           <span className="text-sm font-medium text-[var(--color-text)]">{formatCurrency(cat.value, currency)}</span>

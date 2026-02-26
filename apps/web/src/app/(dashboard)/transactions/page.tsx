@@ -12,6 +12,7 @@ import { Select } from '../../../components/ui/select';
 import { Modal } from '../../../components/ui/modal';
 import { EmptyState } from '../../../components/ui/empty-state';
 import { formatCurrency, formatDate, formatDateInput } from '../../../lib/utils/format';
+import { getCategoryIcon } from '../../../lib/utils/category-icons';
 import { Transaction, TransactionFilters } from '../../../types';
 
 export default function TransactionsPage() {
@@ -146,7 +147,7 @@ export default function TransactionsPage() {
                 className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-medium flex-shrink-0"
                 style={{ backgroundColor: tx.category?.color || '#6366f1' }}
               >
-                {tx.category?.icon || tx.category?.name?.[0]?.toUpperCase() || '?'}
+                {getCategoryIcon(tx.category?.icon, tx.category?.name, tx.type)}
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium text-[var(--color-text)] truncate">
@@ -154,7 +155,7 @@ export default function TransactionsPage() {
                 </p>
                 <div className="flex items-center gap-2 mt-0.5">
                   <span className="text-xs text-[var(--color-text-secondary)]">{formatDate(tx.date)}</span>
-                  <span className={`text-xs px-1.5 py-0.5 rounded ${tx.type === 'INCOME' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                  <span className={`text-xs px-1.5 py-0.5 rounded ${tx.type === 'INCOME' ? 'bg-[var(--color-success)]/10 text-[var(--color-success)]' : 'bg-[var(--color-danger)]/10 text-[var(--color-danger)]'}`}>
                     {tx.type === 'INCOME' ? 'Ingreso' : 'Gasto'}
                   </span>
                 </div>
@@ -204,12 +205,14 @@ export default function TransactionsPage() {
           />
           <Input
             type="date"
+            label="Fecha inicial"
             value={filters.startDate || ''}
             onChange={(e) => setFilters((f) => ({ ...f, startDate: e.target.value || undefined }))}
             placeholder="Desde"
           />
           <Input
             type="date"
+            label="Fecha final"
             value={filters.endDate || ''}
             onChange={(e) => setFilters((f) => ({ ...f, endDate: e.target.value || undefined }))}
             placeholder="Hasta"
@@ -237,7 +240,7 @@ export default function TransactionsPage() {
               type="button"
               onClick={() => setForm((f) => ({ ...f, type: 'EXPENSE', categoryId: '' }))}
               className={`py-2 px-4 rounded-lg text-sm font-medium border transition-colors min-h-[44px] ${
-                form.type === 'EXPENSE' ? 'bg-red-50 border-red-300 text-red-700' : 'border-[var(--color-border)] text-[var(--color-text-secondary)]'
+                form.type === 'EXPENSE' ? 'bg-[var(--color-danger)]/10 border-[var(--color-danger)]/30 text-[var(--color-danger)]' : 'border-[var(--color-border)] text-[var(--color-text-secondary)]'
               }`}
             >
               Gasto
@@ -246,7 +249,7 @@ export default function TransactionsPage() {
               type="button"
               onClick={() => setForm((f) => ({ ...f, type: 'INCOME', categoryId: '' }))}
               className={`py-2 px-4 rounded-lg text-sm font-medium border transition-colors min-h-[44px] ${
-                form.type === 'INCOME' ? 'bg-green-50 border-green-300 text-green-700' : 'border-[var(--color-border)] text-[var(--color-text-secondary)]'
+                form.type === 'INCOME' ? 'bg-[var(--color-success)]/10 border-[var(--color-success)]/30 text-[var(--color-success)]' : 'border-[var(--color-border)] text-[var(--color-text-secondary)]'
               }`}
             >
               Ingreso

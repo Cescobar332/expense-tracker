@@ -123,7 +123,7 @@ export default function SavingsPage() {
                 <div>
                   <h3 className="font-semibold text-[var(--color-text)]">{g.name}</h3>
                   {g.isCompleted && (
-                    <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded mt-1 inline-block">Completada</span>
+                    <span className="text-xs px-2 py-0.5 rounded mt-1 inline-block" style={{ backgroundColor: 'rgba(34,197,94,0.15)', color: 'var(--color-success)' }}>Completada</span>
                   )}
                 </div>
                 <div className="flex gap-1">

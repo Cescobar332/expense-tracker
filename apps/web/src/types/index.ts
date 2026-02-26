@@ -76,7 +76,7 @@ export interface DashboardSummary {
 
 export interface ReportData {
   summary: DashboardSummary;
-  byCategory: { categoryId: string; categoryName: string; color: string; total: number; percentage: number }[];
+  byCategory: { categoryId: string; categoryName: string; color: string; type: string; total: number; percentage: number }[];
   trend: { date: string; income: number; expenses: number }[];
 }
 

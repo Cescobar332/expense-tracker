@@ -8,6 +8,8 @@ import { Card } from '../../../components/ui/card';
 import { Input } from '../../../components/ui/input';
 import { Modal } from '../../../components/ui/modal';
 import { EmptyState } from '../../../components/ui/empty-state';
+import { getCategoryIcon } from '../../../lib/utils/category-icons';
+import { IconPicker } from '../../../components/ui/icon-picker';
 import { Category } from '../../../types';
 
 const PRESET_COLORS = [
@@ -107,7 +109,7 @@ export default function CategoriesPage() {
           <div key={cat.id} className="bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] p-4 flex items-center justify-between hover:shadow-sm transition-shadow">
             <div className="flex items-center gap-3 min-w-0">
               <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0" style={{ backgroundColor: cat.color }}>
-                {cat.icon || cat.name[0]?.toUpperCase()}
+                {getCategoryIcon(cat.icon, cat.name, cat.type)}
               </div>
               <div className="min-w-0">
                 <p className="text-sm font-medium text-[var(--color-text)] truncate">{cat.name}</p>
@@ -180,10 +182,10 @@ export default function CategoriesPage() {
             <div>
               <label htmlFor="category-type" className="block text-sm font-medium text-[var(--color-text)] mb-1">Tipo</label>
               <div id="category-type" className="grid grid-cols-2 gap-3">
-                <button type="button" onClick={() => setForm((f) => ({ ...f, type: 'EXPENSE' }))} className={`py-2 px-4 rounded-lg text-sm font-medium border transition-colors min-h-[44px] ${form.type === 'EXPENSE' ? 'bg-red-50 border-red-300 text-red-700' : 'border-[var(--color-border)] text-[var(--color-text-secondary)]'}`}>
+                <button type="button" onClick={() => setForm((f) => ({ ...f, type: 'EXPENSE' }))} className={`py-2 px-4 rounded-lg text-sm font-medium border transition-colors min-h-[44px] ${form.type === 'EXPENSE' ? 'bg-[var(--color-danger)]/10 border-[var(--color-danger)]/30 text-[var(--color-danger)]' : 'border-[var(--color-border)] text-[var(--color-text-secondary)]'}`}>
                   Gasto
                 </button>
-                <button type="button" onClick={() => setForm((f) => ({ ...f, type: 'INCOME' }))} className={`py-2 px-4 rounded-lg text-sm font-medium border transition-colors min-h-[44px] ${form.type === 'INCOME' ? 'bg-green-50 border-green-300 text-green-700' : 'border-[var(--color-border)] text-[var(--color-text-secondary)]'}`}>
+                <button type="button" onClick={() => setForm((f) => ({ ...f, type: 'INCOME' }))} className={`py-2 px-4 rounded-lg text-sm font-medium border transition-colors min-h-[44px] ${form.type === 'INCOME' ? 'bg-[var(--color-success)]/10 border-[var(--color-success)]/30 text-[var(--color-success)]' : 'border-[var(--color-border)] text-[var(--color-text-secondary)]'}`}>
                   Ingreso
                 </button>
               </div>
@@ -206,7 +208,7 @@ export default function CategoriesPage() {
             </div>
           </div>
 
-          <Input label="Icono (emoji opcional)" value={form.icon} onChange={(e) => setForm((f) => ({ ...f, icon: e.target.value }))} placeholder="Ej: 🍔 🚗 💰" maxLength={2} />
+          <IconPicker value={form.icon} onChange={(icon) => setForm((f) => ({ ...f, icon }))} selectedColor={form.color} />
 
           <div className="flex gap-3 pt-2">
             <Button type="button" variant="secondary" fullWidth onClick={closeModal}>Cancelar</Button>

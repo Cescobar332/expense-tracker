@@ -10,7 +10,7 @@ export function Card({ children, padding = true, className = '', ...props }: Rea
     <div
       className={`
         bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)]
-        shadow-sm ${padding ? 'p-4 md:p-6' : ''} ${className}
+        shadow-sm overflow-hidden ${padding ? 'p-4 md:p-6' : ''} ${className}
       `}
       {...props}
     >
