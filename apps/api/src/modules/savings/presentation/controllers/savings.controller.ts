@@ -21,6 +21,7 @@ import {
 import { CreateSavingsGoalDto } from '../../application/dto/create-savings-goal.dto';
 import { UpdateSavingsGoalDto } from '../../application/dto/update-savings-goal.dto';
 import { AddSavingsAmountDto } from '../../application/dto/add-savings-amount.dto';
+import { AddSavingsAmountUseCase } from '../../application/use-cases/add-savings-amount.use-case';
 import { AuthenticatedRequest } from '../../../../shared/types/authenticated-request';
 
 @ApiTags('savings')
@@ -31,6 +32,7 @@ export class SavingsController {
   constructor(
     @Inject(SAVINGS_GOAL_REPOSITORY)
     private readonly savingsRepo: ISavingsGoalRepository,
+    private readonly addSavingsAmountUseCase: AddSavingsAmountUseCase,
   ) {}
 
   @Get()
@@ -87,11 +89,7 @@ export class SavingsController {
     @Param('id') id: string,
     @Body() dto: AddSavingsAmountDto,
   ) {
-    const goal = await this.savingsRepo.findById(id);
-    if (!goal) throw new NotFoundException('Meta de ahorro no encontrada');
-    if (goal.userId !== req.user.userId) throw new ForbiddenException();
-    const updated = await this.savingsRepo.addAmount(id, dto.amount);
-    return { ...updated, progress: updated.progress };
+    return this.addSavingsAmountUseCase.execute(req.user.userId, id, dto.amount);
   }
 
   @Delete(':id')

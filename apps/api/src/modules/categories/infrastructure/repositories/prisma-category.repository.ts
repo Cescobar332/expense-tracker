@@ -18,6 +18,7 @@ const DEFAULT_CATEGORIES = [
   { name: 'Educación', type: 'EXPENSE', color: '#6366f1', icon: 'BookOpen' },
   { name: 'Ropa', type: 'EXPENSE', color: '#f43f5e', icon: 'Shirt' },
   { name: 'Otros gastos', type: 'EXPENSE', color: '#64748b', icon: 'Package' },
+  { name: 'Ahorro', type: 'EXPENSE', color: '#f59e0b', icon: 'PiggyBank' },
 ];
 
 @Injectable()

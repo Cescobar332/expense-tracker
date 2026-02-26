@@ -57,7 +57,15 @@ export default function SavingsPage() {
 
   const addAmountMutation = useMutation({
     mutationFn: ({ id, amount }: { id: string; amount: number }) => savingsApi.addAmount(id, amount),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['savings'] }); setAddAmountGoal(null); setAddAmount(''); },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['savings'] });
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      queryClient.invalidateQueries({ queryKey: ['report'] });
+      queryClient.invalidateQueries({ queryKey: ['budgets'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      setAddAmountGoal(null);
+      setAddAmount('');
+    },
   });
 
   const deleteMutation = useMutation({

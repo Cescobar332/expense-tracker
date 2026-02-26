@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '../../../lib/stores/auth-store';
 import { transactionsApi } from '../../../lib/api/transactions';
 import { categoriesApi } from '../../../lib/api/categories';
+import { savingsApi } from '../../../lib/api/savings';
 import { Button } from '../../../components/ui/button';
 import { Card } from '../../../components/ui/card';
 import { Input } from '../../../components/ui/input';
@@ -25,6 +26,9 @@ export default function TransactionsPage() {
   const [showModal, setShowModal] = useState(false);
   const [editingTx, setEditingTx] = useState<Transaction | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [showSavingsModal, setShowSavingsModal] = useState(false);
+  const [selectedGoalId, setSelectedGoalId] = useState('');
+  const [savingsAmount, setSavingsAmount] = useState('');
 
   const [form, setForm] = useState({
     amount: '',
@@ -45,6 +49,12 @@ export default function TransactionsPage() {
     queryKey: ['categories'],
     queryFn: () => categoriesApi.getAll(),
   });
+
+  const { data: savingsGoals = [] } = useQuery({
+    queryKey: ['savings'],
+    queryFn: () => savingsApi.getAll(),
+  });
+  const activeSavingsGoals = savingsGoals.filter((g: any) => !g.isCompleted);
 
   const createMutation = useMutation({
     mutationFn: (data: Parameters<typeof transactionsApi.create>[0]) => transactionsApi.create(data),
@@ -74,6 +84,19 @@ export default function TransactionsPage() {
       queryClient.invalidateQueries({ queryKey: ['report'] });
       queryClient.invalidateQueries({ queryKey: ['budgets'] });
       setDeleteConfirm(null);
+    },
+  });
+
+  const addSavingsMutation = useMutation({
+    mutationFn: ({ id, amount }: { id: string; amount: number }) => savingsApi.addAmount(id, amount),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      queryClient.invalidateQueries({ queryKey: ['savings'] });
+      queryClient.invalidateQueries({ queryKey: ['report'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      setShowSavingsModal(false);
+      setSelectedGoalId('');
+      setSavingsAmount('');
     },
   });
 
@@ -186,10 +209,16 @@ export default function TransactionsPage() {
           <h1 className="text-2xl md:text-3xl font-bold text-[var(--color-text)]">Transacciones</h1>
           <p className="text-[var(--color-text-secondary)] mt-1">Gestiona tus ingresos y gastos</p>
         </div>
-        <Button onClick={openCreate}>
-          <svg className="w-5 h-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
-          Nueva transacción
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="secondary" onClick={() => setShowSavingsModal(true)}>
+            <svg className="w-5 h-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+            Agregar ahorro
+          </Button>
+          <Button onClick={openCreate}>
+            <svg className="w-5 h-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+            Nueva transaccion
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -294,6 +323,25 @@ export default function TransactionsPage() {
             <Button type="submit" fullWidth loading={isSubmitting}>
               {editingTx ? 'Guardar' : 'Crear'}
             </Button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Savings Modal */}
+      <Modal isOpen={showSavingsModal} onClose={() => setShowSavingsModal(false)} title="Agregar ahorro">
+        <form onSubmit={(e) => { e.preventDefault(); if (selectedGoalId && savingsAmount) addSavingsMutation.mutate({ id: selectedGoalId, amount: Number.parseFloat(savingsAmount) }); }} className="space-y-4">
+          <Select
+            label="Meta de ahorro"
+            options={activeSavingsGoals.map((g: any) => ({ value: g.id, label: g.name }))}
+            value={selectedGoalId}
+            onChange={(e) => setSelectedGoalId(e.target.value)}
+            placeholder="Selecciona una meta"
+            required
+          />
+          <CurrencyInput label="Monto" currency={currency} value={savingsAmount} onChange={(val) => setSavingsAmount(val)} required />
+          <div className="flex gap-3 pt-2">
+            <Button type="button" variant="secondary" fullWidth onClick={() => setShowSavingsModal(false)}>Cancelar</Button>
+            <Button type="submit" fullWidth loading={addSavingsMutation.isPending}>Agregar</Button>
           </div>
         </form>
       </Modal>
