@@ -4,12 +4,14 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '../../../lib/stores/auth-store';
 import { savingsApi } from '../../../lib/api/savings';
+import { reportsApi } from '../../../lib/api/reports';
 import { Button } from '../../../components/ui/button';
 import { Card } from '../../../components/ui/card';
 import { Input } from '../../../components/ui/input';
+import { CurrencyInput } from '../../../components/ui/currency-input';
 import { Modal } from '../../../components/ui/modal';
 import { EmptyState } from '../../../components/ui/empty-state';
-import { formatCurrency, formatDate, formatDateInput } from '../../../lib/utils/format';
+import { formatCurrency, formatDate, formatDateInput, getMonthRange } from '../../../lib/utils/format';
 import { SavingsGoal } from '../../../types';
 
 export default function SavingsPage() {
@@ -33,6 +35,15 @@ export default function SavingsPage() {
     queryKey: ['savings'],
     queryFn: () => savingsApi.getAll(),
   });
+
+  const monthRange = getMonthRange();
+  const { data: monthReport } = useQuery({
+    queryKey: ['report', monthRange.startDate, monthRange.endDate],
+    queryFn: () => reportsApi.getSummary({ startDate: monthRange.startDate, endDate: monthRange.endDate, period: 'MONTHLY' }),
+    enabled: !!addAmountGoal,
+  });
+
+  const available = (monthReport?.summary?.totalIncome || 0) - (monthReport?.summary?.totalExpenses || 0);
 
   const createMutation = useMutation({
     mutationFn: (data: Parameters<typeof savingsApi.create>[0]) => savingsApi.create(data),
@@ -188,7 +199,7 @@ export default function SavingsPage() {
       <Modal isOpen={showModal} onClose={closeModal} title={editingGoal ? 'Editar meta' : 'Nueva meta de ahorro'}>
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input label="Nombre de la meta" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Ej: Vacaciones, Fondo de emergencia" required />
-          <Input label="Monto objetivo" type="number" step="0.01" min="0.01" value={form.targetAmount} onChange={(e) => setForm((f) => ({ ...f, targetAmount: e.target.value }))} required />
+          <CurrencyInput label="Monto objetivo" currency={currency} value={form.targetAmount} onChange={(val) => setForm((f) => ({ ...f, targetAmount: val }))} required />
           <Input label="Fecha límite (opcional)" type="date" value={form.targetDate} onChange={(e) => setForm((f) => ({ ...f, targetDate: e.target.value }))} />
           <div className="flex gap-3 pt-2">
             <Button type="button" variant="secondary" fullWidth onClick={closeModal}>Cancelar</Button>
@@ -203,7 +214,10 @@ export default function SavingsPage() {
           <p className="text-sm text-[var(--color-text-secondary)]">
             Progreso actual: {formatCurrency(Number(addAmountGoal?.currentAmount || 0), currency)} de {formatCurrency(Number(addAmountGoal?.targetAmount || 0), currency)}
           </p>
-          <Input label="Monto a agregar" type="number" step="0.01" min="0.01" value={addAmount} onChange={(e) => setAddAmount(e.target.value)} required />
+          <p className="text-sm font-medium" style={{ color: available >= 0 ? 'var(--color-success)' : 'var(--color-danger)' }}>
+            Disponible este mes: {formatCurrency(available, currency)}
+          </p>
+          <CurrencyInput label="Monto a agregar" currency={currency} value={addAmount} onChange={(val) => setAddAmount(val)} required />
           <div className="flex gap-3 pt-2">
             <Button type="button" variant="secondary" fullWidth onClick={() => setAddAmountGoal(null)}>Cancelar</Button>
             <Button type="submit" fullWidth loading={addAmountMutation.isPending}>Agregar</Button>

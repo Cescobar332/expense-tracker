@@ -7,6 +7,7 @@ export class SavingsGoal {
   readonly targetAmount: Decimal;
   readonly currentAmount: Decimal;
   readonly targetDate: Date | null;
+  readonly startDate: Date;
   readonly isCompleted: boolean;
   readonly createdAt: Date;
   readonly updatedAt: Date;
@@ -18,6 +19,7 @@ export class SavingsGoal {
     targetAmount: Decimal;
     currentAmount: Decimal;
     targetDate: Date | null;
+    startDate: Date;
     isCompleted: boolean;
     createdAt: Date;
     updatedAt: Date;
@@ -28,6 +30,7 @@ export class SavingsGoal {
     this.targetAmount = props.targetAmount;
     this.currentAmount = props.currentAmount;
     this.targetDate = props.targetDate;
+    this.startDate = props.startDate;
     this.isCompleted = props.isCompleted;
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;

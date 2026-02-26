@@ -144,7 +144,7 @@ export default function ReportsPage() {
       ) : (
         <>
           {/* Summary stats */}
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
             <StatCard
               title="Total ingresos"
               value={formatCurrency(report?.summary?.totalIncome || 0, currency)}
@@ -162,6 +162,12 @@ export default function ReportsPage() {
               value={formatCurrency(report?.summary?.balance || 0, currency)}
               icon={<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>}
               color={(report?.summary?.balance || 0) >= 0 ? 'var(--color-success)' : 'var(--color-danger)'}
+            />
+            <StatCard
+              title="Total ahorros"
+              value={formatCurrency(report?.summary?.savingsTotal || 0, currency)}
+              icon={<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>}
+              color="var(--color-warning)"
             />
           </div>
 

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { authApi } from '../../../lib/api/auth';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
+import { LogoWithText } from '../../../components/ui/logo';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -50,6 +51,7 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center px-4 py-8 bg-[var(--color-bg)]">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
+          <div className="flex justify-center mb-6"><LogoWithText /></div>
           <h1 className="text-3xl font-bold text-[var(--color-primary)]">FinanceApp</h1>
           <p className="mt-2 text-[var(--color-text-secondary)]">Crea tu cuenta para comenzar</p>
         </div>

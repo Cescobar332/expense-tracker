@@ -76,7 +76,7 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={goToPreviousMonth}
             className="p-2 rounded-lg border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:bg-[var(--color-border)] min-h-[40px] min-w-[40px] flex items-center justify-center"
@@ -140,11 +140,11 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-        <Card>
+        <Card className="overflow-hidden">
           <h2 className="text-lg font-semibold text-[var(--color-text)] mb-4">Gastos por categoría</h2>
           <ExpenseChart data={report?.byCategory || []} currency={currency} />
         </Card>
-        <Card>
+        <Card className="overflow-hidden">
           <h2 className="text-lg font-semibold text-[var(--color-text)] mb-4">Alertas de presupuesto</h2>
           <BudgetAlerts budgets={budgets || []} currency={currency} />
         </Card>

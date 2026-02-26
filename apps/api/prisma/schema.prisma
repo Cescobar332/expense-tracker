@@ -111,6 +111,7 @@ model SavingsGoal {
   targetAmount  Decimal   @db.Decimal(15, 2) @map("target_amount")
   currentAmount Decimal   @default(0) @db.Decimal(15, 2) @map("current_amount")
   targetDate    DateTime? @map("target_date")
+  startDate     DateTime  @default(now()) @map("start_date")
   isCompleted   Boolean   @default(false) @map("is_completed")
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")

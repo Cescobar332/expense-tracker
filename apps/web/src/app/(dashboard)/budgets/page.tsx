@@ -8,6 +8,7 @@ import { categoriesApi } from '../../../lib/api/categories';
 import { Button } from '../../../components/ui/button';
 import { Card } from '../../../components/ui/card';
 import { Input } from '../../../components/ui/input';
+import { CurrencyInput } from '../../../components/ui/currency-input';
 import { Select } from '../../../components/ui/select';
 import { Modal } from '../../../components/ui/modal';
 import { EmptyState } from '../../../components/ui/empty-state';
@@ -97,7 +98,8 @@ export default function BudgetsPage() {
       alertAt: Number.parseInt(form.alertAt),
     };
     if (editingBudget) {
-      updateMutation.mutate({ id: editingBudget.id, data: payload });
+      const { categoryId: _categoryId, ...updateData } = payload;
+      updateMutation.mutate({ id: editingBudget.id, data: updateData });
     } else {
       createMutation.mutate(payload);
     }
@@ -196,7 +198,7 @@ export default function BudgetsPage() {
       {/* Create/Edit Modal */}
       <Modal isOpen={showModal} onClose={closeModal} title={editingBudget ? 'Editar presupuesto' : 'Nuevo presupuesto'}>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <Input label="Monto límite" type="number" step="0.01" min="0.01" value={form.amount} onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))} required />
+          <CurrencyInput label="Monto límite" currency={currency} value={form.amount} onChange={(val) => setForm((f) => ({ ...f, amount: val }))} required />
           <Select label="Categoría" options={expenseCategories.map((c) => ({ value: c.id, label: c.name }))} value={form.categoryId} onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))} placeholder="Selecciona categoría" required />
           <Select label="Período" options={[{ value: 'MONTHLY', label: 'Mensual' }, { value: 'QUARTERLY', label: 'Trimestral' }, { value: 'YEARLY', label: 'Anual' }]} value={form.period} onChange={(e) => setForm((f) => ({ ...f, period: e.target.value }))} />
           <div className="grid grid-cols-2 gap-3">

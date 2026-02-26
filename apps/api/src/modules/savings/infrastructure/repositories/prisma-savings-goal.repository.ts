@@ -89,6 +89,7 @@ export class PrismaSavingsGoalRepository implements ISavingsGoalRepository {
       targetAmount: raw.targetAmount,
       currentAmount: raw.currentAmount,
       targetDate: raw.targetDate,
+      startDate: raw.startDate,
       isCompleted: raw.isCompleted,
       createdAt: raw.createdAt,
       updatedAt: raw.updatedAt,

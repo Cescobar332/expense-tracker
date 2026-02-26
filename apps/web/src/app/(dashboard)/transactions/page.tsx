@@ -8,6 +8,7 @@ import { categoriesApi } from '../../../lib/api/categories';
 import { Button } from '../../../components/ui/button';
 import { Card } from '../../../components/ui/card';
 import { Input } from '../../../components/ui/input';
+import { CurrencyInput } from '../../../components/ui/currency-input';
 import { Select } from '../../../components/ui/select';
 import { Modal } from '../../../components/ui/modal';
 import { EmptyState } from '../../../components/ui/empty-state';
@@ -141,7 +142,7 @@ export default function TransactionsPage() {
     return (
       <div className="divide-y divide-[var(--color-border)]">
         {transactions.map((tx) => (
-          <div key={tx.id} className="flex items-center justify-between p-4 hover:bg-[var(--color-bg)] transition-colors">
+          <div key={tx.id} className="flex items-center justify-between p-4 hover:bg-[var(--color-bg)] transition-colors overflow-hidden">
             <div className="flex items-center gap-3 min-w-0 flex-1">
               <div
                 className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-medium flex-shrink-0"
@@ -256,13 +257,11 @@ export default function TransactionsPage() {
             </button>
           </div>
 
-          <Input
+          <CurrencyInput
             label="Monto"
-            type="number"
-            step="0.01"
-            min="0.01"
+            currency={currency}
             value={form.amount}
-            onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
+            onChange={(val) => setForm((f) => ({ ...f, amount: val }))}
             required
           />
 
