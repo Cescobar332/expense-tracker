@@ -13,6 +13,9 @@ export const authApi = {
 
   getProfile: () => api.get<User>('/users/profile'),
 
+  updateProfile: (data: { firstName?: string; lastName?: string; currency?: string; language?: string }) =>
+    api.patch<User>('/users/profile', data),
+
   updateCurrency: (newCurrency: string) =>
     api.patch<{ user: User; convertedCounts: { transactions: number; budgets: number; savings: number } }>(
       '/users/currency',

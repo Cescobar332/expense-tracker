@@ -14,13 +14,14 @@ import { Modal } from '../../../components/ui/modal';
 import { EmptyState } from '../../../components/ui/empty-state';
 import { formatCurrency, formatDate, formatDateInput } from '../../../lib/utils/format';
 import { Budget } from '../../../types';
-
-const PERIOD_LABELS: Record<string, string> = { MONTHLY: 'Mensual', QUARTERLY: 'Trimestral', YEARLY: 'Anual' };
+import { useTranslation } from '../../../lib/i18n';
 
 export default function BudgetsPage() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
   const currency = user?.currency || 'USD';
+  const PERIOD_LABELS: Record<string, string> = { MONTHLY: t['budgets.periodMonthly'], QUARTERLY: t['budgets.periodQuarterly'], YEARLY: t['budgets.periodYearly'] };
 
   const [showModal, setShowModal] = useState(false);
   const [editingBudget, setEditingBudget] = useState<Budget | null>(null);
@@ -116,8 +117,8 @@ export default function BudgetsPage() {
         <Card>
           <EmptyState
             icon={<svg className="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>}
-            title="Sin presupuestos"
-            description="Crea un presupuesto para controlar tus gastos"
+            title={t['budgets.empty']}
+            description={t['budgets.emptyHint']}
             action={{ label: 'Crear presupuesto', onClick: openCreate }}
           />
         </Card>
@@ -145,10 +146,10 @@ export default function BudgetsPage() {
                   </p>
                 </div>
                 <div className="flex gap-1">
-                  <button onClick={() => openEdit(b)} className="p-1.5 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] rounded" aria-label="Editar">
+                  <button onClick={() => openEdit(b)} className="p-1.5 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] rounded" aria-label={t['common.edit']}>
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                   </button>
-                  <button onClick={() => setDeleteConfirm(b.id)} className="p-1.5 text-[var(--color-text-secondary)] hover:text-[var(--color-danger)] rounded" aria-label="Eliminar">
+                  <button onClick={() => setDeleteConfirm(b.id)} className="p-1.5 text-[var(--color-text-secondary)] hover:text-[var(--color-danger)] rounded" aria-label={t['common.delete']}>
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                   </button>
                 </div>
@@ -163,10 +164,10 @@ export default function BudgetsPage() {
                 </div>
                 <div className="flex justify-between mt-1">
                   <span className={`text-xs font-semibold ${textColorClass}`}>
-                    {pct}% usado
+                    {pct}{t['budgets.used']}
                   </span>
                   <span className="text-xs text-[var(--color-text-secondary)]">
-                    Alerta al {b.alertAt}%
+                    {t['budgets.alertAtPercent'].replace('{value}', String(b.alertAt))}
                   </span>
                 </div>
               </div>
@@ -184,44 +185,44 @@ export default function BudgetsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-[var(--color-text)]">Presupuestos</h1>
-          <p className="text-[var(--color-text-secondary)] mt-1">Controla tus límites de gasto por categoría</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-[var(--color-text)]">{t['budgets.title']}</h1>
+          <p className="text-[var(--color-text-secondary)] mt-1">{t['budgets.subtitle']}</p>
         </div>
         <Button onClick={openCreate}>
           <svg className="w-5 h-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
-          Nuevo presupuesto
+          {t['budgets.new']}
         </Button>
       </div>
 
       {renderContent()}
 
       {/* Create/Edit Modal */}
-      <Modal isOpen={showModal} onClose={closeModal} title={editingBudget ? 'Editar presupuesto' : 'Nuevo presupuesto'}>
+      <Modal isOpen={showModal} onClose={closeModal} title={editingBudget ? t['budgets.editTitle'] : t['budgets.newTitle']}>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <CurrencyInput label="Monto límite" currency={currency} value={form.amount} onChange={(val) => setForm((f) => ({ ...f, amount: val }))} required />
-          <Select label="Categoría" options={expenseCategories.map((c) => ({ value: c.id, label: c.name }))} value={form.categoryId} onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))} placeholder="Selecciona categoría" required />
-          <Select label="Período" options={[{ value: 'MONTHLY', label: 'Mensual' }, { value: 'QUARTERLY', label: 'Trimestral' }, { value: 'YEARLY', label: 'Anual' }]} value={form.period} onChange={(e) => setForm((f) => ({ ...f, period: e.target.value }))} />
+          <CurrencyInput label={t['budgets.limitAmount']} currency={currency} value={form.amount} onChange={(val) => setForm((f) => ({ ...f, amount: val }))} required />
+          <Select label={t['common.category']} options={expenseCategories.map((c) => ({ value: c.id, label: c.name }))} value={form.categoryId} onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))} placeholder={t['budgets.selectCategory']} required />
+          <Select label={t['budgets.period']} options={[{ value: 'MONTHLY', label: t['budgets.periodMonthly'] }, { value: 'QUARTERLY', label: t['budgets.periodQuarterly'] }, { value: 'YEARLY', label: t['budgets.periodYearly'] }]} value={form.period} onChange={(e) => setForm((f) => ({ ...f, period: e.target.value }))} />
           <div className="grid grid-cols-2 gap-3">
-            <Input label="Fecha inicio" type="date" value={form.startDate} onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))} required />
-            <Input label="Fecha fin" type="date" value={form.endDate} onChange={(e) => setForm((f) => ({ ...f, endDate: e.target.value }))} required />
+            <Input label={t['budgets.startDate']} type="date" value={form.startDate} onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))} required />
+            <Input label={t['budgets.endDate']} type="date" value={form.endDate} onChange={(e) => setForm((f) => ({ ...f, endDate: e.target.value }))} required />
           </div>
           <div className="relative">
-            <Input label="Alerta al (%)" type="number" min="1" max="100" value={form.alertAt} onChange={(e) => setForm((f) => ({ ...f, alertAt: e.target.value }))} className="pr-8" />
+            <Input label={t['budgets.alertAt']} type="number" min="1" max="100" value={form.alertAt} onChange={(e) => setForm((f) => ({ ...f, alertAt: e.target.value }))} className="pr-8" />
             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-text-secondary)] text-sm pointer-events-none">%</span>
           </div>
           <div className="flex gap-3 pt-2">
-            <Button type="button" variant="secondary" fullWidth onClick={closeModal}>Cancelar</Button>
-            <Button type="submit" fullWidth loading={createMutation.isPending || updateMutation.isPending}>{editingBudget ? 'Guardar' : 'Crear'}</Button>
+            <Button type="button" variant="secondary" fullWidth onClick={closeModal}>{t['common.cancel']}</Button>
+            <Button type="submit" fullWidth loading={createMutation.isPending || updateMutation.isPending}>{editingBudget ? t['common.save'] : t['common.create']}</Button>
           </div>
         </form>
       </Modal>
 
       {/* Delete Modal */}
-      <Modal isOpen={!!deleteConfirm} onClose={() => setDeleteConfirm(null)} title="Eliminar presupuesto">
-        <p className="text-[var(--color-text-secondary)] mb-6">¿Estás seguro/a de que quieres eliminar este presupuesto?</p>
+      <Modal isOpen={!!deleteConfirm} onClose={() => setDeleteConfirm(null)} title={t['budgets.deleteTitle']}>
+        <p className="text-[var(--color-text-secondary)] mb-6">{t['budgets.deleteConfirm']}</p>
         <div className="flex gap-3">
-          <Button variant="secondary" fullWidth onClick={() => setDeleteConfirm(null)}>Cancelar</Button>
-          <Button variant="danger" fullWidth loading={deleteMutation.isPending} onClick={() => deleteConfirm && deleteMutation.mutate(deleteConfirm)}>Eliminar</Button>
+          <Button variant="secondary" fullWidth onClick={() => setDeleteConfirm(null)}>{t['common.cancel']}</Button>
+          <Button variant="danger" fullWidth loading={deleteMutation.isPending} onClick={() => deleteConfirm && deleteMutation.mutate(deleteConfirm)}>{t['common.delete']}</Button>
         </div>
       </Modal>
     </div>

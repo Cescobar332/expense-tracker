@@ -35,6 +35,7 @@ export class PrismaUserRepository implements IUserRepository {
       firstName: string;
       lastName: string;
       currency: string;
+      language: string;
       isActive: boolean;
     }>,
   ): Promise<User> {
@@ -50,6 +51,7 @@ export class PrismaUserRepository implements IUserRepository {
       firstName: raw.firstName,
       lastName: raw.lastName,
       currency: raw.currency,
+      language: raw.language,
       isActive: raw.isActive,
       createdAt: raw.createdAt,
       updatedAt: raw.updatedAt,

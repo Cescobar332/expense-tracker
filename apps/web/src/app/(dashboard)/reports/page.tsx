@@ -13,6 +13,7 @@ import { Input } from '../../../components/ui/input';
 import { Select } from '../../../components/ui/select';
 import { StatCard } from '../../../components/ui/stat-card';
 import { formatCurrency, getMonthRange } from '../../../lib/utils/format';
+import { useTranslation } from '../../../lib/i18n';
 
 function renderLegendText(value: string) {
   return <span className="text-xs">{value}</span>;
@@ -22,6 +23,7 @@ export default function ReportsPage() {
   const { user } = useAuthStore();
   const currency = user?.currency || 'USD';
   const defaultRange = getMonthRange();
+  const { t } = useTranslation();
 
   const [startDate, setStartDate] = useState(defaultRange.startDate);
   const [endDate, setEndDate] = useState(defaultRange.endDate);
@@ -74,10 +76,10 @@ export default function ReportsPage() {
     ? allCategoryData
     : allCategoryData.filter((c) => c.type === categoryTypeFilter);
 
-  const trendData = (report?.trend || []).map((t) => ({
-    date: t.date,
-    Ingresos: Number(t.income),
-    Gastos: Number(t.expenses),
+  const trendData = (report?.trend || []).map((tr) => ({
+    date: tr.date,
+    [t['chart.income']]: Number(tr.income),
+    [t['chart.expenses']]: Number(tr.expenses),
   }));
 
   const tooltipStyle = {
@@ -99,8 +101,8 @@ export default function ReportsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold text-[var(--color-text)]">Reportes</h1>
-        <p className="text-[var(--color-text-secondary)] mt-1">Analiza tus finanzas en detalle</p>
+        <h1 className="text-2xl md:text-3xl font-bold text-[var(--color-text)]">{t['reports.title']}</h1>
+        <p className="text-[var(--color-text-secondary)] mt-1">{t['reports.subtitle']}</p>
       </div>
 
       {/* Filters */}
@@ -108,10 +110,10 @@ export default function ReportsPage() {
         <div className="flex flex-col gap-4">
           <div className="flex flex-wrap gap-2">
             {[
-              { value: 'this-month', label: 'Este mes' },
-              { value: 'last-month', label: 'Mes pasado' },
-              { value: 'this-quarter', label: 'Trimestre' },
-              { value: 'this-year', label: 'Este año' },
+              { value: 'this-month', label: t['reports.thisMonth'] },
+              { value: 'last-month', label: t['reports.lastMonth'] },
+              { value: 'this-quarter', label: t['reports.thisQuarter'] },
+              { value: 'this-year', label: t['reports.thisYear'] },
             ].map((p) => (
               <button
                 key={p.value}
@@ -123,14 +125,14 @@ export default function ReportsPage() {
             ))}
           </div>
           <div className="flex flex-col sm:flex-row gap-3">
-            <Input type="date" label="Desde" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-            <Input type="date" label="Hasta" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+            <Input type="date" label={t['common.from']} value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+            <Input type="date" label={t['common.to']} value={endDate} onChange={(e) => setEndDate(e.target.value)} />
             <Select
-              label="Vista"
+              label={t['reports.view']}
               options={[
-                { value: 'DAILY', label: 'Diario' },
-                { value: 'WEEKLY', label: 'Semanal' },
-                { value: 'MONTHLY', label: 'Mensual' },
+                { value: 'DAILY', label: t['reports.daily'] },
+                { value: 'WEEKLY', label: t['reports.weekly'] },
+                { value: 'MONTHLY', label: t['reports.monthly'] },
               ]}
               value={period}
               onChange={(e) => setPeriod(e.target.value)}
@@ -146,25 +148,25 @@ export default function ReportsPage() {
           {/* Summary stats */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
             <StatCard
-              title="Total ingresos"
+              title={t['reports.totalIncome']}
               value={formatCurrency(report?.summary?.totalIncome || 0, currency)}
               icon={<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11l5-5m0 0l5 5m-5-5v12" /></svg>}
               color="var(--color-success)"
             />
             <StatCard
-              title="Total gastos"
+              title={t['reports.totalExpenses']}
               value={formatCurrency(report?.summary?.totalExpenses || 0, currency)}
               icon={<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 13l-5 5m0 0l-5-5m5 5V6" /></svg>}
               color="var(--color-danger)"
             />
             <StatCard
-              title="Balance neto"
+              title={t['reports.netBalance']}
               value={formatCurrency(report?.summary?.balance || 0, currency)}
               icon={<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>}
               color={(report?.summary?.balance || 0) >= 0 ? 'var(--color-success)' : 'var(--color-danger)'}
             />
             <StatCard
-              title="Total ahorros"
+              title={t['reports.totalSavings']}
               value={formatCurrency(report?.summary?.savingsTotal || 0, currency)}
               icon={<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>}
               color="var(--color-warning)"
@@ -173,7 +175,7 @@ export default function ReportsPage() {
 
           {/* Trend chart */}
           <Card>
-            <h2 className="text-lg font-semibold text-[var(--color-text)] mb-4">Tendencia de ingresos vs gastos</h2>
+            <h2 className="text-lg font-semibold text-[var(--color-text)] mb-4">{t['reports.trendTitle']}</h2>
             {trendData.length > 0 ? (
               <div className="h-[300px] md:h-[350px]">
                 <ResponsiveContainer width="100%" height="100%">
@@ -183,22 +185,22 @@ export default function ReportsPage() {
                     <YAxis tick={{ fontSize: 12 }} stroke="var(--color-text-secondary)" tickFormatter={(v) => formatCurrency(v, currency)} />
                     <Tooltip {...tooltipStyle} formatter={(value: number | undefined) => formatCurrency(value ?? 0, currency)} />
                     <Legend />
-                    <Bar dataKey="Ingresos" fill="var(--color-success)" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="Gastos" fill="var(--color-danger)" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey={t['chart.income']} fill="var(--color-success)" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey={t['chart.expenses']} fill="var(--color-danger)" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
             ) : (
-              <p className="text-[var(--color-text-secondary)] text-sm py-12 text-center">No hay datos para el periodo seleccionado</p>
+              <p className="text-[var(--color-text-secondary)] text-sm py-12 text-center">{t['reports.noDataForPeriod']}</p>
             )}
           </Card>
 
           {/* Category type filter */}
           <div className="flex gap-2">
             {[
-              { value: 'ALL', label: 'Todos' },
-              { value: 'EXPENSE', label: 'Gastos' },
-              { value: 'INCOME', label: 'Ingresos' },
+              { value: 'ALL', label: t['common.all'] },
+              { value: 'EXPENSE', label: t['common.expenses'] },
+              { value: 'INCOME', label: t['common.incomes'] },
             ].map((f) => (
               <button
                 key={f.value}
@@ -217,7 +219,7 @@ export default function ReportsPage() {
           {/* Category breakdown */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
             <Card>
-              <h2 className="text-lg font-semibold text-[var(--color-text)] mb-4">Distribución por categoría</h2>
+              <h2 className="text-lg font-semibold text-[var(--color-text)] mb-4">{t['reports.categoryDistribution']}</h2>
               {categoryData.length > 0 ? (
                 <div className="h-[300px]">
                   <ResponsiveContainer width="100%" height="100%">
@@ -233,12 +235,12 @@ export default function ReportsPage() {
                   </ResponsiveContainer>
                 </div>
               ) : (
-                <p className="text-[var(--color-text-secondary)] text-sm py-12 text-center">Sin datos</p>
+                <p className="text-[var(--color-text-secondary)] text-sm py-12 text-center">{t['common.noData']}</p>
               )}
             </Card>
 
             <Card>
-              <h2 className="text-lg font-semibold text-[var(--color-text)] mb-4">Detalle por categoría</h2>
+              <h2 className="text-lg font-semibold text-[var(--color-text)] mb-4">{t['reports.categoryDetail']}</h2>
               {categoryData.length > 0 ? (
                 <div className="space-y-3 max-h-[300px] overflow-y-auto">
                   {categoryData
@@ -256,7 +258,7 @@ export default function ReportsPage() {
                                 color: cat.type === 'INCOME' ? 'var(--color-success)' : 'var(--color-danger)',
                               }}
                             >
-                              {cat.type === 'INCOME' ? 'Ingreso' : 'Gasto'}
+                              {cat.type === 'INCOME' ? t['reports.incomeLabel'] : t['reports.expenseLabel']}
                             </span>
                           )}
                         </div>
@@ -268,7 +270,7 @@ export default function ReportsPage() {
                     ))}
                 </div>
               ) : (
-                <p className="text-[var(--color-text-secondary)] text-sm py-12 text-center">Sin datos</p>
+                <p className="text-[var(--color-text-secondary)] text-sm py-12 text-center">{t['common.noData']}</p>
               )}
             </Card>
           </div>

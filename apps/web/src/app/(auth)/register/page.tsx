@@ -7,9 +7,11 @@ import { authApi } from '../../../lib/api/auth';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { LogoWithText } from '../../../components/ui/logo';
+import { useTranslation } from '../../../lib/i18n';
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [form, setForm] = useState({ firstName: '', lastName: '', email: '', password: '', confirmPassword: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -22,12 +24,12 @@ export default function RegisterPage() {
     setError('');
 
     if (form.password !== form.confirmPassword) {
-      setError('Las contraseñas no coinciden');
+      setError(t['register.passwordMismatch']);
       return;
     }
 
     if (form.password.length < 8) {
-      setError('La contraseña debe tener al menos 8 caracteres');
+      setError(t['register.passwordTooShort']);
       return;
     }
 
@@ -53,7 +55,7 @@ export default function RegisterPage() {
         <div className="text-center mb-8">
           <div className="flex justify-center mb-6"><LogoWithText /></div>
           <h1 className="text-3xl font-bold text-[var(--color-primary)]">FinanceApp</h1>
-          <p className="mt-2 text-[var(--color-text-secondary)]">Crea tu cuenta para comenzar</p>
+          <p className="mt-2 text-[var(--color-text-secondary)]">{t['register.subtitle']}</p>
         </div>
 
         <div className="bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] shadow-sm p-6 md:p-8">
@@ -65,49 +67,49 @@ export default function RegisterPage() {
             )}
 
             <div className="grid grid-cols-2 gap-3">
-              <Input label="Nombre" value={form.firstName} onChange={updateField('firstName')} required />
-              <Input label="Apellido" value={form.lastName} onChange={updateField('lastName')} required />
+              <Input label={t['register.firstName']} value={form.firstName} onChange={updateField('firstName')} required />
+              <Input label={t['register.lastName']} value={form.lastName} onChange={updateField('lastName')} required />
             </div>
 
             <Input
-              label="Correo electrónico"
+              label={t['register.email']}
               type="email"
               value={form.email}
               onChange={updateField('email')}
-              placeholder="tu@email.com"
+              placeholder={t['register.emailPlaceholder']}
               required
               autoComplete="email"
             />
 
             <Input
-              label="Contraseña"
+              label={t['register.password']}
               type="password"
               value={form.password}
               onChange={updateField('password')}
-              placeholder="Mínimo 8 caracteres"
+              placeholder={t['register.passwordPlaceholder']}
               required
               autoComplete="new-password"
             />
 
             <Input
-              label="Confirmar contraseña"
+              label={t['register.confirmPassword']}
               type="password"
               value={form.confirmPassword}
               onChange={updateField('confirmPassword')}
-              placeholder="Repite tu contraseña"
+              placeholder={t['register.confirmPasswordPlaceholder']}
               required
               autoComplete="new-password"
             />
 
             <Button type="submit" fullWidth loading={loading}>
-              Crear cuenta
+              {t['register.submit']}
             </Button>
           </form>
 
           <p className="mt-6 text-center text-sm text-[var(--color-text-secondary)]">
-            ¿Ya tienes cuenta?{' '}
+            {t['register.hasAccount']}{' '}
             <Link href="/login" className="text-[var(--color-primary)] hover:underline font-medium">
-              Inicia sesión
+              {t['register.login']}
             </Link>
           </p>
         </div>

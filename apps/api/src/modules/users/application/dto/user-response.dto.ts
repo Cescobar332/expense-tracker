@@ -4,6 +4,7 @@ export class UserResponseDto {
   firstName: string;
   lastName: string;
   currency: string;
+  language: string;
   createdAt: Date;
 
   static fromEntity(user: {
@@ -12,6 +13,7 @@ export class UserResponseDto {
     firstName: string;
     lastName: string;
     currency: string;
+    language: string;
     createdAt: Date;
   }): UserResponseDto {
     const dto = new UserResponseDto();
@@ -20,6 +22,7 @@ export class UserResponseDto {
     dto.firstName = user.firstName;
     dto.lastName = user.lastName;
     dto.currency = user.currency;
+    dto.language = user.language;
     dto.createdAt = user.createdAt;
     return dto;
   }

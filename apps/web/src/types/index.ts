@@ -4,6 +4,7 @@ export interface User {
   firstName: string;
   lastName: string;
   currency: string;
+  language: string;
 }
 
 export interface AuthResponse {

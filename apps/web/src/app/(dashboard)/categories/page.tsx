@@ -11,6 +11,7 @@ import { EmptyState } from '../../../components/ui/empty-state';
 import { getCategoryIcon } from '../../../lib/utils/category-icons';
 import { IconPicker } from '../../../components/ui/icon-picker';
 import { Category } from '../../../types';
+import { useTranslation } from '../../../lib/i18n';
 
 const PRESET_COLORS = [
   '#6366f1', '#8b5cf6', '#ec4899', '#ef4444', '#f97316',
@@ -19,6 +20,7 @@ const PRESET_COLORS = [
 ];
 
 export default function CategoriesPage() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [showModal, setShowModal] = useState(false);
   const [editingCat, setEditingCat] = useState<Category | null>(null);
@@ -96,9 +98,9 @@ export default function CategoriesPage() {
         <Card>
           <EmptyState
             icon={<svg className="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg>}
-            title="Sin categorías"
-            description="Crea categorías para organizar tus transacciones"
-            action={{ label: 'Crear categoría', onClick: openCreate }}
+            title={t['categories.empty']}
+            description={t['categories.emptyHint']}
+            action={{ label: t['categories.new'], onClick: openCreate }}
           />
         </Card>
       );
@@ -114,16 +116,16 @@ export default function CategoriesPage() {
               <div className="min-w-0">
                 <p className="text-sm font-medium text-[var(--color-text)] truncate">{cat.name}</p>
                 <span className={`text-xs ${cat.type === 'INCOME' ? 'text-[var(--color-success)]' : 'text-[var(--color-danger)]'}`}>
-                  {cat.type === 'INCOME' ? 'Ingreso' : 'Gasto'}
+                  {cat.type === 'INCOME' ? t['common.income'] : t['common.expense']}
                 </span>
               </div>
             </div>
             <div className="flex gap-1 flex-shrink-0">
-              <button onClick={() => openEdit(cat)} className="p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] rounded min-h-[40px] min-w-[40px] flex items-center justify-center" aria-label="Editar">
+              <button onClick={() => openEdit(cat)} className="p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] rounded min-h-[40px] min-w-[40px] flex items-center justify-center" aria-label={t['common.edit']}>
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
               </button>
               {!cat.isDefault && (
-                <button onClick={() => setDeleteConfirm(cat.id)} className="p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-danger)] rounded min-h-[40px] min-w-[40px] flex items-center justify-center" aria-label="Eliminar">
+                <button onClick={() => setDeleteConfirm(cat.id)} className="p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-danger)] rounded min-h-[40px] min-w-[40px] flex items-center justify-center" aria-label={t['common.delete']}>
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                 </button>
               )}
@@ -138,21 +140,21 @@ export default function CategoriesPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-[var(--color-text)]">Categorías</h1>
-          <p className="text-[var(--color-text-secondary)] mt-1">Organiza tus transacciones por categorías</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-[var(--color-text)]">{t['categories.title']}</h1>
+          <p className="text-[var(--color-text-secondary)] mt-1">{t['categories.subtitle']}</p>
         </div>
         <Button onClick={openCreate}>
           <svg className="w-5 h-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
-          Nueva categoría
+          {t['categories.new']}
         </Button>
       </div>
 
       {/* Filter tabs */}
       <div className="flex gap-2">
         {[
-          { value: '', label: 'Todas' },
-          { value: 'EXPENSE', label: 'Gastos' },
-          { value: 'INCOME', label: 'Ingresos' },
+          { value: '', label: t['common.all'] },
+          { value: 'EXPENSE', label: t['common.expenses'] },
+          { value: 'INCOME', label: t['common.incomes'] },
         ].map((tab) => (
           <button
             key={tab.value}
@@ -174,26 +176,26 @@ export default function CategoriesPage() {
       {renderContent()}
 
       {/* Create/Edit Modal */}
-      <Modal isOpen={showModal} onClose={closeModal} title={editingCat ? 'Editar categoría' : 'Nueva categoría'}>
+      <Modal isOpen={showModal} onClose={closeModal} title={editingCat ? t['categories.editTitle'] : t['categories.newTitle']}>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <Input label="Nombre" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Ej: Alimentación, Transporte" required />
+          <Input label={t['common.name']} value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder={t['categories.namePlaceholder']} required />
 
           {!editingCat && (
             <div>
-              <label htmlFor="category-type" className="block text-sm font-medium text-[var(--color-text)] mb-1">Tipo</label>
+              <label htmlFor="category-type" className="block text-sm font-medium text-[var(--color-text)] mb-1">{t['common.type']}</label>
               <div id="category-type" className="grid grid-cols-2 gap-3">
                 <button type="button" onClick={() => setForm((f) => ({ ...f, type: 'EXPENSE' }))} className={`py-2 px-4 rounded-lg text-sm font-medium border transition-colors min-h-[44px] ${form.type === 'EXPENSE' ? 'bg-[var(--color-danger)]/10 border-[var(--color-danger)]/30 text-[var(--color-danger)]' : 'border-[var(--color-border)] text-[var(--color-text-secondary)]'}`}>
-                  Gasto
+                  {t['common.expense']}
                 </button>
                 <button type="button" onClick={() => setForm((f) => ({ ...f, type: 'INCOME' }))} className={`py-2 px-4 rounded-lg text-sm font-medium border transition-colors min-h-[44px] ${form.type === 'INCOME' ? 'bg-[var(--color-success)]/10 border-[var(--color-success)]/30 text-[var(--color-success)]' : 'border-[var(--color-border)] text-[var(--color-text-secondary)]'}`}>
-                  Ingreso
+                  {t['common.income']}
                 </button>
               </div>
             </div>
           )}
 
           <div>
-            <label htmlFor="category-color" className="block text-sm font-medium text-[var(--color-text)] mb-2">Color</label>
+            <label htmlFor="category-color" className="block text-sm font-medium text-[var(--color-text)] mb-2">{t['common.color']}</label>
             <div id="category-color" className="flex flex-wrap gap-2">
               {PRESET_COLORS.map((color) => (
                 <button
@@ -211,19 +213,19 @@ export default function CategoriesPage() {
           <IconPicker value={form.icon} onChange={(icon) => setForm((f) => ({ ...f, icon }))} selectedColor={form.color} />
 
           <div className="flex gap-3 pt-2">
-            <Button type="button" variant="secondary" fullWidth onClick={closeModal}>Cancelar</Button>
-            <Button type="submit" fullWidth loading={createMutation.isPending || updateMutation.isPending}>{editingCat ? 'Guardar' : 'Crear'}</Button>
+            <Button type="button" variant="secondary" fullWidth onClick={closeModal}>{t['common.cancel']}</Button>
+            <Button type="submit" fullWidth loading={createMutation.isPending || updateMutation.isPending}>{editingCat ? t['common.save'] : t['common.create']}</Button>
           </div>
         </form>
       </Modal>
 
       {/* Delete Modal */}
-      <Modal isOpen={!!deleteConfirm} onClose={() => setDeleteConfirm(null)} title="Eliminar categoría">
-        <p className="text-[var(--color-text-secondary)] mb-2">¿Estás seguro/a de que quieres eliminar esta categoría?</p>
-        <p className="text-sm text-[var(--color-warning)] mb-6">Las transacciones asociadas no se eliminarán, pero quedarán sin categoría.</p>
+      <Modal isOpen={!!deleteConfirm} onClose={() => setDeleteConfirm(null)} title={t['categories.deleteTitle']}>
+        <p className="text-[var(--color-text-secondary)] mb-2">{t['categories.deleteConfirm']}</p>
+        <p className="text-sm text-[var(--color-warning)] mb-6">{t['categories.deleteWarning']}</p>
         <div className="flex gap-3">
-          <Button variant="secondary" fullWidth onClick={() => setDeleteConfirm(null)}>Cancelar</Button>
-          <Button variant="danger" fullWidth loading={deleteMutation.isPending} onClick={() => deleteConfirm && deleteMutation.mutate(deleteConfirm)}>Eliminar</Button>
+          <Button variant="secondary" fullWidth onClick={() => setDeleteConfirm(null)}>{t['common.cancel']}</Button>
+          <Button variant="danger" fullWidth loading={deleteMutation.isPending} onClick={() => deleteConfirm && deleteMutation.mutate(deleteConfirm)}>{t['common.delete']}</Button>
         </div>
       </Modal>
     </div>

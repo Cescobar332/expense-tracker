@@ -1,5 +1,5 @@
-export function formatCurrency(amount: number, currency = 'USD'): string {
-  return new Intl.NumberFormat('es-ES', {
+export function formatCurrency(amount: number, currency = 'USD', locale = 'es-ES'): string {
+  return new Intl.NumberFormat(locale, {
     style: 'currency',
     currency,
     minimumFractionDigits: 2,
@@ -7,12 +7,13 @@ export function formatCurrency(amount: number, currency = 'USD'): string {
   }).format(amount);
 }
 
-export function formatDate(date: string | Date): string {
+export function formatDate(date: string | Date, locale = 'es-ES'): string {
   const d = new Date(date);
-  const day = String(d.getDate()).padStart(2, '0');
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const year = d.getFullYear();
-  return `${day}/${month}/${year}`;
+  return new Intl.DateTimeFormat(locale, {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  }).format(d);
 }
 
 export function formatDateInput(date: string | Date): string {

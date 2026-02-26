@@ -5,6 +5,7 @@ export class User {
   readonly firstName: string;
   readonly lastName: string;
   readonly currency: string;
+  readonly language: string;
   readonly isActive: boolean;
   readonly createdAt: Date;
   readonly updatedAt: Date;
@@ -16,6 +17,7 @@ export class User {
     firstName: string;
     lastName: string;
     currency: string;
+    language: string;
     isActive: boolean;
     createdAt: Date;
     updatedAt: Date;
@@ -26,6 +28,7 @@ export class User {
     this.firstName = props.firstName;
     this.lastName = props.lastName;
     this.currency = props.currency;
+    this.language = props.language;
     this.isActive = props.isActive;
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;

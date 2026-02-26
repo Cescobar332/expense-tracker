@@ -16,7 +16,7 @@ import {
 import { UserResponseDto } from '../../application/dto/user-response.dto';
 import { ChangeCurrencyDto } from '../../application/dto/change-currency.dto';
 import { ChangeCurrencyUseCase } from '../../application/use-cases/change-currency.use-case';
-import { IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsOptional, IsString, MaxLength, IsIn } from 'class-validator';
 import { AuthenticatedRequest } from '../../../../shared/types/authenticated-request';
 
 export class UpdateProfileDto {
@@ -34,6 +34,11 @@ export class UpdateProfileDto {
   @IsString()
   @MaxLength(3)
   currency?: string;
+
+  @IsOptional()
+  @IsString()
+  @IsIn(['es', 'en', 'pt', 'fr'])
+  language?: string;
 }
 
 @ApiTags('users')

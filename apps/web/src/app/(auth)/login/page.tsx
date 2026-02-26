@@ -8,11 +8,13 @@ import { authApi } from '../../../lib/api/auth';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { LogoWithText } from '../../../components/ui/logo';
+import { useTranslation } from '../../../lib/i18n';
 
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { setAuth } = useAuthStore();
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -30,7 +32,7 @@ export default function LoginPage() {
       setAuth(data.user, data.accessToken, data.refreshToken);
       router.push('/dashboard');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al iniciar sesión');
+      setError(err instanceof Error ? err.message : 'Error al iniciar sesi\u00F3n');
     } finally {
       setLoading(false);
     }
@@ -42,14 +44,14 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <div className="flex justify-center mb-6"><LogoWithText /></div>
           <h1 className="text-3xl font-bold text-[var(--color-primary)]">FinanceApp</h1>
-          <p className="mt-2 text-[var(--color-text-secondary)]">Inicia sesión para gestionar tus finanzas</p>
+          <p className="mt-2 text-[var(--color-text-secondary)]">{t['login.subtitle']}</p>
         </div>
 
         <div className="bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] shadow-sm p-6 md:p-8">
           <form onSubmit={handleSubmit} className="space-y-4">
             {registered && (
               <div className="p-3 rounded-lg border text-sm" style={{ backgroundColor: 'rgba(34,197,94,0.1)', color: 'var(--color-success)', borderColor: 'rgba(34,197,94,0.3)' }}>
-                Cuenta creada exitosamente. Inicia sesión con tus credenciales.
+                {t['login.accountCreated']}
               </div>
             )}
 
@@ -60,34 +62,34 @@ export default function LoginPage() {
             )}
 
             <Input
-              label="Correo electrónico"
+              label={t['login.email']}
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="tu@email.com"
+              placeholder={t['login.emailPlaceholder']}
               required
               autoComplete="email"
             />
 
             <Input
-              label="Contraseña"
+              label={t['login.password']}
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Tu contraseña"
+              placeholder={t['login.passwordPlaceholder']}
               required
               autoComplete="current-password"
             />
 
             <Button type="submit" fullWidth loading={loading}>
-              Iniciar sesión
+              {t['login.submit']}
             </Button>
           </form>
 
           <p className="mt-6 text-center text-sm text-[var(--color-text-secondary)]">
-            ¿No tienes cuenta?{' '}
+            {t['login.noAccount']}{' '}
             <Link href="/register" className="text-[var(--color-primary)] hover:underline font-medium">
-              Regístrate
+              {t['login.register']}
             </Link>
           </p>
         </div>
