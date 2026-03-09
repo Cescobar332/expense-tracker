@@ -6,11 +6,14 @@ import { AuthController } from './presentation/controllers/auth.controller';
 import { RegisterUseCase } from './application/use-cases/register.use-case';
 import { LoginUseCase } from './application/use-cases/login.use-case';
 import { RefreshTokenUseCase } from './application/use-cases/refresh-token.use-case';
+import { ForgotPasswordUseCase } from './application/use-cases/forgot-password.use-case';
+import { ResetPasswordUseCase } from './application/use-cases/reset-password.use-case';
 import { JwtStrategy } from './presentation/guards/jwt.strategy';
 import { PrismaRefreshTokenRepository } from './infrastructure/repositories/prisma-refresh-token.repository';
 import { REFRESH_TOKEN_REPOSITORY } from './domain/repositories/refresh-token.repository.interface';
 import { UsersModule } from '../users/users.module';
 import { CategoriesModule } from '../categories/categories.module';
+import { EmailService } from '../../shared/services/email.service';
 
 @Module({
   imports: [
@@ -34,6 +37,9 @@ import { CategoriesModule } from '../categories/categories.module';
     RegisterUseCase,
     LoginUseCase,
     RefreshTokenUseCase,
+    ForgotPasswordUseCase,
+    ResetPasswordUseCase,
+    EmailService,
     JwtStrategy,
     {
       provide: REFRESH_TOKEN_REPOSITORY,

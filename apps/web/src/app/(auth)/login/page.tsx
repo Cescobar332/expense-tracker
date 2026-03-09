@@ -21,6 +21,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   const registered = searchParams.get('registered') === 'true';
+  const passwordReset = searchParams.get('passwordReset') === 'true';
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -55,6 +56,12 @@ export default function LoginPage() {
               </div>
             )}
 
+            {passwordReset && (
+              <div className="p-3 rounded-lg border text-sm" style={{ backgroundColor: 'rgba(34,197,94,0.1)', color: 'var(--color-success)', borderColor: 'rgba(34,197,94,0.3)' }}>
+                {t['login.passwordReset']}
+              </div>
+            )}
+
             {error && (
               <div className="p-3 rounded-lg border text-sm" style={{ backgroundColor: 'rgba(239,68,68,0.1)', color: 'var(--color-danger)', borderColor: 'rgba(239,68,68,0.3)' }}>
                 {error}
@@ -80,6 +87,12 @@ export default function LoginPage() {
               required
               autoComplete="current-password"
             />
+
+            <div className="text-right">
+              <Link href="/forgot-password" className="text-sm text-[var(--color-primary)] hover:underline font-medium">
+                {t['login.forgotPassword']}
+              </Link>
+            </div>
 
             <Button type="submit" fullWidth loading={loading}>
               {t['login.submit']}

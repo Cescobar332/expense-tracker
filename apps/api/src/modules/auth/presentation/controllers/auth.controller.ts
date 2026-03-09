@@ -1,11 +1,16 @@
 import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { RegisterDto } from '../../application/dto/register.dto';
 import { LoginDto } from '../../application/dto/login.dto';
 import { RefreshTokenDto } from '../../application/dto/refresh-token.dto';
+import { ForgotPasswordDto } from '../../application/dto/forgot-password.dto';
+import { ResetPasswordDto } from '../../application/dto/reset-password.dto';
 import { RegisterUseCase } from '../../application/use-cases/register.use-case';
 import { LoginUseCase } from '../../application/use-cases/login.use-case';
 import { RefreshTokenUseCase } from '../../application/use-cases/refresh-token.use-case';
+import { ForgotPasswordUseCase } from '../../application/use-cases/forgot-password.use-case';
+import { ResetPasswordUseCase } from '../../application/use-cases/reset-password.use-case';
 import { AuthResponseDto } from '../../application/dto/auth-response.dto';
 import { UserResponseDto } from '../../../users/application/dto/user-response.dto';
 
@@ -16,9 +21,12 @@ export class AuthController {
     private readonly registerUseCase: RegisterUseCase,
     private readonly loginUseCase: LoginUseCase,
     private readonly refreshTokenUseCase: RefreshTokenUseCase,
+    private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
+    private readonly resetPasswordUseCase: ResetPasswordUseCase,
   ) {}
 
   @Post('register')
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @ApiOperation({ summary: 'Registrar nuevo usuario' })
   @ApiResponse({ status: 201, description: 'Usuario registrado exitosamente' })
   @ApiResponse({ status: 409, description: 'El email ya está registrado' })
@@ -28,6 +36,7 @@ export class AuthController {
   }
 
   @Post('login')
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Iniciar sesión' })
   @ApiResponse({ status: 200, description: 'Login exitoso' })
@@ -43,5 +52,26 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Refresh token inválido' })
   async refresh(@Body() dto: RefreshTokenDto): Promise<AuthResponseDto> {
     return this.refreshTokenUseCase.execute(dto.refreshToken);
+  }
+
+  @Post('forgot-password')
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Solicitar recuperación de contraseña' })
+  @ApiResponse({ status: 200, description: 'Si el email existe, se envía enlace de recuperación' })
+  async forgotPassword(@Body() dto: ForgotPasswordDto) {
+    await this.forgotPasswordUseCase.execute(dto.email);
+    return { message: 'If the email exists, a recovery link has been sent' };
+  }
+
+  @Post('reset-password')
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Restablecer contraseña' })
+  @ApiResponse({ status: 200, description: 'Contraseña restablecida exitosamente' })
+  @ApiResponse({ status: 400, description: 'Token inválido o expirado' })
+  async resetPassword(@Body() dto: ResetPasswordDto) {
+    await this.resetPasswordUseCase.execute(dto.token, dto.newPassword);
+    return { message: 'Password has been reset successfully' };
   }
 }

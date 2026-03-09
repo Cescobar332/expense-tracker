@@ -187,6 +187,24 @@ export const es = {
   'reports.incomeLabel': 'Ingreso',
   'reports.expenseLabel': 'Gasto',
 
+  // Password strength
+  'register.passwordWeak': 'D\u00e9bil',
+  'register.passwordFair': 'Regular',
+  'register.passwordGood': 'Buena',
+  'register.passwordStrong': 'Fuerte',
+  'register.passwordRequirements': 'La contrase\u00f1a debe contener may\u00fascula, min\u00fascula, n\u00famero y car\u00e1cter especial',
+
+  // Forgot/Reset Password
+  'forgotPassword.subtitle': 'Recupera el acceso a tu cuenta',
+  'forgotPassword.submit': 'Enviar enlace de recuperaci\u00f3n',
+  'forgotPassword.sent': 'Si el correo existe, se ha enviado un enlace de recuperaci\u00f3n. Revisa tu bandeja de entrada.',
+  'forgotPassword.backToLogin': 'Volver al inicio de sesi\u00f3n',
+  'resetPassword.subtitle': 'Ingresa tu nueva contrase\u00f1a',
+  'resetPassword.submit': 'Restablecer contrase\u00f1a',
+  'resetPassword.invalidToken': 'Token inv\u00e1lido o expirado',
+  'resetPassword.success': 'Contrase\u00f1a restablecida exitosamente',
+  'login.passwordReset': 'Contrase\u00f1a restablecida exitosamente. Inicia sesi\u00f3n con tu nueva contrase\u00f1a.',
+
   // Chart
   'chart.income': 'Ingresos',
   'chart.expenses': 'Gastos',

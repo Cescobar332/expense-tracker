@@ -72,6 +72,7 @@ export class LoginUseCase {
         firstName: user.firstName,
         lastName: user.lastName,
         currency: user.currency,
+        language: user.language,
       },
     };
   }

@@ -187,6 +187,24 @@ export const en: TranslationKeys = {
   'reports.incomeLabel': 'Income',
   'reports.expenseLabel': 'Expense',
 
+  // Password strength
+  'register.passwordWeak': 'Weak',
+  'register.passwordFair': 'Fair',
+  'register.passwordGood': 'Good',
+  'register.passwordStrong': 'Strong',
+  'register.passwordRequirements': 'Password must contain uppercase, lowercase, number and special character',
+
+  // Forgot/Reset Password
+  'forgotPassword.subtitle': 'Recover access to your account',
+  'forgotPassword.submit': 'Send recovery link',
+  'forgotPassword.sent': 'If the email exists, a recovery link has been sent. Check your inbox.',
+  'forgotPassword.backToLogin': 'Back to login',
+  'resetPassword.subtitle': 'Enter your new password',
+  'resetPassword.submit': 'Reset password',
+  'resetPassword.invalidToken': 'Invalid or expired token',
+  'resetPassword.success': 'Password reset successfully',
+  'login.passwordReset': 'Password reset successfully. Sign in with your new password.',
+
   // Chart
   'chart.income': 'Income',
   'chart.expenses': 'Expenses',

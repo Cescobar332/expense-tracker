@@ -187,6 +187,24 @@ export const pt: TranslationKeys = {
   'reports.incomeLabel': 'Receita',
   'reports.expenseLabel': 'Despesa',
 
+  // Password strength
+  'register.passwordWeak': 'Fraca',
+  'register.passwordFair': 'Regular',
+  'register.passwordGood': 'Boa',
+  'register.passwordStrong': 'Forte',
+  'register.passwordRequirements': 'A senha deve conter mai\u00fascula, min\u00fascula, n\u00famero e caractere especial',
+
+  // Forgot/Reset Password
+  'forgotPassword.subtitle': 'Recupere o acesso \u00e0 sua conta',
+  'forgotPassword.submit': 'Enviar link de recupera\u00e7\u00e3o',
+  'forgotPassword.sent': 'Se o e-mail existir, um link de recupera\u00e7\u00e3o foi enviado. Verifique sua caixa de entrada.',
+  'forgotPassword.backToLogin': 'Voltar ao login',
+  'resetPassword.subtitle': 'Digite sua nova senha',
+  'resetPassword.submit': 'Redefinir senha',
+  'resetPassword.invalidToken': 'Token inv\u00e1lido ou expirado',
+  'resetPassword.success': 'Senha redefinida com sucesso',
+  'login.passwordReset': 'Senha redefinida com sucesso. Fa\u00e7a login com sua nova senha.',
+
   // Chart
   'chart.income': 'Receitas',
   'chart.expenses': 'Despesas',

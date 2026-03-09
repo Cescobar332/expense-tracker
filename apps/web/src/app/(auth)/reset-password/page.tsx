@@ -1,19 +1,20 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { authApi } from '../../../lib/api/auth';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { LogoWithText } from '../../../components/ui/logo';
-import { PasswordStrength } from '../../../components/ui/password-strength';
 import { useTranslation } from '../../../lib/i18n';
 
-export default function RegisterPage() {
+export default function ResetPasswordPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const token = searchParams.get('token') || '';
   const { t } = useTranslation();
-  const [form, setForm] = useState({ firstName: '', lastName: '', email: '', password: '', confirmPassword: '' });
+  const [form, setForm] = useState({ password: '', confirmPassword: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -34,26 +35,29 @@ export default function RegisterPage() {
       return;
     }
 
-    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.,#^()_+\-=])/.test(form.password)) {
-      setError(t['register.passwordRequirements'] || 'Password must contain uppercase, lowercase, number and special character');
-      return;
-    }
-
     setLoading(true);
     try {
-      await authApi.register({
-        firstName: form.firstName,
-        lastName: form.lastName,
-        email: form.email,
-        password: form.password,
-      });
-      router.push('/login?registered=true');
+      await authApi.resetPassword(token, form.password);
+      router.push('/login?passwordReset=true');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al registrar');
+      setError(err instanceof Error ? err.message : 'Error');
     } finally {
       setLoading(false);
     }
   };
+
+  if (!token) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4 py-8 bg-[var(--color-bg)]">
+        <div className="text-center space-y-4">
+          <p className="text-[var(--color-danger)]">{t['resetPassword.invalidToken']}</p>
+          <Link href="/login" className="text-[var(--color-primary)] hover:underline font-medium">
+            {t['forgotPassword.backToLogin']}
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-8 bg-[var(--color-bg)]">
@@ -61,7 +65,7 @@ export default function RegisterPage() {
         <div className="text-center mb-8">
           <div className="flex justify-center mb-6"><LogoWithText /></div>
           <h1 className="text-3xl font-bold text-[var(--color-primary)]">FinanceApp</h1>
-          <p className="mt-2 text-[var(--color-text-secondary)]">{t['register.subtitle']}</p>
+          <p className="mt-2 text-[var(--color-text-secondary)]">{t['resetPassword.subtitle']}</p>
         </div>
 
         <div className="bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] shadow-sm p-6 md:p-8">
@@ -71,22 +75,6 @@ export default function RegisterPage() {
                 {error}
               </div>
             )}
-
-            <div className="grid grid-cols-2 gap-3">
-              <Input label={t['register.firstName']} value={form.firstName} onChange={updateField('firstName')} required />
-              <Input label={t['register.lastName']} value={form.lastName} onChange={updateField('lastName')} required />
-            </div>
-
-            <Input
-              label={t['register.email']}
-              type="email"
-              value={form.email}
-              onChange={updateField('email')}
-              placeholder={t['register.emailPlaceholder']}
-              required
-              autoComplete="email"
-            />
-
             <Input
               label={t['register.password']}
               type="password"
@@ -96,17 +84,6 @@ export default function RegisterPage() {
               required
               autoComplete="new-password"
             />
-
-            <PasswordStrength
-              password={form.password}
-              labels={{
-                weak: t['register.passwordWeak'] || 'Weak',
-                fair: t['register.passwordFair'] || 'Fair',
-                good: t['register.passwordGood'] || 'Good',
-                strong: t['register.passwordStrong'] || 'Strong',
-              }}
-            />
-
             <Input
               label={t['register.confirmPassword']}
               type="password"
@@ -116,18 +93,10 @@ export default function RegisterPage() {
               required
               autoComplete="new-password"
             />
-
             <Button type="submit" fullWidth loading={loading}>
-              {t['register.submit']}
+              {t['resetPassword.submit']}
             </Button>
           </form>
-
-          <p className="mt-6 text-center text-sm text-[var(--color-text-secondary)]">
-            {t['register.hasAccount']}{' '}
-            <Link href="/login" className="text-[var(--color-primary)] hover:underline font-medium">
-              {t['register.login']}
-            </Link>
-          </p>
         </div>
       </div>
     </div>

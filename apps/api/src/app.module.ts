@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
-import { ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { databaseConfig, jwtConfig, appConfig } from './config/env.config';
 import { PrismaModule } from './shared/infrastructure/prisma.module';
@@ -28,6 +29,12 @@ import { ReportsModule } from './modules/reports/reports.module';
     BudgetsModule,
     SavingsModule,
     ReportsModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
   ],
 })
 export class AppModule {}

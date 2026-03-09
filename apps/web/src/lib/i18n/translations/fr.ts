@@ -187,6 +187,24 @@ export const fr: TranslationKeys = {
   'reports.incomeLabel': 'Revenu',
   'reports.expenseLabel': 'D\u00e9pense',
 
+  // Password strength
+  'register.passwordWeak': 'Faible',
+  'register.passwordFair': 'Moyen',
+  'register.passwordGood': 'Bon',
+  'register.passwordStrong': 'Fort',
+  'register.passwordRequirements': 'Le mot de passe doit contenir une majuscule, une minuscule, un chiffre et un caract\u00e8re sp\u00e9cial',
+
+  // Forgot/Reset Password
+  'forgotPassword.subtitle': 'R\u00e9cup\u00e9rez l\'acc\u00e8s \u00e0 votre compte',
+  'forgotPassword.submit': 'Envoyer le lien de r\u00e9cup\u00e9ration',
+  'forgotPassword.sent': 'Si l\'e-mail existe, un lien de r\u00e9cup\u00e9ration a \u00e9t\u00e9 envoy\u00e9. V\u00e9rifiez votre bo\u00eete de r\u00e9ception.',
+  'forgotPassword.backToLogin': 'Retour \u00e0 la connexion',
+  'resetPassword.subtitle': 'Entrez votre nouveau mot de passe',
+  'resetPassword.submit': 'R\u00e9initialiser le mot de passe',
+  'resetPassword.invalidToken': 'Token invalide ou expir\u00e9',
+  'resetPassword.success': 'Mot de passe r\u00e9initialis\u00e9 avec succ\u00e8s',
+  'login.passwordReset': 'Mot de passe r\u00e9initialis\u00e9 avec succ\u00e8s. Connectez-vous avec votre nouveau mot de passe.',
+
   // Chart
   'chart.income': 'Revenus',
   'chart.expenses': 'D\u00e9penses',

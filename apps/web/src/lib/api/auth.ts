@@ -21,4 +21,10 @@ export const authApi = {
       '/users/currency',
       { newCurrency },
     ),
+
+  forgotPassword: (email: string) =>
+    apiRequest('/auth/forgot-password', { method: 'POST', body: { email } }),
+
+  resetPassword: (token: string, newPassword: string) =>
+    apiRequest('/auth/reset-password', { method: 'POST', body: { token, newPassword } }),
 };

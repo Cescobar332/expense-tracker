@@ -19,11 +19,12 @@ model User {
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
-  transactions  Transaction[]
-  categories    Category[]
-  budgets       Budget[]
-  savingsGoals  SavingsGoal[]
-  refreshTokens RefreshToken[]
+  transactions        Transaction[]
+  categories          Category[]
+  budgets             Budget[]
+  savingsGoals        SavingsGoal[]
+  refreshTokens       RefreshToken[]
+  passwordResetTokens PasswordResetToken[]
 
   @@map("users")
 }
@@ -121,4 +122,17 @@ model SavingsGoal {
 
   @@index([userId])
   @@map("savings_goals")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_reset_tokens")
 }
