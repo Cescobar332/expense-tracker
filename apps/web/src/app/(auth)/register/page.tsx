@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { authApi } from '../../../lib/api/auth';
 import { Button } from '../../../components/ui/button';
@@ -11,11 +10,11 @@ import { PasswordStrength } from '../../../components/ui/password-strength';
 import { useTranslation } from '../../../lib/i18n';
 
 export default function RegisterPage() {
-  const router = useRouter();
   const { t } = useTranslation();
   const [form, setForm] = useState({ firstName: '', lastName: '', email: '', password: '', confirmPassword: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [registered, setRegistered] = useState(false);
 
   const updateField = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
@@ -47,7 +46,7 @@ export default function RegisterPage() {
         email: form.email,
         password: form.password,
       });
-      router.push('/login?registered=true');
+      setRegistered(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al registrar');
     } finally {
@@ -65,69 +64,82 @@ export default function RegisterPage() {
         </div>
 
         <div className="bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] shadow-sm p-6 md:p-8">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {error && (
-              <div className="p-3 rounded-lg border text-sm" style={{ backgroundColor: 'rgba(239,68,68,0.1)', color: 'var(--color-danger)', borderColor: 'rgba(239,68,68,0.3)' }}>
-                {error}
+          {registered ? (
+            <div className="space-y-4 text-center">
+              <div className="p-3 rounded-lg border text-sm" style={{ backgroundColor: 'rgba(34,197,94,0.1)', color: 'var(--color-success)', borderColor: 'rgba(34,197,94,0.3)' }}>
+                {t['register.verifyEmail']}
               </div>
-            )}
-
-            <div className="grid grid-cols-2 gap-3">
-              <Input label={t['register.firstName']} value={form.firstName} onChange={updateField('firstName')} required />
-              <Input label={t['register.lastName']} value={form.lastName} onChange={updateField('lastName')} required />
+              <Link href="/login" className="text-[var(--color-primary)] hover:underline font-medium text-sm">
+                {t['verifyEmail.goToLogin']}
+              </Link>
             </div>
+          ) : (
+            <>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {error && (
+                  <div className="p-3 rounded-lg border text-sm" style={{ backgroundColor: 'rgba(239,68,68,0.1)', color: 'var(--color-danger)', borderColor: 'rgba(239,68,68,0.3)' }}>
+                    {error}
+                  </div>
+                )}
 
-            <Input
-              label={t['register.email']}
-              type="email"
-              value={form.email}
-              onChange={updateField('email')}
-              placeholder={t['register.emailPlaceholder']}
-              required
-              autoComplete="email"
-            />
+                <div className="grid grid-cols-2 gap-3">
+                  <Input label={t['register.firstName']} value={form.firstName} onChange={updateField('firstName')} required />
+                  <Input label={t['register.lastName']} value={form.lastName} onChange={updateField('lastName')} required />
+                </div>
 
-            <Input
-              label={t['register.password']}
-              type="password"
-              value={form.password}
-              onChange={updateField('password')}
-              placeholder={t['register.passwordPlaceholder']}
-              required
-              autoComplete="new-password"
-            />
+                <Input
+                  label={t['register.email']}
+                  type="email"
+                  value={form.email}
+                  onChange={updateField('email')}
+                  placeholder={t['register.emailPlaceholder']}
+                  required
+                  autoComplete="email"
+                />
 
-            <PasswordStrength
-              password={form.password}
-              labels={{
-                weak: t['register.passwordWeak'] || 'Weak',
-                fair: t['register.passwordFair'] || 'Fair',
-                good: t['register.passwordGood'] || 'Good',
-                strong: t['register.passwordStrong'] || 'Strong',
-              }}
-            />
+                <Input
+                  label={t['register.password']}
+                  type="password"
+                  value={form.password}
+                  onChange={updateField('password')}
+                  placeholder={t['register.passwordPlaceholder']}
+                  required
+                  autoComplete="new-password"
+                />
 
-            <Input
-              label={t['register.confirmPassword']}
-              type="password"
-              value={form.confirmPassword}
-              onChange={updateField('confirmPassword')}
-              placeholder={t['register.confirmPasswordPlaceholder']}
-              required
-              autoComplete="new-password"
-            />
+                <PasswordStrength
+                  password={form.password}
+                  labels={{
+                    weak: t['register.passwordWeak'] || 'Weak',
+                    fair: t['register.passwordFair'] || 'Fair',
+                    good: t['register.passwordGood'] || 'Good',
+                    strong: t['register.passwordStrong'] || 'Strong',
+                  }}
+                />
 
-            <Button type="submit" fullWidth loading={loading}>
-              {t['register.submit']}
-            </Button>
-          </form>
+                <Input
+                  label={t['register.confirmPassword']}
+                  type="password"
+                  value={form.confirmPassword}
+                  onChange={updateField('confirmPassword')}
+                  placeholder={t['register.confirmPasswordPlaceholder']}
+                  required
+                  autoComplete="new-password"
+                />
 
-          <p className="mt-6 text-center text-sm text-[var(--color-text-secondary)]">
-            {t['register.hasAccount']}{' '}
-            <Link href="/login" className="text-[var(--color-primary)] hover:underline font-medium">
-              {t['register.login']}
-            </Link>
-          </p>
+                <Button type="submit" fullWidth loading={loading}>
+                  {t['register.submit']}
+                </Button>
+              </form>
+
+              <p className="mt-6 text-center text-sm text-[var(--color-text-secondary)]">
+                {t['register.hasAccount']}{' '}
+                <Link href="/login" className="text-[var(--color-primary)] hover:underline font-medium">
+                  {t['register.login']}
+                </Link>
+              </p>
+            </>
+          )}
         </div>
       </div>
     </div>

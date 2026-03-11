@@ -63,6 +63,7 @@ export interface SavingsGoal {
   targetAmount: number;
   currentAmount: number;
   targetDate?: string;
+  startDate: string;
   isCompleted: boolean;
   createdAt: string;
   updatedAt: string;

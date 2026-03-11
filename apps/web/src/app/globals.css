@@ -21,6 +21,7 @@
   --color-text: #f1f5f9;
   --color-text-secondary: #94a3b8;
   --color-border: #334155;
+  color-scheme: dark;
 }
 
 * {
@@ -34,8 +35,8 @@ body {
 }
 
 input, select, textarea {
-  color: inherit;
-  background-color: inherit;
+  color: var(--color-text);
+  background-color: var(--color-surface);
 }
 
 option {

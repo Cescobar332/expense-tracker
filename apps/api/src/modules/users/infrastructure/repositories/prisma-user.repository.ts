@@ -53,6 +53,7 @@ export class PrismaUserRepository implements IUserRepository {
       currency: raw.currency,
       language: raw.language,
       isActive: raw.isActive,
+      isEmailVerified: raw.isEmailVerified,
       createdAt: raw.createdAt,
       updatedAt: raw.updatedAt,
     });

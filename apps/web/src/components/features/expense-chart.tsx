@@ -2,6 +2,7 @@
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import { formatCurrency } from '../../lib/utils/format';
+import { useTranslation } from '../../lib/i18n';
 
 interface CategoryData {
   categoryName: string;
@@ -20,10 +21,12 @@ function legendFormatter(value: string) {
 }
 
 export function ExpenseChart({ data, currency }: Readonly<Props>) {
+  const { t } = useTranslation();
+
   if (data.length === 0) {
     return (
       <p className="text-[var(--color-text-secondary)] text-sm py-12 text-center">
-        No hay datos de gastos para este periodo
+        {t['dashboard.noExpenseData']}
       </p>
     );
   }

@@ -8,6 +8,7 @@ import { LoginUseCase } from './application/use-cases/login.use-case';
 import { RefreshTokenUseCase } from './application/use-cases/refresh-token.use-case';
 import { ForgotPasswordUseCase } from './application/use-cases/forgot-password.use-case';
 import { ResetPasswordUseCase } from './application/use-cases/reset-password.use-case';
+import { VerifyEmailUseCase } from './application/use-cases/verify-email.use-case';
 import { JwtStrategy } from './presentation/guards/jwt.strategy';
 import { PrismaRefreshTokenRepository } from './infrastructure/repositories/prisma-refresh-token.repository';
 import { REFRESH_TOKEN_REPOSITORY } from './domain/repositories/refresh-token.repository.interface';
@@ -39,6 +40,7 @@ import { EmailService } from '../../shared/services/email.service';
     RefreshTokenUseCase,
     ForgotPasswordUseCase,
     ResetPasswordUseCase,
+    VerifyEmailUseCase,
     EmailService,
     JwtStrategy,
     {

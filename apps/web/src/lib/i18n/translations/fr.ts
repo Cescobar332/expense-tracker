@@ -27,6 +27,7 @@ export const fr: TranslationKeys = {
   'common.expense': 'D\u00e9pense',
   'common.incomes': 'Revenus',
   'common.expenses': 'D\u00e9penses',
+  'common.of': 'de',
 
   // Nav
   'nav.dashboard': 'Tableau de bord',
@@ -84,9 +85,20 @@ export const fr: TranslationKeys = {
   'dashboard.recentTransactions': 'Transactions r\u00e9centes',
   'dashboard.noRecentTransactions': 'Aucune transaction r\u00e9cente',
   'dashboard.viewAll': 'Voir tout',
-  'dashboard.budgetAlerts': 'Alertes budget',
+  'dashboard.budgetAlerts': 'Alertes de budget',
   'dashboard.exceeded': 'D\u00e9pass\u00e9',
   'dashboard.savingsGoals': "Objectifs d'\u00e9pargne",
+  'dashboard.greeting': 'Bonjour,',
+  'dashboard.subtitle': 'R\u00e9sum\u00e9 de vos finances',
+  'dashboard.today': "Aujourd'hui",
+  'dashboard.balance': 'Solde',
+  'dashboard.savings': '\u00c9pargne',
+  'dashboard.allTimeBalance': 'Solde total',
+  'dashboard.expensesByCategory': 'D\u00e9penses par cat\u00e9gorie',
+  'dashboard.viewAllTransactions': 'Voir toutes les transactions',
+  'dashboard.noExpenseData': 'Aucune donn\u00e9e de d\u00e9penses pour cette p\u00e9riode',
+  'dashboard.noBudgets': 'Aucun budget configur\u00e9',
+  'dashboard.budgetsOk': 'Tous vos budgets sont en ordre',
 
   // Transactions
   'transactions.title': 'Transactions',
@@ -208,4 +220,10 @@ export const fr: TranslationKeys = {
   // Chart
   'chart.income': 'Revenus',
   'chart.expenses': 'D\u00e9penses',
+
+  // Email Verification
+  'verifyEmail.success': 'Votre e-mail a \u00e9t\u00e9 v\u00e9rifi\u00e9 avec succ\u00e8s. Vous pouvez maintenant vous connecter.',
+  'verifyEmail.invalidToken': 'Token de v\u00e9rification invalide ou expir\u00e9.',
+  'verifyEmail.goToLogin': 'Aller \u00e0 la connexion',
+  'register.verifyEmail': 'Nous vous avons envoy\u00e9 un e-mail de v\u00e9rification. Veuillez v\u00e9rifier votre bo\u00eete de r\u00e9ception.',
 };

@@ -1,4 +1,5 @@
 import { Injectable, Inject, ConflictException } from '@nestjs/common';
+import { randomUUID } from 'crypto';
 import {
   USER_REPOSITORY,
   IUserRepository,
@@ -10,6 +11,8 @@ import {
 import { RegisterDto } from '../dto/register.dto';
 import { hashPassword } from '../../../../shared/utils/hash.util';
 import { User } from '../../../users/domain/entities/user.entity';
+import { PrismaService } from '../../../../shared/infrastructure/prisma.service';
+import { EmailService } from '../../../../shared/services/email.service';
 
 @Injectable()
 export class RegisterUseCase {
@@ -17,6 +20,8 @@ export class RegisterUseCase {
     @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository,
     @Inject(CATEGORY_REPOSITORY)
     private readonly categoryRepository: ICategoryRepository,
+    private readonly prisma: PrismaService,
+    private readonly emailService: EmailService,
   ) {}
 
   async execute(dto: RegisterDto): Promise<User> {
@@ -36,6 +41,19 @@ export class RegisterUseCase {
     });
 
     await this.categoryRepository.createDefaultCategories(user.id);
+
+    const verificationToken = randomUUID();
+    const expiresAt = new Date(Date.now() + 24 * 3600000); // 24 hours
+
+    await this.prisma.emailVerificationToken.create({
+      data: {
+        userId: user.id,
+        token: verificationToken,
+        expiresAt,
+      },
+    });
+
+    await this.emailService.sendVerificationEmail(user.email, verificationToken);
 
     return user;
   }

@@ -27,6 +27,7 @@ export const es = {
   'common.expense': 'Gasto',
   'common.incomes': 'Ingresos',
   'common.expenses': 'Gastos',
+  'common.of': 'de',
 
   // Nav
   'nav.dashboard': 'Dashboard',
@@ -87,6 +88,17 @@ export const es = {
   'dashboard.budgetAlerts': 'Alertas de presupuesto',
   'dashboard.exceeded': 'Excedido',
   'dashboard.savingsGoals': 'Metas de ahorro',
+  'dashboard.greeting': 'Hola,',
+  'dashboard.subtitle': 'Resumen de tus finanzas',
+  'dashboard.today': 'Hoy',
+  'dashboard.balance': 'Balance',
+  'dashboard.savings': 'Ahorros',
+  'dashboard.allTimeBalance': 'Balance total',
+  'dashboard.expensesByCategory': 'Gastos por categoría',
+  'dashboard.viewAllTransactions': 'Ver todas las transacciones',
+  'dashboard.noExpenseData': 'No hay datos de gastos para este periodo',
+  'dashboard.noBudgets': 'No hay presupuestos configurados',
+  'dashboard.budgetsOk': 'Todos tus presupuestos están en orden',
 
   // Transactions
   'transactions.title': 'Transacciones',
@@ -208,4 +220,10 @@ export const es = {
   // Chart
   'chart.income': 'Ingresos',
   'chart.expenses': 'Gastos',
+
+  // Email Verification
+  'verifyEmail.success': 'Tu correo ha sido verificado exitosamente. Ya puedes iniciar sesión.',
+  'verifyEmail.invalidToken': 'Token de verificación inválido o expirado.',
+  'verifyEmail.goToLogin': 'Ir al inicio de sesión',
+  'register.verifyEmail': 'Te hemos enviado un correo de verificación. Por favor revisa tu bandeja de entrada.',
 } as const;

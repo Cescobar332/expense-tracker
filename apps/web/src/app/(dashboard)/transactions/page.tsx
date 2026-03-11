@@ -6,6 +6,7 @@ import { useAuthStore } from '../../../lib/stores/auth-store';
 import { transactionsApi } from '../../../lib/api/transactions';
 import { categoriesApi } from '../../../lib/api/categories';
 import { savingsApi } from '../../../lib/api/savings';
+import { reportsApi } from '../../../lib/api/reports';
 import { Button } from '../../../components/ui/button';
 import { Card } from '../../../components/ui/card';
 import { Input } from '../../../components/ui/input';
@@ -13,7 +14,7 @@ import { CurrencyInput } from '../../../components/ui/currency-input';
 import { Select } from '../../../components/ui/select';
 import { Modal } from '../../../components/ui/modal';
 import { EmptyState } from '../../../components/ui/empty-state';
-import { formatCurrency, formatDate, formatDateInput } from '../../../lib/utils/format';
+import { formatCurrency, formatDate, formatDateInput, getMonthRange } from '../../../lib/utils/format';
 import { getCategoryIcon } from '../../../lib/utils/category-icons';
 import { Transaction, TransactionFilters } from '../../../types';
 import { useTranslation } from '../../../lib/i18n';
@@ -57,6 +58,13 @@ export default function TransactionsPage() {
     queryFn: () => savingsApi.getAll(),
   });
   const activeSavingsGoals = savingsGoals.filter((g: any) => !g.isCompleted);
+
+  const { startDate: monthStart, endDate: monthEnd } = getMonthRange(new Date());
+  const { data: currentMonthReport } = useQuery({
+    queryKey: ['report', monthStart, monthEnd],
+    queryFn: () => reportsApi.getSummary({ startDate: monthStart, endDate: monthEnd }),
+  });
+  const availableMoney = (currentMonthReport?.summary?.totalIncome || 0) - (currentMonthReport?.summary?.totalExpenses || 0);
 
   const createMutation = useMutation({
     mutationFn: (data: Parameters<typeof transactionsApi.create>[0]) => transactionsApi.create(data),
@@ -332,6 +340,12 @@ export default function TransactionsPage() {
       {/* Savings Modal */}
       <Modal isOpen={showSavingsModal} onClose={() => setShowSavingsModal(false)} title={t['transactions.addSavings']}>
         <form onSubmit={(e) => { e.preventDefault(); if (selectedGoalId && savingsAmount) addSavingsMutation.mutate({ id: selectedGoalId, amount: Number.parseFloat(savingsAmount) }); }} className="space-y-4">
+          <div className="p-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)]">
+            <p className="text-sm text-[var(--color-text-secondary)]">{t['savings.availableThisMonth']}</p>
+            <p className={`text-lg font-bold ${availableMoney >= 0 ? 'text-[var(--color-success)]' : 'text-[var(--color-danger)]'}`}>
+              {formatCurrency(availableMoney, currency)}
+            </p>
+          </div>
           <Select
             label={t['transactions.savingsGoal']}
             options={activeSavingsGoals.map((g: any) => ({ value: g.id, label: g.name }))}

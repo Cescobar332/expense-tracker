@@ -27,6 +27,7 @@ export const pt: TranslationKeys = {
   'common.expense': 'Despesa',
   'common.incomes': 'Receitas',
   'common.expenses': 'Despesas',
+  'common.of': 'de',
 
   // Nav
   'nav.dashboard': 'Painel',
@@ -87,6 +88,17 @@ export const pt: TranslationKeys = {
   'dashboard.budgetAlerts': 'Alertas de or\u00e7amento',
   'dashboard.exceeded': 'Excedido',
   'dashboard.savingsGoals': 'Metas de poupan\u00e7a',
+  'dashboard.greeting': 'Ol\u00e1,',
+  'dashboard.subtitle': 'Resumo das suas finan\u00e7as',
+  'dashboard.today': 'Hoje',
+  'dashboard.balance': 'Saldo',
+  'dashboard.savings': 'Poupan\u00e7as',
+  'dashboard.allTimeBalance': 'Saldo total',
+  'dashboard.expensesByCategory': 'Despesas por categoria',
+  'dashboard.viewAllTransactions': 'Ver todas as transa\u00e7\u00f5es',
+  'dashboard.noExpenseData': 'Sem dados de despesas para este per\u00edodo',
+  'dashboard.noBudgets': 'Nenhum or\u00e7amento configurado',
+  'dashboard.budgetsOk': 'Todos os seus or\u00e7amentos est\u00e3o em dia',
 
   // Transactions
   'transactions.title': 'Transa\u00e7\u00f5es',
@@ -208,4 +220,10 @@ export const pt: TranslationKeys = {
   // Chart
   'chart.income': 'Receitas',
   'chart.expenses': 'Despesas',
+
+  // Email Verification
+  'verifyEmail.success': 'Seu e-mail foi verificado com sucesso. Você já pode fazer login.',
+  'verifyEmail.invalidToken': 'Token de verificação inválido ou expirado.',
+  'verifyEmail.goToLogin': 'Ir para o login',
+  'register.verifyEmail': 'Enviamos um e-mail de verificação. Verifique sua caixa de entrada.',
 };

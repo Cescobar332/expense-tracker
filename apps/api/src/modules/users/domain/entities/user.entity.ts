@@ -7,6 +7,7 @@ export class User {
   readonly currency: string;
   readonly language: string;
   readonly isActive: boolean;
+  readonly isEmailVerified: boolean;
   readonly createdAt: Date;
   readonly updatedAt: Date;
 
@@ -19,6 +20,7 @@ export class User {
     currency: string;
     language: string;
     isActive: boolean;
+    isEmailVerified: boolean;
     createdAt: Date;
     updatedAt: Date;
   }) {
@@ -30,6 +32,7 @@ export class User {
     this.currency = props.currency;
     this.language = props.language;
     this.isActive = props.isActive;
+    this.isEmailVerified = props.isEmailVerified;
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
   }

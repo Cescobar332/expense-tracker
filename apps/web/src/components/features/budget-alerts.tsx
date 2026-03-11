@@ -2,6 +2,7 @@
 
 import { Budget } from '../../types';
 import { formatCurrency } from '../../lib/utils/format';
+import { useTranslation } from '../../lib/i18n';
 
 interface Props {
   budgets: Budget[];
@@ -9,10 +10,12 @@ interface Props {
 }
 
 export function BudgetAlerts({ budgets, currency }: Readonly<Props>) {
+  const { t } = useTranslation();
+
   if (budgets.length === 0) {
     return (
       <p className="text-[var(--color-text-secondary)] text-sm py-4 text-center">
-        No hay presupuestos configurados
+        {t['dashboard.noBudgets']}
       </p>
     );
   }
@@ -27,7 +30,7 @@ export function BudgetAlerts({ budgets, currency }: Readonly<Props>) {
         <svg className="w-12 h-12 text-[var(--color-success)] mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
-        <p className="text-sm text-[var(--color-text-secondary)]">Todos tus presupuestos están en orden</p>
+        <p className="text-sm text-[var(--color-text-secondary)]">{t['dashboard.budgetsOk']}</p>
       </div>
     );
   }
@@ -41,7 +44,7 @@ export function BudgetAlerts({ budgets, currency }: Readonly<Props>) {
           <div key={b.id} className="p-3 rounded-lg border border-[var(--color-border)]">
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm font-medium text-[var(--color-text)]">
-                {b.category?.name || 'Presupuesto'}
+                {b.category?.name || t['budgets.title']}
               </span>
               <span className={`text-xs font-semibold ${isOver ? 'text-[var(--color-danger)]' : 'text-[var(--color-warning)]'}`}>
                 {pct}%
@@ -54,7 +57,7 @@ export function BudgetAlerts({ budgets, currency }: Readonly<Props>) {
               />
             </div>
             <p className="text-xs text-[var(--color-text-secondary)] mt-1">
-              {formatCurrency(b.spent || 0, currency)} de {formatCurrency(Number(b.amount), currency)}
+              {formatCurrency(b.spent || 0, currency)} {t['common.of']} {formatCurrency(Number(b.amount), currency)}
             </p>
           </div>
         );

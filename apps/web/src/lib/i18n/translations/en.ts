@@ -27,6 +27,7 @@ export const en: TranslationKeys = {
   'common.expense': 'Expense',
   'common.incomes': 'Income',
   'common.expenses': 'Expenses',
+  'common.of': 'of',
 
   // Nav
   'nav.dashboard': 'Dashboard',
@@ -87,6 +88,17 @@ export const en: TranslationKeys = {
   'dashboard.budgetAlerts': 'Budget alerts',
   'dashboard.exceeded': 'Exceeded',
   'dashboard.savingsGoals': 'Savings goals',
+  'dashboard.greeting': 'Hello,',
+  'dashboard.subtitle': 'Your financial summary',
+  'dashboard.today': 'Today',
+  'dashboard.balance': 'Balance',
+  'dashboard.savings': 'Savings',
+  'dashboard.allTimeBalance': 'Total balance',
+  'dashboard.expensesByCategory': 'Expenses by category',
+  'dashboard.viewAllTransactions': 'View all transactions',
+  'dashboard.noExpenseData': 'No expense data for this period',
+  'dashboard.noBudgets': 'No budgets configured',
+  'dashboard.budgetsOk': 'All your budgets are on track',
 
   // Transactions
   'transactions.title': 'Transactions',
@@ -208,4 +220,10 @@ export const en: TranslationKeys = {
   // Chart
   'chart.income': 'Income',
   'chart.expenses': 'Expenses',
+
+  // Email Verification
+  'verifyEmail.success': 'Your email has been verified successfully. You can now sign in.',
+  'verifyEmail.invalidToken': 'Invalid or expired verification token.',
+  'verifyEmail.goToLogin': 'Go to login',
+  'register.verifyEmail': 'We have sent you a verification email. Please check your inbox.',
 };

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Transaction } from '../../types';
 import { formatCurrency, formatDate } from '../../lib/utils/format';
 import { getCategoryIcon } from '../../lib/utils/category-icons';
+import { useTranslation } from '../../lib/i18n';
 
 interface Props {
   transactions: Transaction[];
@@ -11,41 +12,43 @@ interface Props {
 }
 
 export function RecentTransactions({ transactions, currency }: Readonly<Props>) {
+  const { t } = useTranslation();
+
   if (transactions.length === 0) {
     return (
       <p className="text-[var(--color-text-secondary)] text-sm py-4 text-center">
-        No hay transacciones recientes
+        {t['dashboard.noRecentTransactions']}
       </p>
     );
   }
 
   return (
     <div className="space-y-2">
-      {transactions.map((t) => (
-        <div key={t.id} className="flex items-center justify-between py-3 border-b border-[var(--color-border)] last:border-0">
+      {transactions.map((tx) => (
+        <div key={tx.id} className="flex items-center justify-between py-3 border-b border-[var(--color-border)] last:border-0">
           <div className="flex items-center gap-3 min-w-0">
             <div
               className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-medium flex-shrink-0"
-              style={{ backgroundColor: t.category?.color || '#6366f1' }}
+              style={{ backgroundColor: tx.category?.color || '#6366f1' }}
             >
-              {getCategoryIcon(t.category?.icon, t.category?.name, t.type)}
+              {getCategoryIcon(tx.category?.icon, tx.category?.name, tx.type)}
             </div>
             <div className="min-w-0">
               <p className="text-sm font-medium text-[var(--color-text)] truncate">
-                {t.description || t.category?.name || 'Sin descripción'}
+                {tx.description || tx.category?.name || t['transactions.noDescription']}
               </p>
-              <p className="text-xs text-[var(--color-text-secondary)]">{formatDate(t.date)}</p>
+              <p className="text-xs text-[var(--color-text-secondary)]">{formatDate(tx.date)}</p>
             </div>
           </div>
           <span className={`text-sm font-semibold flex-shrink-0 ml-2 ${
-            t.type === 'INCOME' ? 'text-[var(--color-success)]' : 'text-[var(--color-danger)]'
+            tx.type === 'INCOME' ? 'text-[var(--color-success)]' : 'text-[var(--color-danger)]'
           }`}>
-            {t.type === 'INCOME' ? '+' : '-'}{formatCurrency(Number(t.amount), currency)}
+            {tx.type === 'INCOME' ? '+' : '-'}{formatCurrency(Number(tx.amount), currency)}
           </span>
         </div>
       ))}
       <Link href="/transactions" className="block text-center text-sm text-[var(--color-primary)] hover:underline py-2">
-        Ver todas las transacciones
+        {t['dashboard.viewAllTransactions']}
       </Link>
     </div>
   );

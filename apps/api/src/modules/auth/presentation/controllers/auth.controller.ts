@@ -6,11 +6,13 @@ import { LoginDto } from '../../application/dto/login.dto';
 import { RefreshTokenDto } from '../../application/dto/refresh-token.dto';
 import { ForgotPasswordDto } from '../../application/dto/forgot-password.dto';
 import { ResetPasswordDto } from '../../application/dto/reset-password.dto';
+import { VerifyEmailDto } from '../../application/dto/verify-email.dto';
 import { RegisterUseCase } from '../../application/use-cases/register.use-case';
 import { LoginUseCase } from '../../application/use-cases/login.use-case';
 import { RefreshTokenUseCase } from '../../application/use-cases/refresh-token.use-case';
 import { ForgotPasswordUseCase } from '../../application/use-cases/forgot-password.use-case';
 import { ResetPasswordUseCase } from '../../application/use-cases/reset-password.use-case';
+import { VerifyEmailUseCase } from '../../application/use-cases/verify-email.use-case';
 import { AuthResponseDto } from '../../application/dto/auth-response.dto';
 import { UserResponseDto } from '../../../users/application/dto/user-response.dto';
 
@@ -23,6 +25,7 @@ export class AuthController {
     private readonly refreshTokenUseCase: RefreshTokenUseCase,
     private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
     private readonly resetPasswordUseCase: ResetPasswordUseCase,
+    private readonly verifyEmailUseCase: VerifyEmailUseCase,
   ) {}
 
   @Post('register')
@@ -73,5 +76,15 @@ export class AuthController {
   async resetPassword(@Body() dto: ResetPasswordDto) {
     await this.resetPasswordUseCase.execute(dto.token, dto.newPassword);
     return { message: 'Password has been reset successfully' };
+  }
+
+  @Post('verify-email')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Verificar email' })
+  @ApiResponse({ status: 200, description: 'Email verificado exitosamente' })
+  @ApiResponse({ status: 400, description: 'Token inválido o expirado' })
+  async verifyEmail(@Body() dto: VerifyEmailDto) {
+    await this.verifyEmailUseCase.execute(dto.token);
+    return { message: 'Email verified successfully' };
   }
 }
