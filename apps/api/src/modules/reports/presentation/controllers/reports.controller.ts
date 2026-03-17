@@ -18,18 +18,17 @@ export class ReportsController {
 
   @Get()
   @ApiOperation({ summary: 'Obtener reporte unificado' })
-  @ApiQuery({ name: 'startDate', required: true })
-  @ApiQuery({ name: 'endDate', required: true })
+  @ApiQuery({ name: 'startDate', required: false })
+  @ApiQuery({ name: 'endDate', required: false })
   async getReport(
     @Request() req: AuthenticatedRequest,
-    @Query('startDate') startDate: string,
-    @Query('endDate') endDate: string,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
   ) {
-    return this.reportUseCase.getUnifiedReport(
-      req.user.userId,
-      new Date(startDate),
-      new Date(endDate),
-    );
+    // If no dates provided, use all-time range (from year 2000 to 2100)
+    const start = startDate ? new Date(startDate) : new Date('2000-01-01');
+    const end = endDate ? new Date(endDate) : new Date('2100-12-31');
+    return this.reportUseCase.getUnifiedReport(req.user.userId, start, end);
   }
 
   @Get('dashboard')

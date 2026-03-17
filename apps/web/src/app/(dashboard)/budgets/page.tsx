@@ -208,7 +208,7 @@ export default function BudgetsPage() {
           </div>
           <div className="relative">
             <Input label={t['budgets.alertAt']} type="number" min="1" max="100" value={form.alertAt} onChange={(e) => setForm((f) => ({ ...f, alertAt: e.target.value }))} className="pr-8" />
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-text-secondary)] text-sm pointer-events-none">%</span>
+            <span className="absolute right-3 top-[40px] text-[var(--color-text-secondary)] text-sm pointer-events-none">%</span>
           </div>
           <div className="flex gap-3 pt-2">
             <Button type="button" variant="secondary" fullWidth onClick={closeModal}>{t['common.cancel']}</Button>
