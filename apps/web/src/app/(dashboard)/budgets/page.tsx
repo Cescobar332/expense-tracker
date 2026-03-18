@@ -130,6 +130,8 @@ export default function BudgetsPage() {
           const pct = b.percentage || 0;
           const isOver = pct >= 100;
           const isWarning = pct >= (b.alertAt || 80);
+          const formattedSpent = formatCurrency(b.spent || 0, currency);
+          const formattedAmount = formatCurrency(Number(b.amount), currency);
           let barColor = 'bg-[var(--color-success)]';
           if (isOver) barColor = 'bg-[var(--color-danger)]';
           else if (isWarning) barColor = 'bg-[var(--color-warning)]';
@@ -156,8 +158,8 @@ export default function BudgetsPage() {
               </div>
               <div className="mb-2">
                 <div className="flex justify-between text-sm mb-1">
-                  <span className="text-[var(--color-text-secondary)]">{formatCurrency(b.spent || 0, currency)}</span>
-                  <span className="font-medium text-[var(--color-text)]">{formatCurrency(Number(b.amount), currency)}</span>
+                  <span className="text-[var(--color-text-secondary)] truncate" title={formattedSpent}>{formattedSpent}</span>
+                  <span className="font-medium text-[var(--color-text)] truncate ml-2" title={formattedAmount}>{formattedAmount}</span>
                 </div>
                 <div className="w-full bg-[var(--color-border)] rounded-full h-3">
                   <div className={`h-3 rounded-full transition-all ${barColor}`} style={{ width: `${Math.min(pct, 100)}%` }} />

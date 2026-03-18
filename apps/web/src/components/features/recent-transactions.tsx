@@ -24,29 +24,37 @@ export function RecentTransactions({ transactions, currency }: Readonly<Props>) 
 
   return (
     <div className="space-y-2">
-      {transactions.map((tx) => (
-        <div key={tx.id} className="flex items-center justify-between py-3 border-b border-[var(--color-border)] last:border-0">
-          <div className="flex items-center gap-3 min-w-0">
-            <div
-              className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-medium flex-shrink-0"
-              style={{ backgroundColor: tx.category?.color || '#6366f1' }}
+      {transactions.map((tx) => {
+        const description = tx.description || tx.category?.name || t['transactions.noDescription'];
+        const formattedAmount = `${tx.type === 'INCOME' ? '+' : '-'}${formatCurrency(Number(tx.amount), currency)}`;
+
+        return (
+          <div key={tx.id} className="flex items-center justify-between gap-2 py-3 border-b border-[var(--color-border)] last:border-0">
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+              <div
+                className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-medium flex-shrink-0"
+                style={{ backgroundColor: tx.category?.color || '#6366f1' }}
+              >
+                {getCategoryIcon(tx.category?.icon, tx.category?.name, tx.type)}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium text-[var(--color-text)] truncate" title={description}>
+                  {description}
+                </p>
+                <p className="text-xs text-[var(--color-text-secondary)]">{formatDate(tx.date)}</p>
+              </div>
+            </div>
+            <span
+              className={`text-sm font-semibold flex-shrink-0 ${
+                tx.type === 'INCOME' ? 'text-[var(--color-success)]' : 'text-[var(--color-danger)]'
+              }`}
+              title={formattedAmount}
             >
-              {getCategoryIcon(tx.category?.icon, tx.category?.name, tx.type)}
-            </div>
-            <div className="min-w-0">
-              <p className="text-sm font-medium text-[var(--color-text)] truncate">
-                {tx.description || tx.category?.name || t['transactions.noDescription']}
-              </p>
-              <p className="text-xs text-[var(--color-text-secondary)]">{formatDate(tx.date)}</p>
-            </div>
+              {formattedAmount}
+            </span>
           </div>
-          <span className={`text-sm font-semibold flex-shrink-0 ml-2 ${
-            tx.type === 'INCOME' ? 'text-[var(--color-success)]' : 'text-[var(--color-danger)]'
-          }`}>
-            {tx.type === 'INCOME' ? '+' : '-'}{formatCurrency(Number(tx.amount), currency)}
-          </span>
-        </div>
-      ))}
+        );
+      })}
       <Link href="/transactions" className="block text-center text-sm text-[var(--color-primary)] hover:underline py-2">
         {t['dashboard.viewAllTransactions']}
       </Link>

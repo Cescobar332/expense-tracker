@@ -138,6 +138,8 @@ export default function SavingsPage() {
           const target = Number(g.targetAmount);
           const current = Number(g.currentAmount);
           const pct = target > 0 ? Math.min(Math.round((current / target) * 100), 100) : 0;
+          const formattedCurrent = formatCurrency(current, currency);
+          const formattedTarget = formatCurrency(target, currency);
           return (
             <Card key={g.id}>
               <div className="flex items-start justify-between mb-3">
@@ -158,8 +160,8 @@ export default function SavingsPage() {
               </div>
 
               <div className="text-center mb-3">
-                <p className="text-2xl font-bold text-[var(--color-primary)]">{formatCurrency(current, currency)}</p>
-                <p className="text-sm text-[var(--color-text-secondary)]">de {formatCurrency(target, currency)}</p>
+                <p className="text-2xl font-bold text-[var(--color-primary)] truncate" title={formattedCurrent}>{formattedCurrent}</p>
+                <p className="text-sm text-[var(--color-text-secondary)] truncate" title={`de ${formattedTarget}`}>de {formattedTarget}</p>
               </div>
 
               <div className="w-full bg-[var(--color-border)] rounded-full h-3 mb-2">

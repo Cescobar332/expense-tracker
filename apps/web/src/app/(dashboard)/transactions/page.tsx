@@ -174,40 +174,48 @@ export default function TransactionsPage() {
     }
     return (
       <div className="divide-y divide-[var(--color-border)]">
-        {transactions.map((tx) => (
-          <div key={tx.id} className="flex items-center justify-between p-3 sm:p-4 hover:bg-[var(--color-bg)] transition-colors overflow-hidden gap-2">
-            <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-              <div
-                className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white text-xs sm:text-sm font-medium flex-shrink-0"
-                style={{ backgroundColor: tx.category?.color || '#6366f1' }}
-              >
-                {getCategoryIcon(tx.category?.icon, tx.category?.name, tx.type)}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-xs sm:text-sm font-medium text-[var(--color-text)] truncate">
-                  {tx.description || tx.category?.name || t['transactions.noDescription']}
-                </p>
-                <div className="flex items-center gap-1 sm:gap-2 mt-0.5 flex-wrap">
-                  <span className="text-xs text-[var(--color-text-secondary)]">{formatDate(tx.date)}</span>
-                  <span className={`text-xs px-1 sm:px-1.5 py-0.5 rounded ${tx.type === 'INCOME' ? 'bg-[var(--color-success)]/10 text-[var(--color-success)]' : 'bg-[var(--color-danger)]/10 text-[var(--color-danger)]'}`}>
-                    {tx.type === 'INCOME' ? t['common.income'] : t['common.expense']}
-                  </span>
+        {transactions.map((tx) => {
+          const description = tx.description || tx.category?.name || t['transactions.noDescription'];
+          const formattedAmount = `${tx.type === 'INCOME' ? '+' : '-'}${formatCurrency(Number(tx.amount), currency)}`;
+
+          return (
+            <div key={tx.id} className="flex items-center justify-between p-3 sm:p-4 hover:bg-[var(--color-bg)] transition-colors overflow-hidden gap-2">
+              <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                <div
+                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white text-xs sm:text-sm font-medium flex-shrink-0"
+                  style={{ backgroundColor: tx.category?.color || '#6366f1' }}
+                >
+                  {getCategoryIcon(tx.category?.icon, tx.category?.name, tx.type)}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs sm:text-sm font-medium text-[var(--color-text)] truncate" title={description}>
+                    {description}
+                  </p>
+                  <div className="flex items-center gap-1 sm:gap-2 mt-0.5 flex-wrap">
+                    <span className="text-xs text-[var(--color-text-secondary)]">{formatDate(tx.date)}</span>
+                    <span className={`text-xs px-1 sm:px-1.5 py-0.5 rounded ${tx.type === 'INCOME' ? 'bg-[var(--color-success)]/10 text-[var(--color-success)]' : 'bg-[var(--color-danger)]/10 text-[var(--color-danger)]'}`}>
+                      {tx.type === 'INCOME' ? t['common.income'] : t['common.expense']}
+                    </span>
+                  </div>
                 </div>
               </div>
+              <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                <span
+                  className={`text-xs sm:text-sm font-semibold whitespace-nowrap ${tx.type === 'INCOME' ? 'text-[var(--color-success)]' : 'text-[var(--color-danger)]'}`}
+                  title={formattedAmount}
+                >
+                  {formattedAmount}
+                </span>
+                <button onClick={() => openEdit(tx)} className="p-1.5 sm:p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] min-h-[36px] sm:min-h-[44px] min-w-[36px] sm:min-w-[44px] flex items-center justify-center" aria-label={t['common.edit']}>
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                </button>
+                <button onClick={() => setDeleteConfirm(tx.id)} className="p-1.5 sm:p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-danger)] min-h-[36px] sm:min-h-[44px] min-w-[36px] sm:min-w-[44px] flex items-center justify-center" aria-label={t['common.delete']}>
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                </button>
+              </div>
             </div>
-            <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-              <span className={`text-xs sm:text-sm font-semibold whitespace-nowrap ${tx.type === 'INCOME' ? 'text-[var(--color-success)]' : 'text-[var(--color-danger)]'}`}>
-                {tx.type === 'INCOME' ? '+' : '-'}{formatCurrency(Number(tx.amount), currency)}
-              </span>
-              <button onClick={() => openEdit(tx)} className="p-1.5 sm:p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] min-h-[36px] sm:min-h-[44px] min-w-[36px] sm:min-w-[44px] flex items-center justify-center" aria-label={t['common.edit']}>
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-              </button>
-              <button onClick={() => setDeleteConfirm(tx.id)} className="p-1.5 sm:p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-danger)] min-h-[36px] sm:min-h-[44px] min-w-[36px] sm:min-w-[44px] flex items-center justify-center" aria-label={t['common.delete']}>
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-              </button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     );
   };
