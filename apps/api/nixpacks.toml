@@ -11,4 +11,4 @@ cmds = ["npx prisma generate", "npm run build"]
 dependsOn = ["install"]
 
 [start]
-cmd = "npx prisma migrate deploy && npm run start:prod"
+cmd = "npm run start:prod"
