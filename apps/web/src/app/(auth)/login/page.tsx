@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthStore } from '../../../lib/stores/auth-store';
@@ -10,7 +10,7 @@ import { Input } from '../../../components/ui/input';
 import { LogoWithText } from '../../../components/ui/logo';
 import { useTranslation } from '../../../lib/i18n';
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { setAuth } = useAuthStore();
@@ -33,11 +33,88 @@ export default function LoginPage() {
       setAuth(data.user, data.accessToken, data.refreshToken);
       router.push('/dashboard');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al iniciar sesi\u00F3n');
+      setError(err instanceof Error ? err.message : 'Error al iniciar sesión');
     } finally {
       setLoading(false);
     }
   };
+
+  return (
+    <div className="bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] shadow-sm p-6 md:p-8">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {registered && (
+          <div className="p-3 rounded-lg border text-sm" style={{ backgroundColor: 'rgba(34,197,94,0.1)', color: 'var(--color-success)', borderColor: 'rgba(34,197,94,0.3)' }}>
+            {t['login.accountCreated']}
+          </div>
+        )}
+
+        {passwordReset && (
+          <div className="p-3 rounded-lg border text-sm" style={{ backgroundColor: 'rgba(34,197,94,0.1)', color: 'var(--color-success)', borderColor: 'rgba(34,197,94,0.3)' }}>
+            {t['login.passwordReset']}
+          </div>
+        )}
+
+        {error && (
+          <div className="p-3 rounded-lg border text-sm" style={{ backgroundColor: 'rgba(239,68,68,0.1)', color: 'var(--color-danger)', borderColor: 'rgba(239,68,68,0.3)' }}>
+            {error}
+          </div>
+        )}
+
+        <Input
+          label={t['login.email']}
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder={t['login.emailPlaceholder']}
+          required
+          autoComplete="email"
+        />
+
+        <Input
+          label={t['login.password']}
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder={t['login.passwordPlaceholder']}
+          required
+          autoComplete="current-password"
+        />
+
+        <div className="text-right">
+          <Link href="/forgot-password" className="text-sm text-[var(--color-primary)] hover:underline font-medium">
+            {t['login.forgotPassword']}
+          </Link>
+        </div>
+
+        <Button type="submit" fullWidth loading={loading}>
+          {t['login.submit']}
+        </Button>
+      </form>
+
+      <p className="mt-6 text-center text-sm text-[var(--color-text-secondary)]">
+        {t['login.noAccount']}{' '}
+        <Link href="/register" className="text-[var(--color-primary)] hover:underline font-medium">
+          {t['login.register']}
+        </Link>
+      </p>
+    </div>
+  );
+}
+
+function LoginFormFallback() {
+  return (
+    <div className="bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] shadow-sm p-6 md:p-8">
+      <div className="space-y-4 animate-pulse">
+        <div className="h-10 bg-[var(--color-border)] rounded" />
+        <div className="h-10 bg-[var(--color-border)] rounded" />
+        <div className="h-10 bg-[var(--color-border)] rounded" />
+      </div>
+    </div>
+  );
+}
+
+export default function LoginPage() {
+  const { t } = useTranslation();
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-[var(--color-bg)]">
@@ -48,64 +125,9 @@ export default function LoginPage() {
           <p className="mt-2 text-[var(--color-text-secondary)]">{t['login.subtitle']}</p>
         </div>
 
-        <div className="bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] shadow-sm p-6 md:p-8">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {registered && (
-              <div className="p-3 rounded-lg border text-sm" style={{ backgroundColor: 'rgba(34,197,94,0.1)', color: 'var(--color-success)', borderColor: 'rgba(34,197,94,0.3)' }}>
-                {t['login.accountCreated']}
-              </div>
-            )}
-
-            {passwordReset && (
-              <div className="p-3 rounded-lg border text-sm" style={{ backgroundColor: 'rgba(34,197,94,0.1)', color: 'var(--color-success)', borderColor: 'rgba(34,197,94,0.3)' }}>
-                {t['login.passwordReset']}
-              </div>
-            )}
-
-            {error && (
-              <div className="p-3 rounded-lg border text-sm" style={{ backgroundColor: 'rgba(239,68,68,0.1)', color: 'var(--color-danger)', borderColor: 'rgba(239,68,68,0.3)' }}>
-                {error}
-              </div>
-            )}
-
-            <Input
-              label={t['login.email']}
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder={t['login.emailPlaceholder']}
-              required
-              autoComplete="email"
-            />
-
-            <Input
-              label={t['login.password']}
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder={t['login.passwordPlaceholder']}
-              required
-              autoComplete="current-password"
-            />
-
-            <div className="text-right">
-              <Link href="/forgot-password" className="text-sm text-[var(--color-primary)] hover:underline font-medium">
-                {t['login.forgotPassword']}
-              </Link>
-            </div>
-
-            <Button type="submit" fullWidth loading={loading}>
-              {t['login.submit']}
-            </Button>
-          </form>
-
-          <p className="mt-6 text-center text-sm text-[var(--color-text-secondary)]">
-            {t['login.noAccount']}{' '}
-            <Link href="/register" className="text-[var(--color-primary)] hover:underline font-medium">
-              {t['login.register']}
-            </Link>
-          </p>
-        </div>
+        <Suspense fallback={<LoginFormFallback />}>
+          <LoginForm />
+        </Suspense>
       </div>
     </div>
   );
