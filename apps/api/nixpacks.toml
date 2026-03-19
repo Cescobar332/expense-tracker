@@ -1,11 +1,15 @@
 [phases.setup]
-nixPkgs = ["nodejs_20"]
+nixPkgs = ["nodejs_20", "npm"]
 
 [phases.install]
-cmds = ["npm install"]
+cmds = ["npm install --legacy-peer-deps"]
 
 [phases.build]
 cmds = ["npx prisma generate", "npm run build"]
 
 [start]
-cmd = "npm run start:prod"
+cmd = "npx prisma migrate deploy && npm run start:prod"
+
+[variables]
+NPM_CONFIG_LEGACY_PEER_DEPS = "true"
+NIXPACKS_NO_PNPM = "1"
