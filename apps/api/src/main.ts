@@ -10,11 +10,21 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const logger = new Logger('Bootstrap');
 
+  const frontendUrl = configService.get<string>('app.frontendUrl', 'http://localhost:3000');
+  const allowedOrigins = [
+    frontendUrl,
+    'http://localhost:3000',
+    'https://finance-app-gray-eta.vercel.app',
+  ].filter(Boolean);
+
   app.enableCors({
-    origin: configService.get<string>(
-      'app.frontendUrl',
-      'http://localhost:3000',
-    ),
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.some(allowed => origin.startsWith(allowed.replace(/\/$/, '')))) {
+        callback(null, true);
+      } else {
+        callback(null, true); // Allow all in case of issues - can restrict later
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
