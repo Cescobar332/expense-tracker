@@ -1,6 +1,7 @@
 import { Injectable, Inject, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { randomUUID } from 'crypto';
 import {
   USER_REPOSITORY,
   IUserRepository,
@@ -12,7 +13,6 @@ import {
 import { LoginDto } from '../dto/login.dto';
 import { AuthResponseDto } from '../dto/auth-response.dto';
 import { comparePassword } from '../../../../shared/utils/hash.util';
-import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class LoginUseCase {
@@ -47,7 +47,7 @@ export class LoginUseCase {
     const payload = { sub: user.id, email: user.email };
     const accessToken = this.jwtService.sign(payload);
 
-    const refreshToken = uuidv4();
+    const refreshToken = randomUUID();
     const refreshExpDays = Number.parseInt(
       this.configService
         .get<string>('jwt.refreshExpiration', '7')
