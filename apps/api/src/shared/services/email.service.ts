@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class EmailService {
+  private readonly logger = new Logger(EmailService.name);
   private transporter: nodemailer.Transporter;
 
   constructor() {
@@ -15,9 +16,25 @@ export class EmailService {
         pass: process.env.SMTP_PASS,
       },
     });
+
+    // Verify connection on startup
+    this.transporter
+      .verify()
+      .then(() => this.logger.log('SMTP connection verified successfully'))
+      .catch((err) => this.logger.error('SMTP connection failed', err.message));
   }
 
-  async sendPasswordResetEmail(to: string, token: string, lang = 'es'): Promise<void> {
+  private getFromAddress(): string {
+    // Gmail requires the from address to match the authenticated user
+    const smtpUser = process.env.SMTP_USER;
+    return `"FinanceApp" <${smtpUser}>`;
+  }
+
+  async sendPasswordResetEmail(
+    to: string,
+    token: string,
+    lang = 'es',
+  ): Promise<void> {
     const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${token}`;
 
     const subjects: Record<string, string> = {
@@ -35,14 +52,20 @@ export class EmailService {
     };
 
     await this.transporter.sendMail({
-      from: process.env.SMTP_FROM || '"FinanceApp" <noreply@financeapp.com>',
+      from: this.getFromAddress(),
       to,
       subject: subjects[lang] || subjects.es,
       html: bodies[lang] || bodies.es,
     });
+
+    this.logger.log(`Password reset email sent to ${to}`);
   }
 
-  async sendVerificationEmail(to: string, token: string, lang = 'es'): Promise<void> {
+  async sendVerificationEmail(
+    to: string,
+    token: string,
+    lang = 'es',
+  ): Promise<void> {
     const verifyUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email?token=${token}`;
 
     const subjects: Record<string, string> = {
@@ -60,10 +83,12 @@ export class EmailService {
     };
 
     await this.transporter.sendMail({
-      from: process.env.SMTP_FROM || '"FinanceApp" <noreply@financeapp.com>',
+      from: this.getFromAddress(),
       to,
       subject: subjects[lang] || subjects.es,
       html: bodies[lang] || bodies.es,
     });
+
+    this.logger.log(`Verification email sent to ${to}`);
   }
 }
