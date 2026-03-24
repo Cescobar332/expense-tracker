@@ -56,8 +56,14 @@ export class RegisterUseCase {
     });
 
     // Send email in background (fire-and-forget) to not block the response
-    this.emailService.sendVerificationEmail(user.email, verificationToken)
-      .catch(err => this.logger.error(`Failed to send verification email to ${user.email}`, err));
+    this.emailService
+      .sendVerificationEmail(user.email, verificationToken)
+      .catch((err) =>
+        this.logger.error(
+          `Failed to send verification email to ${user.email}`,
+          err,
+        ),
+      );
 
     return user;
   }

@@ -13,7 +13,9 @@ export class ForgotPasswordUseCase {
   ) {}
 
   async execute(email: string): Promise<void> {
-    const user = await this.prisma.user.findUnique({ where: { email: email.toLowerCase().trim() } });
+    const user = await this.prisma.user.findUnique({
+      where: { email: email.toLowerCase().trim() },
+    });
 
     // Always return success to prevent email enumeration
     if (!user) return;
@@ -36,7 +38,13 @@ export class ForgotPasswordUseCase {
     });
 
     // Send email in background (fire-and-forget) to not block the response
-    this.emailService.sendPasswordResetEmail(user.email, token, user.language)
-      .catch(err => this.logger.error(`Failed to send password reset email to ${user.email}`, err));
+    this.emailService
+      .sendPasswordResetEmail(user.email, token, user.language)
+      .catch((err) =>
+        this.logger.error(
+          `Failed to send password reset email to ${user.email}`,
+          err,
+        ),
+      );
   }
 }
