@@ -7,10 +7,16 @@ export class EmailService {
   private transporter: nodemailer.Transporter;
 
   constructor() {
+    const port = Number(process.env.SMTP_PORT) || 465;
+    const isSecure = port === 465;
+
     this.transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST || 'smtp.gmail.com',
-      port: Number(process.env.SMTP_PORT) || 587,
-      secure: false,
+      port,
+      secure: isSecure, // true for 465, false for 587
+      connectionTimeout: 10000, // 10 seconds
+      greetingTimeout: 10000,
+      socketTimeout: 15000,
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
@@ -20,7 +26,7 @@ export class EmailService {
     // Verify connection on startup
     this.transporter
       .verify()
-      .then(() => this.logger.log('SMTP connection verified successfully'))
+      .then(() => this.logger.log(`SMTP connection verified (port ${port}, secure: ${isSecure})`))
       .catch((err) => this.logger.error('SMTP connection failed', err.message));
   }
 
