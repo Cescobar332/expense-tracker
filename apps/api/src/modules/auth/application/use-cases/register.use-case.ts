@@ -1,4 +1,4 @@
-import { Injectable, Inject, ConflictException } from '@nestjs/common';
+import { Injectable, Inject, ConflictException, Logger } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import {
   USER_REPOSITORY,
@@ -16,6 +16,8 @@ import { EmailService } from '../../../../shared/services/email.service';
 
 @Injectable()
 export class RegisterUseCase {
+  private readonly logger = new Logger(RegisterUseCase.name);
+
   constructor(
     @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository,
     @Inject(CATEGORY_REPOSITORY)
@@ -53,7 +55,9 @@ export class RegisterUseCase {
       },
     });
 
-    await this.emailService.sendVerificationEmail(user.email, verificationToken);
+    // Send email in background (fire-and-forget) to not block the response
+    this.emailService.sendVerificationEmail(user.email, verificationToken)
+      .catch(err => this.logger.error(`Failed to send verification email to ${user.email}`, err));
 
     return user;
   }

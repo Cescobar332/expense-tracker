@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../../../shared/infrastructure/prisma.service';
 import { EmailService } from '../../../../shared/services/email.service';
 import { randomUUID } from 'crypto';
 
 @Injectable()
 export class ForgotPasswordUseCase {
+  private readonly logger = new Logger(ForgotPasswordUseCase.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly emailService: EmailService,
@@ -33,6 +35,8 @@ export class ForgotPasswordUseCase {
       },
     });
 
-    await this.emailService.sendPasswordResetEmail(user.email, token, user.language);
+    // Send email in background (fire-and-forget) to not block the response
+    this.emailService.sendPasswordResetEmail(user.email, token, user.language)
+      .catch(err => this.logger.error(`Failed to send password reset email to ${user.email}`, err));
   }
 }
