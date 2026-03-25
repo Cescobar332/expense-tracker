@@ -1,43 +1,118 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import * as dns from 'dns';
-
-// Force IPv4 for all DNS lookups (Railway doesn't support IPv6 outbound)
-dns.setDefaultResultOrder('ipv4first');
+import * as tls from 'tls';
 
 @Injectable()
-export class EmailService {
+export class EmailService implements OnModuleInit {
   private readonly logger = new Logger(EmailService.name);
-  private transporter: nodemailer.Transporter;
+  private smtpConfig: {
+    host: string;
+    port: number;
+    secure: boolean;
+    user: string;
+    pass: string;
+  };
 
   constructor() {
     const port = Number(process.env.SMTP_PORT) || 465;
-    const isSecure = port === 465;
-
-    this.transporter = nodemailer.createTransport({
+    this.smtpConfig = {
       host: process.env.SMTP_HOST || 'smtp.gmail.com',
       port,
-      secure: isSecure, // true for 465, false for 587
-      connectionTimeout: 10000, // 10 seconds
-      greetingTimeout: 10000,
-      socketTimeout: 15000,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
+      secure: port === 465,
+      user: process.env.SMTP_USER || '',
+      pass: process.env.SMTP_PASS || '',
+    };
+  }
+
+  async onModuleInit() {
+    // Test SMTP connection on startup
+    try {
+      const transporter = await this.createTransporter();
+      await transporter.verify();
+      this.logger.log(
+        `SMTP connection verified (port ${this.smtpConfig.port}, secure: ${this.smtpConfig.secure})`,
+      );
+      transporter.close();
+    } catch (err) {
+      this.logger.error('SMTP connection failed', (err as Error).message);
+    }
+  }
+
+  private resolveIPv4(hostname: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      dns.resolve4(hostname, (err, addresses) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        if (addresses.length === 0) {
+          reject(new Error(`No IPv4 address found for ${hostname}`));
+          return;
+        }
+        const address = addresses[0];
+        this.logger.debug(`Resolved ${hostname} to ${address} (IPv4)`);
+        resolve(address);
+      });
+    });
+  }
+
+  private async createTransporter(): Promise<nodemailer.Transporter> {
+    const { host, port, secure, user, pass } = this.smtpConfig;
+
+    // Resolve hostname to IPv4 address to bypass IPv6 issues on Railway
+    let ipAddress: string;
+    try {
+      ipAddress = await this.resolveIPv4(host);
+    } catch {
+      this.logger.warn(`IPv4 resolution failed for ${host}, using hostname directly`);
+      ipAddress = host;
+    }
+
+    // Create custom TLS socket for secure connection
+    if (secure) {
+      return new Promise((resolve, reject) => {
+        const socket = tls.connect(
+          {
+            host: ipAddress,
+            port,
+            servername: host, // For TLS certificate validation
+          },
+          () => {
+            const transporter = nodemailer.createTransport({
+              host,
+              port,
+              secure: true,
+              auth: { user, pass },
+              socket, // Use our pre-connected IPv4 socket
+            } as nodemailer.TransportOptions);
+            resolve(transporter);
+          },
+        );
+
+        socket.on('error', reject);
+        socket.setTimeout(10000, () => {
+          socket.destroy();
+          reject(new Error('Socket connection timeout'));
+        });
+      });
+    }
+
+    // For non-secure connections, use standard transporter with resolved IP
+    return nodemailer.createTransport({
+      host: ipAddress,
+      port,
+      secure: false,
+      auth: { user, pass },
+      tls: {
+        servername: host,
       },
     });
-
-    // Verify connection on startup
-    this.transporter
-      .verify()
-      .then(() => this.logger.log(`SMTP connection verified (port ${port}, secure: ${isSecure})`))
-      .catch((err) => this.logger.error('SMTP connection failed', err.message));
   }
 
   private getFromAddress(): string {
     // Gmail requires the from address to match the authenticated user
-    const smtpUser = process.env.SMTP_USER;
-    return `"FinanceApp" <${smtpUser}>`;
+    return `"FinanceApp" <${this.smtpConfig.user}>`;
   }
 
   async sendPasswordResetEmail(
@@ -61,14 +136,18 @@ export class EmailService {
       fr: `<h2>Recuperation de mot de passe</h2><p>Cliquez sur le lien suivant pour reinitialiser votre mot de passe :</p><a href="${resetUrl}">${resetUrl}</a><p>Ce lien expire dans 1 heure.</p>`,
     };
 
-    await this.transporter.sendMail({
-      from: this.getFromAddress(),
-      to,
-      subject: subjects[lang] || subjects.es,
-      html: bodies[lang] || bodies.es,
-    });
-
-    this.logger.log(`Password reset email sent to ${to}`);
+    const transporter = await this.createTransporter();
+    try {
+      await transporter.sendMail({
+        from: this.getFromAddress(),
+        to,
+        subject: subjects[lang] || subjects.es,
+        html: bodies[lang] || bodies.es,
+      });
+      this.logger.log(`Password reset email sent to ${to}`);
+    } finally {
+      transporter.close();
+    }
   }
 
   async sendVerificationEmail(
@@ -92,13 +171,17 @@ export class EmailService {
       fr: `<h2>Vérification d'e-mail</h2><p>Cliquez sur le lien suivant pour vérifier votre adresse e-mail :</p><a href="${verifyUrl}">${verifyUrl}</a><p>Ce lien expire dans 24 heures.</p>`,
     };
 
-    await this.transporter.sendMail({
-      from: this.getFromAddress(),
-      to,
-      subject: subjects[lang] || subjects.es,
-      html: bodies[lang] || bodies.es,
-    });
-
-    this.logger.log(`Verification email sent to ${to}`);
+    const transporter = await this.createTransporter();
+    try {
+      await transporter.sendMail({
+        from: this.getFromAddress(),
+        to,
+        subject: subjects[lang] || subjects.es,
+        html: bodies[lang] || bodies.es,
+      });
+      this.logger.log(`Verification email sent to ${to}`);
+    } finally {
+      transporter.close();
+    }
   }
 }
