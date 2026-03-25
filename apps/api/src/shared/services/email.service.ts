@@ -14,6 +14,7 @@ export class EmailService {
       host: process.env.SMTP_HOST || 'smtp.gmail.com',
       port,
       secure: isSecure, // true for 465, false for 587
+      family: 4, // Force IPv4 (Railway doesn't support IPv6 outbound)
       connectionTimeout: 10000, // 10 seconds
       greetingTimeout: 10000,
       socketTimeout: 15000,
