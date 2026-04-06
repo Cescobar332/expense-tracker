@@ -1,4 +1,6 @@
-import { Injectable, Inject, ConflictException, Logger } from '@nestjs/common';
+import { Injectable, Inject, ConflictException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
 import {
   USER_REPOSITORY,
@@ -8,25 +10,27 @@ import {
   CATEGORY_REPOSITORY,
   ICategoryRepository,
 } from '../../../categories/domain/repositories/category.repository.interface';
+import {
+  REFRESH_TOKEN_REPOSITORY,
+  IRefreshTokenRepository,
+} from '../../domain/repositories/refresh-token.repository.interface';
 import { RegisterDto } from '../dto/register.dto';
+import { AuthResponseDto } from '../dto/auth-response.dto';
 import { hashPassword } from '../../../../shared/utils/hash.util';
-import { User } from '../../../users/domain/entities/user.entity';
-import { PrismaService } from '../../../../shared/infrastructure/prisma.service';
-import { EmailService } from '../../../../shared/services/email.service';
 
 @Injectable()
 export class RegisterUseCase {
-  private readonly logger = new Logger(RegisterUseCase.name);
-
   constructor(
     @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository,
     @Inject(CATEGORY_REPOSITORY)
     private readonly categoryRepository: ICategoryRepository,
-    private readonly prisma: PrismaService,
-    private readonly emailService: EmailService,
+    @Inject(REFRESH_TOKEN_REPOSITORY)
+    private readonly refreshTokenRepo: IRefreshTokenRepository,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
-  async execute(dto: RegisterDto): Promise<User> {
+  async execute(dto: RegisterDto): Promise<AuthResponseDto> {
     const existingUser = await this.userRepository.findByEmail(dto.email);
     if (existingUser) {
       throw new ConflictException('El email ya está registrado');
@@ -44,27 +48,37 @@ export class RegisterUseCase {
 
     await this.categoryRepository.createDefaultCategories(user.id);
 
-    const verificationToken = randomUUID();
-    const expiresAt = new Date(Date.now() + 24 * 3600000); // 24 hours
+    // Generate tokens (skip email verification for now)
+    const payload = { sub: user.id, email: user.email };
+    const accessToken = this.jwtService.sign(payload);
 
-    await this.prisma.emailVerificationToken.create({
-      data: {
-        userId: user.id,
-        token: verificationToken,
-        expiresAt,
-      },
+    const refreshToken = randomUUID();
+    const refreshExpDays = Number.parseInt(
+      this.configService
+        .get<string>('jwt.refreshExpiration', '7')
+        .replace('d', ''),
+      10,
+    );
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + refreshExpDays);
+
+    await this.refreshTokenRepo.create({
+      userId: user.id,
+      token: refreshToken,
+      expiresAt,
     });
 
-    // Send email in background (fire-and-forget) to not block the response
-    this.emailService
-      .sendVerificationEmail(user.email, verificationToken)
-      .catch((err) =>
-        this.logger.error(
-          `Failed to send verification email to ${user.email}`,
-          err,
-        ),
-      );
-
-    return user;
+    return {
+      accessToken,
+      refreshToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        currency: user.currency,
+        language: user.language,
+      },
+    };
   }
 }

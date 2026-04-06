@@ -2,8 +2,13 @@ import { api, apiRequest } from './client';
 import { AuthResponse, User } from '../../types';
 
 export const authApi = {
-  register: (data: { email: string; password: string; firstName: string; lastName: string; currency?: string }) =>
-    apiRequest<User>('/auth/register', { method: 'POST', body: data }),
+  register: (data: {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    currency?: string;
+  }) => apiRequest<AuthResponse>('/auth/register', { method: 'POST', body: data }),
 
   login: (data: { email: string; password: string }) =>
     apiRequest<AuthResponse>('/auth/login', { method: 'POST', body: data }),
@@ -13,14 +18,18 @@ export const authApi = {
 
   getProfile: () => api.get<User>('/users/profile'),
 
-  updateProfile: (data: { firstName?: string; lastName?: string; currency?: string; language?: string }) =>
-    api.patch<User>('/users/profile', data),
+  updateProfile: (data: {
+    firstName?: string;
+    lastName?: string;
+    currency?: string;
+    language?: string;
+  }) => api.patch<User>('/users/profile', data),
 
   updateCurrency: (newCurrency: string) =>
-    api.patch<{ user: User; convertedCounts: { transactions: number; budgets: number; savings: number } }>(
-      '/users/currency',
-      { newCurrency },
-    ),
+    api.patch<{
+      user: User;
+      convertedCounts: { transactions: number; budgets: number; savings: number };
+    }>('/users/currency', { newCurrency }),
 
   forgotPassword: (email: string) =>
     apiRequest('/auth/forgot-password', { method: 'POST', body: { email } }),

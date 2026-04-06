@@ -14,7 +14,6 @@ import { ForgotPasswordUseCase } from '../../application/use-cases/forgot-passwo
 import { ResetPasswordUseCase } from '../../application/use-cases/reset-password.use-case';
 import { VerifyEmailUseCase } from '../../application/use-cases/verify-email.use-case';
 import { AuthResponseDto } from '../../application/dto/auth-response.dto';
-import { UserResponseDto } from '../../../users/application/dto/user-response.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -33,9 +32,8 @@ export class AuthController {
   @ApiOperation({ summary: 'Registrar nuevo usuario' })
   @ApiResponse({ status: 201, description: 'Usuario registrado exitosamente' })
   @ApiResponse({ status: 409, description: 'El email ya está registrado' })
-  async register(@Body() dto: RegisterDto): Promise<UserResponseDto> {
-    const user = await this.registerUseCase.execute(dto);
-    return UserResponseDto.fromEntity(user);
+  async register(@Body() dto: RegisterDto): Promise<AuthResponseDto> {
+    return this.registerUseCase.execute(dto);
   }
 
   @Post('login')
@@ -61,7 +59,10 @@ export class AuthController {
   @Throttle({ default: { limit: 3, ttl: 60000 } })
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Solicitar recuperación de contraseña' })
-  @ApiResponse({ status: 200, description: 'Si el email existe, se envía enlace de recuperación' })
+  @ApiResponse({
+    status: 200,
+    description: 'Si el email existe, se envía enlace de recuperación',
+  })
   async forgotPassword(@Body() dto: ForgotPasswordDto) {
     await this.forgotPasswordUseCase.execute(dto.email);
     return { message: 'If the email exists, a recovery link has been sent' };
@@ -71,7 +72,10 @@ export class AuthController {
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Restablecer contraseña' })
-  @ApiResponse({ status: 200, description: 'Contraseña restablecida exitosamente' })
+  @ApiResponse({
+    status: 200,
+    description: 'Contraseña restablecida exitosamente',
+  })
   @ApiResponse({ status: 400, description: 'Token inválido o expirado' })
   async resetPassword(@Body() dto: ResetPasswordDto) {
     await this.resetPasswordUseCase.execute(dto.token, dto.newPassword);
