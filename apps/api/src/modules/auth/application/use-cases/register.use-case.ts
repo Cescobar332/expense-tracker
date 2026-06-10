@@ -1,4 +1,4 @@
-import { Injectable, Inject, ConflictException } from '@nestjs/common';
+import { Injectable, Inject, ConflictException, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
@@ -17,9 +17,13 @@ import {
 import { RegisterDto } from '../dto/register.dto';
 import { AuthResponseDto } from '../dto/auth-response.dto';
 import { hashPassword } from '../../../../shared/utils/hash.util';
+import { PrismaService } from '../../../../shared/infrastructure/prisma.service';
+import { EmailService } from '../../../../shared/services/email.service';
 
 @Injectable()
 export class RegisterUseCase {
+  private readonly logger = new Logger(RegisterUseCase.name);
+
   constructor(
     @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository,
     @Inject(CATEGORY_REPOSITORY)
@@ -28,10 +32,13 @@ export class RegisterUseCase {
     private readonly refreshTokenRepo: IRefreshTokenRepository,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly prisma: PrismaService,
+    private readonly emailService: EmailService,
   ) {}
 
   async execute(dto: RegisterDto): Promise<AuthResponseDto> {
-    const existingUser = await this.userRepository.findByEmail(dto.email);
+    const normalizedEmail = dto.email.toLowerCase().trim();
+    const existingUser = await this.userRepository.findByEmail(normalizedEmail);
     if (existingUser) {
       throw new ConflictException('El email ya está registrado');
     }
@@ -39,7 +46,7 @@ export class RegisterUseCase {
     const passwordHash = await hashPassword(dto.password);
 
     const user = await this.userRepository.create({
-      email: dto.email.toLowerCase().trim(),
+      email: normalizedEmail,
       passwordHash,
       firstName: dto.firstName.trim(),
       lastName: dto.lastName.trim(),
@@ -48,7 +55,26 @@ export class RegisterUseCase {
 
     await this.categoryRepository.createDefaultCategories(user.id);
 
-    // Generate tokens (skip email verification for now)
+    const verificationToken = randomUUID();
+    const verificationExpiresAt = new Date(Date.now() + 24 * 3600000);
+
+    await this.prisma.emailVerificationToken.create({
+      data: {
+        userId: user.id,
+        token: verificationToken,
+        expiresAt: verificationExpiresAt,
+      },
+    });
+
+    this.emailService
+      .sendVerificationEmail(user.email, verificationToken, user.language)
+      .catch((err) =>
+        this.logger.error(
+          `Failed to send verification email to ${user.email}`,
+          err,
+        ),
+      );
+
     const payload = { sub: user.id, email: user.email };
     const accessToken = this.jwtService.sign(payload);
 

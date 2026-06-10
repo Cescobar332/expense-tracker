@@ -45,7 +45,7 @@ A full-stack personal finance management application built with modern web techn
 ### Infrastructure
 
 - **Frontend Hosting**: Vercel
-- **Backend Hosting**: Railway
+- **Backend Hosting**: Railway / Render / Fly.io / Cloud Run
 - **Database**: Supabase (PostgreSQL)
 - **Monorepo**: pnpm workspaces
 
@@ -112,12 +112,19 @@ JWT_REFRESH_EXPIRATION=7d
 PORT=3001
 FRONTEND_URL=http://localhost:3000
 
-# Email (optional for development)
+# Email provider
+EMAIL_PROVIDER=smtp
+
+# Email (SMTP for local development)
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_USER=your-email@gmail.com
 SMTP_PASS=your-app-password
-SMTP_FROM="FinanceApp" <noreply@financeapp.com>
+SMTP_FROM="FinanceApp" <your-email@gmail.com>
+
+# Alternative provider for production
+RESEND_API_KEY=
+EMAIL_FROM="FinanceApp" <noreply@financeapp.com>
 ```
 
 #### Frontend (`apps/web/.env.local`)
@@ -193,13 +200,16 @@ npx prisma studio           # Open database GUI
 
 ## Deployment
 
-### Backend (Railway)
+### Backend
 
-1. Create a new project in [Railway](https://railway.app)
-2. Connect your GitHub repository
-3. Set root directory to `apps/api`
-4. Add environment variables (see above)
-5. Deploy
+The NestJS backend is a long-running Node server, so it fits better on [Railway](https://railway.app), [Render](https://render.com), [Fly.io](https://fly.io) or [Google Cloud Run](https://cloud.google.com/run).
+
+Vercel can host the frontend without issue, but the backend would need a serverless rewrite to live there as-is. For this codebase, keeping backend and frontend separated is the least risky path.
+
+1. Create a backend service on one of the platforms above.
+2. Point it at `apps/api`.
+3. Add the environment variables from the section above.
+4. Run the Prisma migrations against Supabase.
 
 ### Frontend (Vercel)
 
