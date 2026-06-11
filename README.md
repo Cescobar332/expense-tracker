@@ -123,6 +123,7 @@ SMTP_PASS=your-app-password
 SMTP_FROM="FinanceApp" <your-email@gmail.com>
 
 # Alternative provider for production
+# Set EMAIL_PROVIDER=resend in Render/Vercel previews or any non-SMTP host
 RESEND_API_KEY=
 EMAIL_FROM="FinanceApp" <noreply@financeapp.com>
 ```

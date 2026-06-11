@@ -1,6 +1,11 @@
 import { useAuthStore } from '../stores/auth-store';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+function normalizeApiBaseUrl(rawUrl: string): string {
+  const trimmedUrl = rawUrl.replace(/\/$/, '');
+  return trimmedUrl.endsWith('/api') ? trimmedUrl : `${trimmedUrl}/api`;
+}
+
+const API_URL = normalizeApiBaseUrl(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api');
 
 interface RequestOptions extends Omit<RequestInit, 'body'> {
   body?: unknown;
@@ -35,7 +40,9 @@ async function makeRequest(url: string, options: RequestInit): Promise<Response>
   try {
     return await fetch(url, options);
   } catch {
-    throw new Error('No se pudo conectar con el servidor. Verifica que el backend esté en ejecución.');
+    throw new Error(
+      'No se pudo conectar con el servidor. Verifica que el backend esté en ejecución.',
+    );
   }
 }
 
@@ -46,7 +53,7 @@ export async function apiRequest<T>(endpoint: string, options: RequestOptions = 
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...customHeaders as Record<string, string>,
+    ...(customHeaders as Record<string, string>),
   };
 
   if (accessToken) {
