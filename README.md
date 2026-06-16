@@ -113,7 +113,12 @@ PORT=3001
 FRONTEND_URL=http://localhost:3000
 
 # Email provider
-EMAIL_PROVIDER=resend
+EMAIL_PROVIDER=brevo
+
+# Brevo configuration (recommended for production)
+BREVO_API_KEY=your-brevo-api-key
+BREVO_SENDER_NAME=FinanceApp
+BREVO_SENDER_EMAIL=your-email@gmail.com
 
 # Resend configuration for local or production use
 RESEND_API_KEY=your-resend-api-key

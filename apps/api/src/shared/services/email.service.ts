@@ -3,7 +3,7 @@ import * as nodemailer from 'nodemailer';
 import * as dns from 'node:dns';
 import * as tls from 'node:tls';
 
-type EmailProvider = 'smtp' | 'resend' | 'disabled';
+type EmailProvider = 'smtp' | 'resend' | 'brevo' | 'disabled';
 
 @Injectable()
 export class EmailService implements OnModuleInit {
@@ -19,11 +19,20 @@ export class EmailService implements OnModuleInit {
   };
   private readonly resendApiKey: string;
   private readonly resendFrom: string;
+  private readonly brevoApiKey: string;
+  private readonly brevoSenderName: string;
+  private readonly brevoSenderEmail: string;
 
   constructor() {
     const configuredProvider = (process.env.EMAIL_PROVIDER || '').toLowerCase();
-    if (configuredProvider === 'resend' || configuredProvider === 'disabled') {
+    if (
+      configuredProvider === 'resend' ||
+      configuredProvider === 'brevo' ||
+      configuredProvider === 'disabled'
+    ) {
       this.provider = configuredProvider;
+    } else if (process.env.BREVO_API_KEY) {
+      this.provider = 'brevo';
     } else if (process.env.RESEND_API_KEY) {
       this.provider = 'resend';
     } else {
@@ -41,6 +50,9 @@ export class EmailService implements OnModuleInit {
     };
     this.resendApiKey = process.env.RESEND_API_KEY || '';
     this.resendFrom = process.env.EMAIL_FROM || process.env.RESEND_FROM || '';
+    this.brevoApiKey = process.env.BREVO_API_KEY || '';
+    this.brevoSenderName = process.env.BREVO_SENDER_NAME || 'FinanceApp';
+    this.brevoSenderEmail = process.env.BREVO_SENDER_EMAIL || '';
   }
 
   async onModuleInit() {
@@ -55,6 +67,17 @@ export class EmailService implements OnModuleInit {
       } else {
         this.logger.warn(
           'Resend provider selected but RESEND_API_KEY is missing',
+        );
+      }
+      return;
+    }
+
+    if (this.provider === 'brevo') {
+      if (this.brevoApiKey && this.brevoSenderEmail) {
+        this.logger.log('Brevo email provider configured');
+      } else {
+        this.logger.warn(
+          'Brevo provider selected but BREVO_API_KEY or BREVO_SENDER_EMAIL is missing',
         );
       }
       return;
@@ -188,6 +211,40 @@ export class EmailService implements OnModuleInit {
     }
   }
 
+  private async sendViaBrevo(to: string, subject: string, html: string) {
+    if (!this.brevoApiKey) {
+      throw new Error('BREVO_API_KEY is not configured');
+    }
+
+    if (!this.brevoSenderEmail) {
+      throw new Error('BREVO_SENDER_EMAIL is not configured');
+    }
+
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'api-key': this.brevoApiKey,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        sender: {
+          name: this.brevoSenderName,
+          email: this.brevoSenderEmail,
+        },
+        to: [{ email: to }],
+        subject,
+        htmlContent: html,
+      }),
+    });
+
+    if (!response.ok) {
+      const responseText = await response.text();
+      throw new Error(
+        `Brevo request failed (${response.status}): ${responseText}`,
+      );
+    }
+  }
+
   private async sendEmail(to: string, subject: string, html: string) {
     if (this.provider === 'disabled') {
       throw new Error('Email provider is disabled');
@@ -195,6 +252,11 @@ export class EmailService implements OnModuleInit {
 
     if (this.provider === 'resend') {
       await this.sendViaResend(to, subject, html);
+      return;
+    }
+
+    if (this.provider === 'brevo') {
+      await this.sendViaBrevo(to, subject, html);
       return;
     }
 
