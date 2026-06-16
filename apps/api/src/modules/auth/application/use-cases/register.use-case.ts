@@ -1,6 +1,4 @@
 import { Injectable, Inject, ConflictException, Logger } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
 import {
   USER_REPOSITORY,
@@ -10,12 +8,8 @@ import {
   CATEGORY_REPOSITORY,
   ICategoryRepository,
 } from '../../../categories/domain/repositories/category.repository.interface';
-import {
-  REFRESH_TOKEN_REPOSITORY,
-  IRefreshTokenRepository,
-} from '../../domain/repositories/refresh-token.repository.interface';
 import { RegisterDto } from '../dto/register.dto';
-import { AuthResponseDto } from '../dto/auth-response.dto';
+import { RegisterResponseDto } from '../dto/register-response.dto';
 import { hashPassword } from '../../../../shared/utils/hash.util';
 import { PrismaService } from '../../../../shared/infrastructure/prisma.service';
 import { EmailService } from '../../../../shared/services/email.service';
@@ -28,15 +22,11 @@ export class RegisterUseCase {
     @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository,
     @Inject(CATEGORY_REPOSITORY)
     private readonly categoryRepository: ICategoryRepository,
-    @Inject(REFRESH_TOKEN_REPOSITORY)
-    private readonly refreshTokenRepo: IRefreshTokenRepository,
-    private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
     private readonly prisma: PrismaService,
     private readonly emailService: EmailService,
   ) {}
 
-  async execute(dto: RegisterDto): Promise<AuthResponseDto> {
+  async execute(dto: RegisterDto): Promise<RegisterResponseDto> {
     const normalizedEmail = dto.email.toLowerCase().trim();
     const existingUser = await this.userRepository.findByEmail(normalizedEmail);
     if (existingUser) {
@@ -75,36 +65,9 @@ export class RegisterUseCase {
         ),
       );
 
-    const payload = { sub: user.id, email: user.email };
-    const accessToken = this.jwtService.sign(payload);
-
-    const refreshToken = randomUUID();
-    const refreshExpDays = Number.parseInt(
-      this.configService
-        .get<string>('jwt.refreshExpiration', '7')
-        .replace('d', ''),
-      10,
-    );
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + refreshExpDays);
-
-    await this.refreshTokenRepo.create({
-      userId: user.id,
-      token: refreshToken,
-      expiresAt,
-    });
-
     return {
-      accessToken,
-      refreshToken,
-      user: {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        currency: user.currency,
-        language: user.language,
-      },
+      message:
+        'Te hemos enviado un correo de verificación. Por favor revisa tu bandeja de entrada.',
     };
   }
 }

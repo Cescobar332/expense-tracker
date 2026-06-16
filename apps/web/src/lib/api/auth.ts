@@ -1,5 +1,5 @@
 import { api, apiRequest } from './client';
-import { AuthResponse, User } from '../../types';
+import { AuthResponse, RegisterResponse, User } from '../../types';
 
 export const authApi = {
   register: (data: {
@@ -8,7 +8,7 @@ export const authApi = {
     firstName: string;
     lastName: string;
     currency?: string;
-  }) => apiRequest<AuthResponse>('/auth/register', { method: 'POST', body: data }),
+  }) => apiRequest<RegisterResponse>('/auth/register', { method: 'POST', body: data }),
 
   login: (data: { email: string; password: string }) =>
     apiRequest<AuthResponse>('/auth/login', { method: 'POST', body: data }),

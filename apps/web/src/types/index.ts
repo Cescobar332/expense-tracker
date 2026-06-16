@@ -13,6 +13,10 @@ export interface AuthResponse {
   user: User;
 }
 
+export interface RegisterResponse {
+  message: string;
+}
+
 export interface Category {
   id: string;
   userId: string;
@@ -78,7 +82,14 @@ export interface DashboardSummary {
 
 export interface ReportData {
   summary: DashboardSummary;
-  byCategory: { categoryId: string; categoryName: string; color: string; type: string; total: number; percentage: number }[];
+  byCategory: {
+    categoryId: string;
+    categoryName: string;
+    color: string;
+    type: string;
+    total: number;
+    percentage: number;
+  }[];
   trend: { date: string; income: number; expenses: number }[];
 }
 

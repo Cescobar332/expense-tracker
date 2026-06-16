@@ -36,6 +36,12 @@ export class LoginUseCase {
       throw new UnauthorizedException('Cuenta desactivada');
     }
 
+    if (!user.isEmailVerified) {
+      throw new UnauthorizedException(
+        'Debes verificar tu correo antes de iniciar sesión',
+      );
+    }
+
     const isPasswordValid = await comparePassword(
       dto.password,
       user.passwordHash,

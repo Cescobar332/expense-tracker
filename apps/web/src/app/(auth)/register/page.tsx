@@ -2,9 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { authApi } from '../../../lib/api/auth';
-import { useAuthStore } from '../../../lib/stores/auth-store';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { LogoWithText } from '../../../components/ui/logo';
@@ -13,8 +11,6 @@ import { useTranslation } from '../../../lib/i18n';
 
 export default function RegisterPage() {
   const { t } = useTranslation();
-  const router = useRouter();
-  const setAuth = useAuthStore((state) => state.setAuth);
   const [form, setForm] = useState({
     firstName: '',
     lastName: '',
@@ -23,6 +19,7 @@ export default function RegisterPage() {
     confirmPassword: '',
   });
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
 
   const updateField = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -31,6 +28,7 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
 
     if (form.password !== form.confirmPassword) {
       setError(t['register.passwordMismatch']);
@@ -58,9 +56,14 @@ export default function RegisterPage() {
         email: form.email,
         password: form.password,
       });
-      // Save auth and redirect to dashboard
-      setAuth(response.user, response.accessToken, response.refreshToken);
-      router.push('/dashboard');
+      setSuccess(response.message || t['register.verifyEmail']);
+      setForm({
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al registrar');
     } finally {
@@ -91,6 +94,19 @@ export default function RegisterPage() {
                 }}
               >
                 {error}
+              </div>
+            )}
+
+            {success && (
+              <div
+                className="p-3 rounded-lg border text-sm"
+                style={{
+                  backgroundColor: 'rgba(34,197,94,0.1)',
+                  color: 'var(--color-success)',
+                  borderColor: 'rgba(34,197,94,0.3)',
+                }}
+              >
+                {success}
               </div>
             )}
 
