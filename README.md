@@ -113,19 +113,13 @@ PORT=3001
 FRONTEND_URL=http://localhost:3000
 
 # Email provider
-EMAIL_PROVIDER=smtp
+EMAIL_PROVIDER=resend
 
-# Email (SMTP for local development)
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=your-email@gmail.com
-SMTP_PASS=your-app-password
-SMTP_FROM="FinanceApp" <your-email@gmail.com>
-
-# Alternative provider for production
-# Set EMAIL_PROVIDER=resend in Render/Vercel previews or any non-SMTP host
-RESEND_API_KEY=
+# Resend configuration for local or production use
+RESEND_API_KEY=your-resend-api-key
 EMAIL_FROM="FinanceApp" <noreply@financeapp.com>
+
+# If you need SMTP locally, switch EMAIL_PROVIDER=smtp and add SMTP_* values
 ```
 
 #### Frontend (`apps/web/.env.local`)
