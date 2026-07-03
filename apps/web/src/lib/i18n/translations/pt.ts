@@ -116,10 +116,15 @@ export const pt: TranslationKeys = {
   'transactions.descriptionPlaceholder': 'Ex: Compra no supermercado',
   'transactions.noDescription': 'Sem descri\u00e7\u00e3o',
   'transactions.deleteTitle': 'Excluir transa\u00e7\u00e3o',
-  'transactions.deleteConfirm': 'Tem certeza que deseja excluir esta transa\u00e7\u00e3o? Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.',
+  'transactions.deleteConfirm':
+    'Tem certeza que deseja excluir esta transa\u00e7\u00e3o? Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.',
   'transactions.addSavings': 'Adicionar poupan\u00e7a',
   'transactions.savingsGoal': 'Meta de poupan\u00e7a',
   'transactions.selectGoal': 'Selecione uma meta',
+  'transactions.paginationShowing': 'Mostrando',
+  'transactions.paginationPrevious': 'Anterior',
+  'transactions.paginationNext': 'Pr\u00f3xima',
+  'transactions.paginationPage': 'Pagina',
 
   // Categories
   'categories.title': 'Categorias',
@@ -132,7 +137,8 @@ export const pt: TranslationKeys = {
   'categories.namePlaceholder': 'Ex: Alimenta\u00e7\u00e3o, Transporte',
   'categories.deleteTitle': 'Excluir categoria',
   'categories.deleteConfirm': 'Tem certeza que deseja excluir esta categoria?',
-  'categories.deleteWarning': 'As transa\u00e7\u00f5es associadas n\u00e3o ser\u00e3o exclu\u00eddas, mas ficar\u00e3o sem categoria.',
+  'categories.deleteWarning':
+    'As transa\u00e7\u00f5es associadas n\u00e3o ser\u00e3o exclu\u00eddas, mas ficar\u00e3o sem categoria.',
   'categories.icon': '\u00cdcone',
 
   // Budgets
@@ -204,12 +210,14 @@ export const pt: TranslationKeys = {
   'register.passwordFair': 'Regular',
   'register.passwordGood': 'Boa',
   'register.passwordStrong': 'Forte',
-  'register.passwordRequirements': 'A senha deve conter mai\u00fascula, min\u00fascula, n\u00famero e caractere especial',
+  'register.passwordRequirements':
+    'A senha deve conter mai\u00fascula, min\u00fascula, n\u00famero e caractere especial',
 
   // Forgot/Reset Password
   'forgotPassword.subtitle': 'Recupere o acesso \u00e0 sua conta',
   'forgotPassword.submit': 'Enviar link de recupera\u00e7\u00e3o',
-  'forgotPassword.sent': 'Se o e-mail existir, um link de recupera\u00e7\u00e3o foi enviado. Verifique sua caixa de entrada.',
+  'forgotPassword.sent':
+    'Se o e-mail existir, um link de recupera\u00e7\u00e3o foi enviado. Verifique sua caixa de entrada.',
   'forgotPassword.backToLogin': 'Voltar ao login',
   'resetPassword.subtitle': 'Digite sua nova senha',
   'resetPassword.submit': 'Redefinir senha',

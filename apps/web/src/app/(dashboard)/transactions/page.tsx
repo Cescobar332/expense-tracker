@@ -14,10 +14,17 @@ import { CurrencyInput } from '../../../components/ui/currency-input';
 import { Select } from '../../../components/ui/select';
 import { Modal } from '../../../components/ui/modal';
 import { EmptyState } from '../../../components/ui/empty-state';
-import { formatCurrency, formatDate, formatDateInput, getMonthRange } from '../../../lib/utils/format';
+import {
+  formatCurrency,
+  formatDate,
+  formatDateInput,
+  getMonthRange,
+} from '../../../lib/utils/format';
 import { getCategoryIcon } from '../../../lib/utils/category-icons';
 import { Transaction, TransactionFilters } from '../../../types';
 import { useTranslation } from '../../../lib/i18n';
+
+const DEFAULT_PAGE_SIZE = 20;
 
 export default function TransactionsPage() {
   const { t } = useTranslation();
@@ -25,7 +32,10 @@ export default function TransactionsPage() {
   const { user } = useAuthStore();
   const currency = user?.currency || 'USD';
 
-  const [filters, setFilters] = useState<TransactionFilters>({});
+  const [filters, setFilters] = useState<TransactionFilters>({
+    page: 1,
+    limit: DEFAULT_PAGE_SIZE,
+  });
   const [showModal, setShowModal] = useState(false);
   const [editingTx, setEditingTx] = useState<Transaction | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
@@ -47,6 +57,12 @@ export default function TransactionsPage() {
   });
 
   const transactions = paginatedResult?.data ?? [];
+  const currentPage = paginatedResult?.page ?? filters.page ?? 1;
+  const totalPages = paginatedResult?.totalPages ?? 1;
+  const totalItems = paginatedResult?.total ?? 0;
+  const pageLimit = paginatedResult?.limit ?? filters.limit ?? DEFAULT_PAGE_SIZE;
+  const fromItem = totalItems === 0 ? 0 : (currentPage - 1) * pageLimit + 1;
+  const toItem = totalItems === 0 ? 0 : Math.min(currentPage * pageLimit, totalItems);
 
   const { data: categories = [] } = useQuery({
     queryKey: ['categories'],
@@ -64,10 +80,13 @@ export default function TransactionsPage() {
     queryKey: ['report', monthStart, monthEnd],
     queryFn: () => reportsApi.getSummary({ startDate: monthStart, endDate: monthEnd }),
   });
-  const availableMoney = (currentMonthReport?.summary?.totalIncome || 0) - (currentMonthReport?.summary?.totalExpenses || 0);
+  const availableMoney =
+    (currentMonthReport?.summary?.totalIncome || 0) -
+    (currentMonthReport?.summary?.totalExpenses || 0);
 
   const createMutation = useMutation({
-    mutationFn: (data: Parameters<typeof transactionsApi.create>[0]) => transactionsApi.create(data),
+    mutationFn: (data: Parameters<typeof transactionsApi.create>[0]) =>
+      transactionsApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       queryClient.invalidateQueries({ queryKey: ['report'] });
@@ -77,8 +96,13 @@ export default function TransactionsPage() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Parameters<typeof transactionsApi.update>[1] }) =>
-      transactionsApi.update(id, data),
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: Parameters<typeof transactionsApi.update>[1];
+    }) => transactionsApi.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       queryClient.invalidateQueries({ queryKey: ['report'] });
@@ -98,7 +122,8 @@ export default function TransactionsPage() {
   });
 
   const addSavingsMutation = useMutation({
-    mutationFn: ({ id, amount }: { id: string; amount: number }) => savingsApi.addAmount(id, amount),
+    mutationFn: ({ id, amount }: { id: string; amount: number }) =>
+      savingsApi.addAmount(id, amount),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       queryClient.invalidateQueries({ queryKey: ['savings'] });
@@ -114,7 +139,13 @@ export default function TransactionsPage() {
 
   const openCreate = () => {
     setEditingTx(null);
-    setForm({ amount: '', type: 'EXPENSE', categoryId: '', date: formatDateInput(new Date()), description: '' });
+    setForm({
+      amount: '',
+      type: 'EXPENSE',
+      categoryId: '',
+      date: formatDateInput(new Date()),
+      description: '',
+    });
     setShowModal(true);
   };
 
@@ -165,7 +196,16 @@ export default function TransactionsPage() {
     if (transactions.length === 0) {
       return (
         <EmptyState
-          icon={<svg className="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" /></svg>}
+          icon={
+            <svg className="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1}
+                d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
+              />
+            </svg>
+          }
           title={t['transactions.empty']}
           description={t['transactions.emptyHint']}
           action={{ label: t['transactions.new'], onClick: openCreate }}
@@ -175,11 +215,15 @@ export default function TransactionsPage() {
     return (
       <div className="divide-y divide-[var(--color-border)]">
         {transactions.map((tx) => {
-          const description = tx.description || tx.category?.name || t['transactions.noDescription'];
+          const description =
+            tx.description || tx.category?.name || t['transactions.noDescription'];
           const formattedAmount = `${tx.type === 'INCOME' ? '+' : '-'}${formatCurrency(Number(tx.amount), currency)}`;
 
           return (
-            <div key={tx.id} className="flex items-center justify-between p-3 sm:p-4 hover:bg-[var(--color-bg)] transition-colors overflow-hidden gap-2">
+            <div
+              key={tx.id}
+              className="flex items-center justify-between p-3 sm:p-4 hover:bg-[var(--color-bg)] transition-colors overflow-hidden gap-2"
+            >
               <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                 <div
                   className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white text-xs sm:text-sm font-medium flex-shrink-0"
@@ -188,12 +232,19 @@ export default function TransactionsPage() {
                   {getCategoryIcon(tx.category?.icon, tx.category?.name, tx.type)}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs sm:text-sm font-medium text-[var(--color-text)] truncate" title={description}>
+                  <p
+                    className="text-xs sm:text-sm font-medium text-[var(--color-text)] truncate"
+                    title={description}
+                  >
                     {description}
                   </p>
                   <div className="flex items-center gap-1 sm:gap-2 mt-0.5 flex-wrap">
-                    <span className="text-xs text-[var(--color-text-secondary)]">{formatDate(tx.date)}</span>
-                    <span className={`text-xs px-1 sm:px-1.5 py-0.5 rounded ${tx.type === 'INCOME' ? 'bg-[var(--color-success)]/10 text-[var(--color-success)]' : 'bg-[var(--color-danger)]/10 text-[var(--color-danger)]'}`}>
+                    <span className="text-xs text-[var(--color-text-secondary)]">
+                      {formatDate(tx.date)}
+                    </span>
+                    <span
+                      className={`text-xs px-1 sm:px-1.5 py-0.5 rounded ${tx.type === 'INCOME' ? 'bg-[var(--color-success)]/10 text-[var(--color-success)]' : 'bg-[var(--color-danger)]/10 text-[var(--color-danger)]'}`}
+                    >
                       {tx.type === 'INCOME' ? t['common.income'] : t['common.expense']}
                     </span>
                   </div>
@@ -206,11 +257,33 @@ export default function TransactionsPage() {
                 >
                   {formattedAmount}
                 </span>
-                <button onClick={() => openEdit(tx)} className="p-1.5 sm:p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] min-h-[36px] sm:min-h-[44px] min-w-[36px] sm:min-w-[44px] flex items-center justify-center" aria-label={t['common.edit']}>
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                <button
+                  onClick={() => openEdit(tx)}
+                  className="p-1.5 sm:p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] min-h-[36px] sm:min-h-[44px] min-w-[36px] sm:min-w-[44px] flex items-center justify-center"
+                  aria-label={t['common.edit']}
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                    />
+                  </svg>
                 </button>
-                <button onClick={() => setDeleteConfirm(tx.id)} className="p-1.5 sm:p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-danger)] min-h-[36px] sm:min-h-[44px] min-w-[36px] sm:min-w-[44px] flex items-center justify-center" aria-label={t['common.delete']}>
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                <button
+                  onClick={() => setDeleteConfirm(tx.id)}
+                  className="p-1.5 sm:p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-danger)] min-h-[36px] sm:min-h-[44px] min-w-[36px] sm:min-w-[44px] flex items-center justify-center"
+                  aria-label={t['common.delete']}
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    />
+                  </svg>
                 </button>
               </div>
             </div>
@@ -220,20 +293,49 @@ export default function TransactionsPage() {
     );
   };
 
+  const goToPage = (page: number) => {
+    setFilters((prev) => ({ ...prev, page }));
+  };
+
+  const updateFilterAndResetPage = (next: Partial<TransactionFilters>) => {
+    setFilters((prev) => ({
+      ...prev,
+      ...next,
+      page: 1,
+      limit: prev.limit || DEFAULT_PAGE_SIZE,
+    }));
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-[var(--color-text)]">{t['transactions.title']}</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-[var(--color-text)]">
+            {t['transactions.title']}
+          </h1>
           <p className="text-[var(--color-text-secondary)] mt-1">{t['transactions.subtitle']}</p>
         </div>
         <div className="flex gap-2">
           <Button variant="secondary" onClick={() => setShowSavingsModal(true)}>
-            <svg className="w-5 h-5 sm:mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+            <svg className="w-5 h-5 sm:mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
+              />
+            </svg>
             <span className="hidden sm:inline">{t['transactions.addSavings']}</span>
           </Button>
           <Button onClick={openCreate}>
-            <svg className="w-5 h-5 sm:mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+            <svg className="w-5 h-5 sm:mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
             <span className="hidden sm:inline">{t['transactions.new']}</span>
           </Button>
         </div>
@@ -249,25 +351,34 @@ export default function TransactionsPage() {
               { value: 'EXPENSE', label: t['common.expenses'] },
             ]}
             value={filters.type || ''}
-            onChange={(e) => setFilters((f) => ({ ...f, type: e.target.value as any || undefined }))}
+            onChange={(e) =>
+              updateFilterAndResetPage({
+                type: (e.target.value as 'INCOME' | 'EXPENSE') || undefined,
+              })
+            }
           />
           <Input
             type="date"
             label={t['transactions.startDate']}
             value={filters.startDate || ''}
-            onChange={(e) => setFilters((f) => ({ ...f, startDate: e.target.value || undefined }))}
+            onChange={(e) => updateFilterAndResetPage({ startDate: e.target.value || undefined })}
             placeholder="Desde"
           />
           <Input
             type="date"
             label={t['transactions.endDate']}
             value={filters.endDate || ''}
-            onChange={(e) => setFilters((f) => ({ ...f, endDate: e.target.value || undefined }))}
+            onChange={(e) => updateFilterAndResetPage({ endDate: e.target.value || undefined })}
             placeholder="Hasta"
           />
           <Button
             variant="ghost"
-            onClick={() => setFilters({})}
+            onClick={() =>
+              setFilters({
+                page: 1,
+                limit: DEFAULT_PAGE_SIZE,
+              })
+            }
             className="flex-shrink-0"
           >
             {t['common.clear']}
@@ -278,17 +389,52 @@ export default function TransactionsPage() {
       {/* Transactions list */}
       <Card padding={false}>
         {renderTransactionList()}
+
+        {totalItems > 0 && (
+          <div className="border-t border-[var(--color-border)] px-3 sm:px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <p className="text-xs sm:text-sm text-[var(--color-text-secondary)]">
+              {t['transactions.paginationShowing']} {fromItem}-{toItem} {t['common.of']}{' '}
+              {totalItems}
+            </p>
+
+            <div className="flex items-center gap-2 self-end sm:self-auto">
+              <Button
+                variant="secondary"
+                onClick={() => goToPage(currentPage - 1)}
+                disabled={currentPage <= 1 || isLoading}
+              >
+                {t['transactions.paginationPrevious']}
+              </Button>
+              <span className="text-xs sm:text-sm text-[var(--color-text-secondary)] min-w-[100px] text-center">
+                {t['transactions.paginationPage']} {currentPage} {t['common.of']} {totalPages}
+              </span>
+              <Button
+                variant="secondary"
+                onClick={() => goToPage(currentPage + 1)}
+                disabled={currentPage >= totalPages || isLoading}
+              >
+                {t['transactions.paginationNext']}
+              </Button>
+            </div>
+          </div>
+        )}
       </Card>
 
       {/* Create/Edit Modal */}
-      <Modal isOpen={showModal} onClose={closeModal} title={editingTx ? t['transactions.editTitle'] : t['transactions.newTitle']}>
+      <Modal
+        isOpen={showModal}
+        onClose={closeModal}
+        title={editingTx ? t['transactions.editTitle'] : t['transactions.newTitle']}
+      >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <button
               type="button"
               onClick={() => setForm((f) => ({ ...f, type: 'EXPENSE', categoryId: '' }))}
               className={`py-2 px-4 rounded-lg text-sm font-medium border transition-colors min-h-[44px] ${
-                form.type === 'EXPENSE' ? 'bg-[var(--color-danger)]/10 border-[var(--color-danger)]/30 text-[var(--color-danger)]' : 'border-[var(--color-border)] text-[var(--color-text-secondary)]'
+                form.type === 'EXPENSE'
+                  ? 'bg-[var(--color-danger)]/10 border-[var(--color-danger)]/30 text-[var(--color-danger)]'
+                  : 'border-[var(--color-border)] text-[var(--color-text-secondary)]'
               }`}
             >
               {t['common.expense']}
@@ -297,7 +443,9 @@ export default function TransactionsPage() {
               type="button"
               onClick={() => setForm((f) => ({ ...f, type: 'INCOME', categoryId: '' }))}
               className={`py-2 px-4 rounded-lg text-sm font-medium border transition-colors min-h-[44px] ${
-                form.type === 'INCOME' ? 'bg-[var(--color-success)]/10 border-[var(--color-success)]/30 text-[var(--color-success)]' : 'border-[var(--color-border)] text-[var(--color-text-secondary)]'
+                form.type === 'INCOME'
+                  ? 'bg-[var(--color-success)]/10 border-[var(--color-success)]/30 text-[var(--color-success)]'
+                  : 'border-[var(--color-border)] text-[var(--color-text-secondary)]'
               }`}
             >
               {t['common.income']}
@@ -337,7 +485,9 @@ export default function TransactionsPage() {
           />
 
           <div className="flex gap-3 pt-2">
-            <Button type="button" variant="secondary" fullWidth onClick={closeModal}>{t['common.cancel']}</Button>
+            <Button type="button" variant="secondary" fullWidth onClick={closeModal}>
+              {t['common.cancel']}
+            </Button>
             <Button type="submit" fullWidth loading={isSubmitting}>
               {editingTx ? t['common.save'] : t['common.create']}
             </Button>
@@ -346,11 +496,29 @@ export default function TransactionsPage() {
       </Modal>
 
       {/* Savings Modal */}
-      <Modal isOpen={showSavingsModal} onClose={() => setShowSavingsModal(false)} title={t['transactions.addSavings']}>
-        <form onSubmit={(e) => { e.preventDefault(); if (selectedGoalId && savingsAmount) addSavingsMutation.mutate({ id: selectedGoalId, amount: Number.parseFloat(savingsAmount) }); }} className="space-y-4">
+      <Modal
+        isOpen={showSavingsModal}
+        onClose={() => setShowSavingsModal(false)}
+        title={t['transactions.addSavings']}
+      >
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (selectedGoalId && savingsAmount)
+              addSavingsMutation.mutate({
+                id: selectedGoalId,
+                amount: Number.parseFloat(savingsAmount),
+              });
+          }}
+          className="space-y-4"
+        >
           <div className="p-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)]">
-            <p className="text-sm text-[var(--color-text-secondary)]">{t['savings.availableThisMonth']}</p>
-            <p className={`text-lg font-bold ${availableMoney >= 0 ? 'text-[var(--color-success)]' : 'text-[var(--color-danger)]'}`}>
+            <p className="text-sm text-[var(--color-text-secondary)]">
+              {t['savings.availableThisMonth']}
+            </p>
+            <p
+              className={`text-lg font-bold ${availableMoney >= 0 ? 'text-[var(--color-success)]' : 'text-[var(--color-danger)]'}`}
+            >
               {formatCurrency(availableMoney, currency)}
             </p>
           </div>
@@ -362,22 +530,46 @@ export default function TransactionsPage() {
             placeholder={t['transactions.selectGoal']}
             required
           />
-          <CurrencyInput label={t['common.amount']} currency={currency} value={savingsAmount} onChange={(val) => setSavingsAmount(val)} required />
+          <CurrencyInput
+            label={t['common.amount']}
+            currency={currency}
+            value={savingsAmount}
+            onChange={(val) => setSavingsAmount(val)}
+            required
+          />
           <div className="flex gap-3 pt-2">
-            <Button type="button" variant="secondary" fullWidth onClick={() => setShowSavingsModal(false)}>{t['common.cancel']}</Button>
-            <Button type="submit" fullWidth loading={addSavingsMutation.isPending}>{t['common.add']}</Button>
+            <Button
+              type="button"
+              variant="secondary"
+              fullWidth
+              onClick={() => setShowSavingsModal(false)}
+            >
+              {t['common.cancel']}
+            </Button>
+            <Button type="submit" fullWidth loading={addSavingsMutation.isPending}>
+              {t['common.add']}
+            </Button>
           </div>
         </form>
       </Modal>
 
       {/* Delete confirmation */}
-      <Modal isOpen={!!deleteConfirm} onClose={() => setDeleteConfirm(null)} title={t['transactions.deleteTitle']}>
-        <p className="text-[var(--color-text-secondary)] mb-6">
-          {t['transactions.deleteConfirm']}
-        </p>
+      <Modal
+        isOpen={!!deleteConfirm}
+        onClose={() => setDeleteConfirm(null)}
+        title={t['transactions.deleteTitle']}
+      >
+        <p className="text-[var(--color-text-secondary)] mb-6">{t['transactions.deleteConfirm']}</p>
         <div className="flex gap-3">
-          <Button variant="secondary" fullWidth onClick={() => setDeleteConfirm(null)}>{t['common.cancel']}</Button>
-          <Button variant="danger" fullWidth loading={deleteMutation.isPending} onClick={() => deleteConfirm && deleteMutation.mutate(deleteConfirm)}>
+          <Button variant="secondary" fullWidth onClick={() => setDeleteConfirm(null)}>
+            {t['common.cancel']}
+          </Button>
+          <Button
+            variant="danger"
+            fullWidth
+            loading={deleteMutation.isPending}
+            onClick={() => deleteConfirm && deleteMutation.mutate(deleteConfirm)}
+          >
             {t['common.delete']}
           </Button>
         </div>

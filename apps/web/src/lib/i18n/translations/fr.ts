@@ -52,7 +52,8 @@ export const fr: TranslationKeys = {
 
   // Auth - Login
   'login.subtitle': 'Connectez-vous pour g\u00e9rer vos finances',
-  'login.accountCreated': 'Compte cr\u00e9\u00e9 avec succ\u00e8s. Connectez-vous avec vos identifiants.',
+  'login.accountCreated':
+    'Compte cr\u00e9\u00e9 avec succ\u00e8s. Connectez-vous avec vos identifiants.',
   'login.email': 'E-mail',
   'login.emailPlaceholder': 'vous@email.com',
   'login.password': 'Mot de passe',
@@ -116,10 +117,15 @@ export const fr: TranslationKeys = {
   'transactions.descriptionPlaceholder': 'Ex : Courses au supermarch\u00e9',
   'transactions.noDescription': 'Sans description',
   'transactions.deleteTitle': 'Supprimer la transaction',
-  'transactions.deleteConfirm': '\u00cates-vous s\u00fbr de vouloir supprimer cette transaction ? Cette action est irr\u00e9versible.',
+  'transactions.deleteConfirm':
+    '\u00cates-vous s\u00fbr de vouloir supprimer cette transaction ? Cette action est irr\u00e9versible.',
   'transactions.addSavings': "Ajouter \u00e0 l'\u00e9pargne",
   'transactions.savingsGoal': "Objectif d'\u00e9pargne",
   'transactions.selectGoal': 'S\u00e9lectionnez un objectif',
+  'transactions.paginationShowing': 'Affichage',
+  'transactions.paginationPrevious': 'Pr\u00e9c\u00e9dent',
+  'transactions.paginationNext': 'Suivant',
+  'transactions.paginationPage': 'Page',
 
   // Categories
   'categories.title': 'Cat\u00e9gories',
@@ -132,7 +138,8 @@ export const fr: TranslationKeys = {
   'categories.namePlaceholder': 'Ex : Alimentation, Transport',
   'categories.deleteTitle': 'Supprimer la cat\u00e9gorie',
   'categories.deleteConfirm': '\u00cates-vous s\u00fbr de vouloir supprimer cette cat\u00e9gorie ?',
-  'categories.deleteWarning': 'Les transactions associ\u00e9es ne seront pas supprim\u00e9es, mais resteront sans cat\u00e9gorie.',
+  'categories.deleteWarning':
+    'Les transactions associ\u00e9es ne seront pas supprim\u00e9es, mais resteront sans cat\u00e9gorie.',
   'categories.icon': 'Ic\u00f4ne',
 
   // Budgets
@@ -162,7 +169,7 @@ export const fr: TranslationKeys = {
   'savings.subtitle': 'Enregistrez et atteignez vos objectifs financiers',
   'savings.new': 'Nouvel objectif',
   'savings.empty': "Aucun objectif d'\u00e9pargne",
-  'savings.emptyHint': "D\u00e9finissez un objectif et commencez \u00e0 \u00e9pargner",
+  'savings.emptyHint': 'D\u00e9finissez un objectif et commencez \u00e0 \u00e9pargner',
   'savings.editTitle': "Modifier l'objectif",
   'savings.newTitle': "Nouvel objectif d'\u00e9pargne",
   'savings.goalName': "Nom de l'objectif",
@@ -170,12 +177,13 @@ export const fr: TranslationKeys = {
   'savings.targetAmount': 'Montant cible',
   'savings.targetDate': 'Date limite (optionnelle)',
   'savings.completed': 'Termin\u00e9',
-  'savings.addAmountTitle': "\u00c9pargne pour",
+  'savings.addAmountTitle': '\u00c9pargne pour',
   'savings.currentProgress': 'Progression actuelle',
   'savings.availableThisMonth': 'Disponible ce mois',
   'savings.amountToAdd': 'Montant \u00e0 ajouter',
   'savings.deleteTitle': "Supprimer l'objectif",
-  'savings.deleteConfirm': "\u00cates-vous s\u00fbr de vouloir supprimer cet objectif d'\u00e9pargne ?",
+  'savings.deleteConfirm':
+    "\u00cates-vous s\u00fbr de vouloir supprimer cet objectif d'\u00e9pargne ?",
 
   // Reports
   'reports.title': 'Rapports',
@@ -204,26 +212,31 @@ export const fr: TranslationKeys = {
   'register.passwordFair': 'Moyen',
   'register.passwordGood': 'Bon',
   'register.passwordStrong': 'Fort',
-  'register.passwordRequirements': 'Le mot de passe doit contenir une majuscule, une minuscule, un chiffre et un caract\u00e8re sp\u00e9cial',
+  'register.passwordRequirements':
+    'Le mot de passe doit contenir une majuscule, une minuscule, un chiffre et un caract\u00e8re sp\u00e9cial',
 
   // Forgot/Reset Password
-  'forgotPassword.subtitle': 'R\u00e9cup\u00e9rez l\'acc\u00e8s \u00e0 votre compte',
+  'forgotPassword.subtitle': "R\u00e9cup\u00e9rez l'acc\u00e8s \u00e0 votre compte",
   'forgotPassword.submit': 'Envoyer le lien de r\u00e9cup\u00e9ration',
-  'forgotPassword.sent': 'Si l\'e-mail existe, un lien de r\u00e9cup\u00e9ration a \u00e9t\u00e9 envoy\u00e9. V\u00e9rifiez votre bo\u00eete de r\u00e9ception.',
+  'forgotPassword.sent':
+    "Si l'e-mail existe, un lien de r\u00e9cup\u00e9ration a \u00e9t\u00e9 envoy\u00e9. V\u00e9rifiez votre bo\u00eete de r\u00e9ception.",
   'forgotPassword.backToLogin': 'Retour \u00e0 la connexion',
   'resetPassword.subtitle': 'Entrez votre nouveau mot de passe',
   'resetPassword.submit': 'R\u00e9initialiser le mot de passe',
   'resetPassword.invalidToken': 'Token invalide ou expir\u00e9',
   'resetPassword.success': 'Mot de passe r\u00e9initialis\u00e9 avec succ\u00e8s',
-  'login.passwordReset': 'Mot de passe r\u00e9initialis\u00e9 avec succ\u00e8s. Connectez-vous avec votre nouveau mot de passe.',
+  'login.passwordReset':
+    'Mot de passe r\u00e9initialis\u00e9 avec succ\u00e8s. Connectez-vous avec votre nouveau mot de passe.',
 
   // Chart
   'chart.income': 'Revenus',
   'chart.expenses': 'D\u00e9penses',
 
   // Email Verification
-  'verifyEmail.success': 'Votre e-mail a \u00e9t\u00e9 v\u00e9rifi\u00e9 avec succ\u00e8s. Vous pouvez maintenant vous connecter.',
+  'verifyEmail.success':
+    'Votre e-mail a \u00e9t\u00e9 v\u00e9rifi\u00e9 avec succ\u00e8s. Vous pouvez maintenant vous connecter.',
   'verifyEmail.invalidToken': 'Token de v\u00e9rification invalide ou expir\u00e9.',
   'verifyEmail.goToLogin': 'Aller \u00e0 la connexion',
-  'register.verifyEmail': 'Nous vous avons envoy\u00e9 un e-mail de v\u00e9rification. Veuillez v\u00e9rifier votre bo\u00eete de r\u00e9ception.',
+  'register.verifyEmail':
+    'Nous vous avons envoy\u00e9 un e-mail de v\u00e9rification. Veuillez v\u00e9rifier votre bo\u00eete de r\u00e9ception.',
 };

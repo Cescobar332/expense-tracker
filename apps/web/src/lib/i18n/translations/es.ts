@@ -116,10 +116,15 @@ export const es = {
   'transactions.descriptionPlaceholder': 'Ej: Compra del supermercado',
   'transactions.noDescription': 'Sin descripci\u00f3n',
   'transactions.deleteTitle': 'Eliminar transacci\u00f3n',
-  'transactions.deleteConfirm': '\u00bfEst\u00e1s seguro/a de que quieres eliminar esta transacci\u00f3n? Esta acci\u00f3n no se puede deshacer.',
+  'transactions.deleteConfirm':
+    '\u00bfEst\u00e1s seguro/a de que quieres eliminar esta transacci\u00f3n? Esta acci\u00f3n no se puede deshacer.',
   'transactions.addSavings': 'Agregar ahorro',
   'transactions.savingsGoal': 'Meta de ahorro',
   'transactions.selectGoal': 'Selecciona una meta',
+  'transactions.paginationShowing': 'Mostrando',
+  'transactions.paginationPrevious': 'Anterior',
+  'transactions.paginationNext': 'Siguiente',
+  'transactions.paginationPage': 'Pagina',
 
   // Categories
   'categories.title': 'Categor\u00edas',
@@ -131,8 +136,10 @@ export const es = {
   'categories.newTitle': 'Crear categor\u00eda',
   'categories.namePlaceholder': 'Ej: Alimentaci\u00f3n, Transporte',
   'categories.deleteTitle': 'Eliminar categor\u00eda',
-  'categories.deleteConfirm': '\u00bfEst\u00e1s seguro/a de que quieres eliminar esta categor\u00eda?',
-  'categories.deleteWarning': 'Las transacciones asociadas no se eliminar\u00e1n, pero quedar\u00e1n sin categor\u00eda.',
+  'categories.deleteConfirm':
+    '\u00bfEst\u00e1s seguro/a de que quieres eliminar esta categor\u00eda?',
+  'categories.deleteWarning':
+    'Las transacciones asociadas no se eliminar\u00e1n, pero quedar\u00e1n sin categor\u00eda.',
   'categories.icon': 'Icono',
 
   // Budgets
@@ -204,18 +211,21 @@ export const es = {
   'register.passwordFair': 'Regular',
   'register.passwordGood': 'Buena',
   'register.passwordStrong': 'Fuerte',
-  'register.passwordRequirements': 'La contrase\u00f1a debe contener may\u00fascula, min\u00fascula, n\u00famero y car\u00e1cter especial',
+  'register.passwordRequirements':
+    'La contrase\u00f1a debe contener may\u00fascula, min\u00fascula, n\u00famero y car\u00e1cter especial',
 
   // Forgot/Reset Password
   'forgotPassword.subtitle': 'Recupera el acceso a tu cuenta',
   'forgotPassword.submit': 'Enviar enlace de recuperaci\u00f3n',
-  'forgotPassword.sent': 'Si el correo existe, se ha enviado un enlace de recuperaci\u00f3n. Revisa tu bandeja de entrada.',
+  'forgotPassword.sent':
+    'Si el correo existe, se ha enviado un enlace de recuperaci\u00f3n. Revisa tu bandeja de entrada.',
   'forgotPassword.backToLogin': 'Volver al inicio de sesi\u00f3n',
   'resetPassword.subtitle': 'Ingresa tu nueva contrase\u00f1a',
   'resetPassword.submit': 'Restablecer contrase\u00f1a',
   'resetPassword.invalidToken': 'Token inv\u00e1lido o expirado',
   'resetPassword.success': 'Contrase\u00f1a restablecida exitosamente',
-  'login.passwordReset': 'Contrase\u00f1a restablecida exitosamente. Inicia sesi\u00f3n con tu nueva contrase\u00f1a.',
+  'login.passwordReset':
+    'Contrase\u00f1a restablecida exitosamente. Inicia sesi\u00f3n con tu nueva contrase\u00f1a.',
 
   // Chart
   'chart.income': 'Ingresos',
@@ -225,5 +235,6 @@ export const es = {
   'verifyEmail.success': 'Tu correo ha sido verificado exitosamente. Ya puedes iniciar sesión.',
   'verifyEmail.invalidToken': 'Token de verificación inválido o expirado.',
   'verifyEmail.goToLogin': 'Ir al inicio de sesión',
-  'register.verifyEmail': 'Te hemos enviado un correo de verificación. Por favor revisa tu bandeja de entrada.',
+  'register.verifyEmail':
+    'Te hemos enviado un correo de verificación. Por favor revisa tu bandeja de entrada.',
 } as const;

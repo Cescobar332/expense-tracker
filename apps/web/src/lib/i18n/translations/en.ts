@@ -116,10 +116,15 @@ export const en: TranslationKeys = {
   'transactions.descriptionPlaceholder': 'E.g.: Grocery shopping',
   'transactions.noDescription': 'No description',
   'transactions.deleteTitle': 'Delete transaction',
-  'transactions.deleteConfirm': 'Are you sure you want to delete this transaction? This action cannot be undone.',
+  'transactions.deleteConfirm':
+    'Are you sure you want to delete this transaction? This action cannot be undone.',
   'transactions.addSavings': 'Add savings',
   'transactions.savingsGoal': 'Savings goal',
   'transactions.selectGoal': 'Select a goal',
+  'transactions.paginationShowing': 'Showing',
+  'transactions.paginationPrevious': 'Previous',
+  'transactions.paginationNext': 'Next',
+  'transactions.paginationPage': 'Page',
 
   // Categories
   'categories.title': 'Categories',
@@ -132,7 +137,8 @@ export const en: TranslationKeys = {
   'categories.namePlaceholder': 'E.g.: Food, Transport',
   'categories.deleteTitle': 'Delete category',
   'categories.deleteConfirm': 'Are you sure you want to delete this category?',
-  'categories.deleteWarning': 'Associated transactions will not be deleted, but will be left without a category.',
+  'categories.deleteWarning':
+    'Associated transactions will not be deleted, but will be left without a category.',
   'categories.icon': 'Icon',
 
   // Budgets
@@ -204,7 +210,8 @@ export const en: TranslationKeys = {
   'register.passwordFair': 'Fair',
   'register.passwordGood': 'Good',
   'register.passwordStrong': 'Strong',
-  'register.passwordRequirements': 'Password must contain uppercase, lowercase, number and special character',
+  'register.passwordRequirements':
+    'Password must contain uppercase, lowercase, number and special character',
 
   // Forgot/Reset Password
   'forgotPassword.subtitle': 'Recover access to your account',
