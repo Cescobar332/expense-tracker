@@ -139,7 +139,7 @@ export const fr: TranslationKeys = {
   'categories.deleteTitle': 'Supprimer la cat\u00e9gorie',
   'categories.deleteConfirm': '\u00cates-vous s\u00fbr de vouloir supprimer cette cat\u00e9gorie ?',
   'categories.deleteWarning':
-    'Les transactions associ\u00e9es ne seront pas supprim\u00e9es, mais resteront sans cat\u00e9gorie.',
+    'Les transactions et budgets associ\u00e9s seront d\u00e9plac\u00e9s vers une cat\u00e9gorie par d\u00e9faut.',
   'categories.icon': 'Ic\u00f4ne',
 
   // Budgets

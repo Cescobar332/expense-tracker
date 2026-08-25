@@ -8,8 +8,18 @@ const DEFAULT_CATEGORIES = [
   { name: 'Salario', type: 'INCOME', color: '#22c55e', icon: 'Briefcase' },
   { name: 'Freelance', type: 'INCOME', color: '#3b82f6', icon: 'Laptop' },
   { name: 'Inversiones', type: 'INCOME', color: '#8b5cf6', icon: 'TrendingUp' },
-  { name: 'Otros ingresos', type: 'INCOME', color: '#06b6d4', icon: 'PlusCircle' },
-  { name: 'Alimentación', type: 'EXPENSE', color: '#ef4444', icon: 'UtensilsCrossed' },
+  {
+    name: 'Otros ingresos',
+    type: 'INCOME',
+    color: '#06b6d4',
+    icon: 'PlusCircle',
+  },
+  {
+    name: 'Alimentación',
+    type: 'EXPENSE',
+    color: '#ef4444',
+    icon: 'UtensilsCrossed',
+  },
   { name: 'Transporte', type: 'EXPENSE', color: '#f97316', icon: 'Car' },
   { name: 'Vivienda', type: 'EXPENSE', color: '#eab308', icon: 'Home' },
   { name: 'Servicios', type: 'EXPENSE', color: '#14b8a6', icon: 'Zap' },
@@ -67,7 +77,38 @@ export class PrismaCategoryRepository implements ICategoryRepository {
   }
 
   async delete(id: string): Promise<void> {
-    await this.prisma.category.delete({ where: { id } });
+    const category = await this.prisma.category.findUnique({
+      where: { id },
+      select: { userId: true, type: true },
+    });
+
+    if (!category) return;
+
+    const fallbackCategory = await this.prisma.category.findFirst({
+      where: {
+        userId: category.userId,
+        type: category.type,
+        isDefault: true,
+        id: { not: id },
+      },
+      select: { id: true },
+    });
+
+    if (!fallbackCategory) {
+      throw new Error('No default category is available for reassignment');
+    }
+
+    await this.prisma.$transaction([
+      this.prisma.transaction.updateMany({
+        where: { categoryId: id },
+        data: { categoryId: fallbackCategory.id },
+      }),
+      this.prisma.budget.updateMany({
+        where: { categoryId: id },
+        data: { categoryId: fallbackCategory.id },
+      }),
+      this.prisma.category.delete({ where: { id } }),
+    ]);
   }
 
   async createDefaultCategories(userId: string): Promise<void> {

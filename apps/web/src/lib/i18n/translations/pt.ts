@@ -138,7 +138,7 @@ export const pt: TranslationKeys = {
   'categories.deleteTitle': 'Excluir categoria',
   'categories.deleteConfirm': 'Tem certeza que deseja excluir esta categoria?',
   'categories.deleteWarning':
-    'As transa\u00e7\u00f5es associadas n\u00e3o ser\u00e3o exclu\u00eddas, mas ficar\u00e3o sem categoria.',
+    'As transa\u00e7\u00f5es e os or\u00e7amentos associados ser\u00e3o movidos para uma categoria padr\u00e3o.',
   'categories.icon': '\u00cdcone',
 
   // Budgets

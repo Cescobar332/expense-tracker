@@ -88,10 +88,6 @@ export class CategoriesController {
     const category = await this.categoryRepo.findById(id);
     if (!category) throw new NotFoundException('Categoría no encontrada');
     if (category.userId !== req.user.userId) throw new ForbiddenException();
-    if (category.isDefault)
-      throw new ForbiddenException(
-        'No se puede eliminar una categoría predeterminada',
-      );
     await this.categoryRepo.delete(id);
     return { message: 'Categoría eliminada' };
   }

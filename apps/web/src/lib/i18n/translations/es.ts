@@ -139,7 +139,7 @@ export const es = {
   'categories.deleteConfirm':
     '\u00bfEst\u00e1s seguro/a de que quieres eliminar esta categor\u00eda?',
   'categories.deleteWarning':
-    'Las transacciones asociadas no se eliminar\u00e1n, pero quedar\u00e1n sin categor\u00eda.',
+    'Las transacciones y presupuestos asociados se mover\u00e1n a una categor\u00eda predeterminada.',
   'categories.icon': 'Icono',
 
   // Budgets

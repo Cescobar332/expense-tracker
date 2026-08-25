@@ -138,7 +138,7 @@ export const en: TranslationKeys = {
   'categories.deleteTitle': 'Delete category',
   'categories.deleteConfirm': 'Are you sure you want to delete this category?',
   'categories.deleteWarning':
-    'Associated transactions will not be deleted, but will be left without a category.',
+    'Associated transactions and budgets will be moved to a default category.',
   'categories.icon': 'Icon',
 
   // Budgets
