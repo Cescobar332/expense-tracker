@@ -7,7 +7,14 @@ Monorepo pnpm de finanzas personales.
 - Base de datos: Postgres en **Supabase** (producción) y Postgres en Docker (`docker-compose.yml`) en local.
 - Correos: `apps/api/src/shared/services/email.service.ts`. El proveedor se elige con `EMAIL_PROVIDER` (`resend` | `brevo` | `smtp`). En producción se usa Resend, porque Render bloquea SMTP. En local se usa SMTP (Gmail).
 
-Comandos: `pnpm dev`, `pnpm test`, `pnpm lint`, `pnpm db:migrate`, `pnpm db:studio`.
+Comandos: `pnpm dev`, `pnpm lint`, `pnpm db:migrate`, `pnpm db:studio`. Tests: solo existen e2e en `apps/api/test` (`pnpm --filter api test:e2e`, corren contra la base de datos local). `pnpm test` falla porque no hay tests unitarios.
+
+## Montar el entorno local (PC nuevo)
+
+1. Abrir Docker Desktop y correr `docker compose up -d` (Postgres en el puerto 5432).
+2. Copiar `apps/api/.env.example` a `apps/api/.env`, generar los JWT con `openssl rand -hex 32` y llenar `SMTP_USER`, `SMTP_PASS` y `SMTP_FROM` (contraseña de aplicación de Gmail).
+3. Crear `apps/web/.env.local` con `NEXT_PUBLIC_API_URL=http://localhost:3001/api`.
+4. `pnpm install`, `pnpm --filter api prisma:deploy` y `pnpm dev`.
 
 ## Reglas obligatorias
 
