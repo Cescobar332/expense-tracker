@@ -1,8 +1,7 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
-import { AppModule } from './../src/app.module';
+import { createTestApp, emailServiceMock } from './setup-app';
 import { PrismaService } from './../src/shared/infrastructure/prisma.service';
 
 describe('Auth (e2e)', () => {
@@ -17,21 +16,7 @@ describe('Auth (e2e)', () => {
   };
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    app.setGlobalPrefix('api');
-    app.useGlobalPipes(
-      new ValidationPipe({
-        whitelist: true,
-        forbidNonWhitelisted: true,
-        transform: true,
-      }),
-    );
-    await app.init();
-
+    app = await createTestApp();
     prisma = app.get(PrismaService);
   });
 
@@ -44,18 +29,31 @@ describe('Auth (e2e)', () => {
   });
 
   describe('/api/auth/register (POST)', () => {
-    it('should register a new user', () => {
-      return request(app.getHttpServer())
+    it('should register a new user and send a verification email', async () => {
+      await request(app.getHttpServer())
         .post('/api/auth/register')
         .send(testUser)
         .expect(201)
         .expect((res) => {
-          expect(res.body).toHaveProperty('id');
-          expect(res.body.email).toBe(testUser.email);
-          expect(res.body.firstName).toBe(testUser.firstName);
-          expect(res.body.lastName).toBe(testUser.lastName);
+          expect(res.body).toHaveProperty('message');
           expect(res.body).not.toHaveProperty('passwordHash');
         });
+
+      const user = await prisma.user.findUnique({
+        where: { email: testUser.email },
+      });
+      expect(user).not.toBeNull();
+      expect(user?.firstName).toBe(testUser.firstName);
+      expect(user?.lastName).toBe(testUser.lastName);
+      expect(user?.isEmailVerified).toBe(false);
+      expect(emailServiceMock.sendVerificationEmail).toHaveBeenCalled();
+    });
+
+    it('should reject login before the email is verified', () => {
+      return request(app.getHttpServer())
+        .post('/api/auth/login')
+        .send({ email: testUser.email, password: testUser.password })
+        .expect((res) => expect(res.status).toBeGreaterThanOrEqual(400));
     });
 
     it('should reject duplicate email', () => {
@@ -101,12 +99,14 @@ describe('Auth (e2e)', () => {
           email: testUser.email,
           password: testUser.password,
         })
-        .expect(201)
+        .expect(200)
         .expect((res) => {
           expect(res.body).toHaveProperty('accessToken');
           expect(res.body).toHaveProperty('refreshToken');
           expect(res.body).toHaveProperty('user');
-          expect(res.body.user.email).toBe(testUser.email);
+          expect((res.body as { user: { email: string } }).user.email).toBe(
+            testUser.email,
+          );
         });
     });
 

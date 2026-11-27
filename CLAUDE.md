@@ -20,6 +20,7 @@ Comandos: `pnpm dev`, `pnpm test`, `pnpm lint`, `pnpm db:migrate`, `pnpm db:stud
 ## Ramas
 
 - `master`: producción. Vercel y Render despliegan desde aquí. Nadie trabaja directo en ella.
+- Vercel solo despliega `master` (`apps/web/vercel.json`). No hay ambiente de pruebas en la nube: todo se prueba en local.
 - `develop`: integración. Todo se prueba aquí antes de pasar a `master`.
 - Ramas de trabajo, siempre creadas desde `develop`, en minúsculas y con guiones:
   - `feature/<descripcion-corta>`: funcionalidad nueva (ej. `feature/presupuestos-mensuales`)
