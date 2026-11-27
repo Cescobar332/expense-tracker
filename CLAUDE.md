@@ -11,7 +11,7 @@ Comandos: `pnpm dev`, `pnpm lint`, `pnpm db:migrate`, `pnpm db:studio`. Tests: s
 
 ## Montar el entorno local (PC nuevo)
 
-1. Abrir Docker Desktop y correr `docker compose up -d` (Postgres en el puerto 5432).
+1. Abrir Docker Desktop y correr `docker compose up -d` (Postgres en el puerto 5433, para no chocar con otros proyectos).
 2. Copiar `apps/api/.env.example` a `apps/api/.env`, generar los JWT con `openssl rand -hex 32` y llenar `SMTP_USER`, `SMTP_PASS` y `SMTP_FROM` (contraseña de aplicación de Gmail).
 3. Crear `apps/web/.env.local` con `NEXT_PUBLIC_API_URL=http://localhost:3001/api`.
 4. `pnpm install`, `pnpm --filter api prisma:deploy` y `pnpm dev`.
